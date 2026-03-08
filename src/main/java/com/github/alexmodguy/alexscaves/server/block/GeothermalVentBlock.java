@@ -3,8 +3,8 @@ package com.github.alexmodguy.alexscaves.server.block;
 import com.mojang.serialization.MapCodec;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.ACBlockEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.GeothermalVentBlockEntity;
-import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -69,7 +69,7 @@ public class GeothermalVentBlock extends BaseEntityBlock {
         if (state.getBlock() instanceof GeothermalVentBlock) {
             return state.getValue(SMOKE_TYPE);
         }
-        if (state.getFluidState().getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+        if (ACFluidHelper.isAcid(state.getFluidState())) {
             return 3;
         } else if (state.getFluidState().is(FluidTags.WATER)) {
             return 1;

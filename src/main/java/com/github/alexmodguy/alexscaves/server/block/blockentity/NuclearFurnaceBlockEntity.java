@@ -396,8 +396,7 @@ public class NuclearFurnaceBlockEntity extends BaseContainerBlockEntity implemen
         return this.saveWithoutMetadata(registries);
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void applyUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
         this.loadAdditional(tag, registries);
     }
 

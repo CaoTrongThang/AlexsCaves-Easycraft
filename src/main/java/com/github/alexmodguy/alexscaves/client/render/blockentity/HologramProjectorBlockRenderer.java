@@ -163,22 +163,18 @@ public class HologramProjectorBlockRenderer<T extends HologramProjectorBlockEnti
         PlayerInfo playerInfo = getPlayerInfo(lastPlayerUUID);
         // In 1.21, getSkinMap() uses PlayerSkin.Model enum as key, not String
         PlayerSkin.Model skinModel = getPlayerSkinModel(playerInfo, lastPlayerUUID);
-        EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
-        EntityRenderer<? extends Player> renderer = manager.getSkinMap().get(skinModel);
         if(playerModel == null || slimPlayerModel == null){
             playerModel = new PlayerModel(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER), false);
             slimPlayerModel = new PlayerModel(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_SLIM), true);
         }
         PlayerModel model = skinModel == PlayerSkin.Model.SLIM ? slimPlayerModel : playerModel;
         model.young = false;
-        if (renderer instanceof LivingEntityRenderer livingEntityRenderer) {
-            ResourceLocation skinTexture = getPlayerSkinTextureLocation(playerInfo, lastPlayerUUID);
-            VertexConsumer ivertexbuilder = bufferIn.getBuffer(ACRenderTypes.getHologram(skinTexture));
-            poseStack.pushPose();
-            poseStack.scale(-1F, -1F, 1F);
-            model.renderToBuffer(poseStack, ivertexbuilder, 240, OverlayTexture.NO_OVERLAY, -1);
-            poseStack.popPose();
-        }
+        ResourceLocation skinTexture = getPlayerSkinTextureLocation(playerInfo, lastPlayerUUID);
+        VertexConsumer ivertexbuilder = bufferIn.getBuffer(ACRenderTypes.getHologram(skinTexture));
+        poseStack.pushPose();
+        poseStack.scale(-1F, -1F, 1F);
+        model.renderToBuffer(poseStack, ivertexbuilder, 240, OverlayTexture.NO_OVERLAY, -1);
+        poseStack.popPose();
         Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
     }
 

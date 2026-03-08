@@ -28,6 +28,8 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import com.github.alexmodguy.alexscaves.server.block.NuclearBombBlock;
+import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.world.chunk.TicketController;
@@ -84,7 +86,11 @@ public class RemoteDetonatorItem extends Item {
                     loadChunksAround(dimensionLevel, player.getUUID(), globalPos.pos(), true);
                     BlockState blockState = dimensionLevel.getBlockState(globalPos.pos());
                     if(blockState.is(ACTagRegistry.REMOTE_DETONATOR_ACTIVATES)){
-                        blockState.onCaughtFire(dimensionLevel, globalPos.pos(), Direction.UP, player);
+                        if (blockState.getBlock() instanceof NuclearBombBlock nuclearBombBlock) {
+                            nuclearBombBlock.onCaughtFire(blockState, dimensionLevel, globalPos.pos(), Direction.UP, player);
+                        } else if (blockState.getBlock() instanceof TntBlock) {
+                            TntBlock.explode(dimensionLevel, globalPos.pos());
+                        }
                         if(player.distanceToSqr(globalPos.pos().getCenter()) > 1000){
                             ACAdvancementTriggerRegistry.REMOTE_DETONATION.get().triggerForEntity(player);
                         }

@@ -2,6 +2,7 @@ package com.github.alexmodguy.alexscaves.server.block;
 
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -117,7 +118,7 @@ public class SulfurBudBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     public boolean canPlaceLiquid(BlockGetter getter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return fluid == Fluids.WATER || fluid.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        return fluid == Fluids.WATER || ACFluidHelper.isAcid(fluid);
     }
 
     public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState) {
@@ -126,7 +127,7 @@ public class SulfurBudBlock extends Block implements SimpleWaterloggedBlock {
             if (!levelAccessor.isClientSide()) {
                 if (fluidState.getType() == Fluids.WATER) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 1), 3);
-                } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+                } else if (ACFluidHelper.isAcid(fluidState)) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 2), 3);
                 }
                 levelAccessor.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(levelAccessor));
@@ -169,7 +170,7 @@ public class SulfurBudBlock extends Block implements SimpleWaterloggedBlock {
     public static int getLiquidType(FluidState fluidState) {
         if (fluidState.getType() == Fluids.WATER) {
             return 1;
-        } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get() && fluidState.isSource()) {
+        } else if (ACFluidHelper.isAcid(fluidState) && fluidState.isSource()) {
             return 2;
         }
         return 0;

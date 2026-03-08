@@ -34,7 +34,6 @@ public class ShotGumItem extends Item implements UpdatesStackTags, AlwaysCombina
         super(new Item.Properties().stacksTo(1));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

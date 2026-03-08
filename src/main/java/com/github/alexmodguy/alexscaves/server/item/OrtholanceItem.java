@@ -114,12 +114,13 @@ public class OrtholanceItem extends Item {
                 AABB aabb = new AABB(livingEntity.position(), livingEntity.position().add(vec3.scale(maxWaves))).inflate(1);
                 DamageSource source = livingEntity.damageSources().mobAttack(livingEntity);
                 double d = 5.0D; // Base attack damage from attributes
-                var modifiers = stack.getAttributeModifiers();
-                for (var entry : modifiers.modifiers()) {
-                    if (entry.attribute().equals(Attributes.ATTACK_DAMAGE)) {
-                        d += entry.modifier().amount();
+                final double[] bonusDamage = new double[1];
+                stack.forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+                    if (attribute.is(Attributes.ATTACK_DAMAGE)) {
+                        bonusDamage[0] += modifier.amount();
                     }
-                }
+                });
+                d += bonusDamage[0];
                 for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, aabb)) {
                     if (!livingEntity.isAlliedTo(entity) && !livingEntity.equals(entity) && livingEntity.hasLineOfSight(entity)) {
                         entity.hurt(source, (float) d);
@@ -163,7 +164,6 @@ public class OrtholanceItem extends Item {
     }
 
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

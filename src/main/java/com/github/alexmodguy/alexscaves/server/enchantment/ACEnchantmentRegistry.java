@@ -115,18 +115,7 @@ public class ACEnchantmentRegistry {
      * @return The enchantment level, or 0 if not present or enchantment doesn't exist
      */
     public static int getEnchantmentLevel(net.minecraft.world.level.Level level, net.minecraft.world.item.ItemStack stack, ResourceKey<Enchantment> enchantmentKey) {
-        if (level == null || stack == null || stack.isEmpty()) {
-            return 0;
-        }
-        var lookup = level.registryAccess().lookup(Registries.ENCHANTMENT);
-        if (lookup.isEmpty()) {
-            return 0;
-        }
-        var holder = lookup.get().get(enchantmentKey);
-        if (holder.isEmpty()) {
-            return 0;
-        }
-        return stack.getEnchantmentLevel(holder.get());
+        return ACEnchantmentHelper.getEnchantmentLevel(level, enchantmentKey, stack);
     }
     
     /**

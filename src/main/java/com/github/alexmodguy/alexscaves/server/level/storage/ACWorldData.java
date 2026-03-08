@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,7 +26,7 @@ import java.util.*;
 public class ACWorldData extends SavedData {
 
     private static final String IDENTIFIER = "alexscaves_world_data";
-    public static final Factory<ACWorldData> FACTORY = new Factory<>(ACWorldData::new, ACWorldData::load);
+    public static final Factory<ACWorldData> FACTORY = new Factory<>(ACWorldData::new, ACWorldData::load, DataFixTypes.LEVEL);
     private Map<UUID, Integer> deepOneReputations = new HashMap<>();
     private boolean primordialBossDefeatedOnce = false;
     private long firstPrimordialBossDefeatTimestamp = -1;

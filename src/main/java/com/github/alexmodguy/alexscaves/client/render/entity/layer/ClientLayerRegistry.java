@@ -1,28 +1,37 @@
 package com.github.alexmodguy.alexscaves.client.render.entity.layer;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
+import com.github.alexmodguy.alexscaves.client.render.entity.LivingEntityRendererAccessor;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.player.AbstractClientPlayer;
+import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientLayerRegistry {
+
+    public static void registerFabric() {
+        LivingEntityFeatureRendererRegistrationCallback.EVENT.register(
+                (entityType, entityRenderer, registrationHelper, context) -> {
+                    if (entityType != EntityType.ENDER_DRAGON
+                            && entityRenderer instanceof LivingEntityRenderer<?, ?> livingRenderer) {
+                        registerFabricLayer(livingRenderer, registrationHelper);
+                    }
+                });
+    }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
@@ -38,7 +47,7 @@ public class ClientLayerRegistry {
         for (PlayerSkin.Model modelType : event.getSkins()) {
             EntityRenderer<? extends Player> renderer = event.getSkin(modelType);
             if (renderer instanceof LivingEntityRenderer<?, ?> livingRenderer) {
-                livingRenderer.addLayer(new ACPotionEffectLayer(livingRenderer));
+                ((LivingEntityRendererAccessor) livingRenderer).addACLayer(new ACPotionEffectLayer(livingRenderer));
             }
         }
     }
@@ -53,8 +62,14 @@ public class ClientLayerRegistry {
                 AlexsCaves.LOGGER.warn("Could not apply radiation glow layer to " + BuiltInRegistries.ENTITY_TYPE.getKey(entityType) + ", has custom renderer that is not LivingEntityRenderer.");
             }
             if (renderer != null) {
-                renderer.addLayer(new ACPotionEffectLayer(renderer));
+                ((LivingEntityRendererAccessor) renderer).addACLayer(new ACPotionEffectLayer(renderer));
             }
         }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static void registerFabricLayer(LivingEntityRenderer<?, ?> livingRenderer,
+            LivingEntityFeatureRendererRegistrationCallback.RegistrationHelper registrationHelper) {
+        registrationHelper.register(new ACPotionEffectLayer(livingRenderer));
     }
 }

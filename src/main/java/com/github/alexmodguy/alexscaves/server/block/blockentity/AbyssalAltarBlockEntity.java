@@ -310,7 +310,6 @@ public class AbyssalAltarBlockEntity extends BaseContainerBlockEntity implements
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
         if (packet != null && packet.getTag() != null) {
             this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);

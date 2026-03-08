@@ -4,6 +4,7 @@ import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.FissurePrimalMagmaBlock;
 import com.github.alexmodguy.alexscaves.server.entity.living.LuxtructosaurusEntity;
+import com.github.alexmodguy.alexscaves.server.misc.ACBlockCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.google.common.collect.Maps;
@@ -252,7 +253,7 @@ public class TephraExplosion {
                     }
                     if (blockstate.getFluidState().isEmpty() && !blockstate.is(ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get())) {
                         if (setToAir) {
-                            blockstate.onBlockExploded(level, blockpos, dummyExplosion);
+                            ACBlockCompat.explodeBlock(level, blockpos, blockstate, dummyExplosion);
                         } else {
                             level.setBlock(blockpos, ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get().defaultBlockState().setValue(FissurePrimalMagmaBlock.REGEN_HEIGHT, 0), 3);
                         }

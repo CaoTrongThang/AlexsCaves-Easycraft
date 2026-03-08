@@ -249,7 +249,6 @@ public class AmberMonolithBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet, HolderLookup.Provider registries) {
         if (packet != null && packet.getTag() != null) {
             if (packet.getTag().contains("EntityType")) {

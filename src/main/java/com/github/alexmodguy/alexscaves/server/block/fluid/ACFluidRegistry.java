@@ -18,13 +18,12 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ACFluidRegistry {
-    public static final DeferredRegister<FluidType> FLUID_TYPE_DEF_REG = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, AlexsCaves.MODID);
+    @SuppressWarnings("unchecked")
+    public static final DeferredRegister<FluidType> FLUID_TYPE_DEF_REG = DeferredRegister.create((net.minecraft.resources.ResourceKey) NeoForgeRegistries.Keys.FLUID_TYPES, AlexsCaves.MODID);
     public static final DeferredRegister<Fluid> FLUID_DEF_REG = DeferredRegister.create(BuiltInRegistries.FLUID, AlexsCaves.MODID);
 
     private static BaseFlowingFluid.Properties acidProperties() {

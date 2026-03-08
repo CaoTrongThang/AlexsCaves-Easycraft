@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.block;
 
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +20,7 @@ public class SugarGlassBlock extends TransparentBlock {
     }
 
     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entityIn, float fallDistance) {
-        if (!(entityIn.getType().is(ACTagRegistry.CANDY_MOBS)) && !entityIn.isInFluidType() && !level.isClientSide) {
+        if (!(entityIn.getType().is(ACTagRegistry.CANDY_MOBS)) && !ACFluidHelper.isInAnyFluid(entityIn) && !level.isClientSide) {
             level.destroyBlock(pos, true);
         }
         super.fallOn(level, state, pos, entityIn, fallDistance);

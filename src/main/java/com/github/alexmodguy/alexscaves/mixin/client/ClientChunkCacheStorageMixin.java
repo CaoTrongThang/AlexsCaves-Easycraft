@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ClientChunkCache.Storage.class)
+@Mixin(targets = "net.minecraft.client.multiplayer.ClientChunkCache$Storage")
 public class ClientChunkCacheStorageMixin {
 
     @Inject(

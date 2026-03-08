@@ -261,12 +261,10 @@ public class GossamerWormEntity extends WaterAnimal implements Bucketable {
     }
 
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

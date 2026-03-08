@@ -2,21 +2,37 @@ package com.github.alexmodguy.alexscaves.mixin.client;
 
 
 import com.github.alexmodguy.alexscaves.client.render.item.ACArmorRenderProperties;
+import com.github.alexmodguy.alexscaves.server.item.DivingArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.GingerbreadArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.HazmatArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.PrimordialArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.RainbounceBootsItem;
 import com.github.alexmodguy.alexscaves.server.item.CustomArmorPostRender;
+import com.github.alexmodguy.alexscaves.server.item.DarknessArmorItem;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.armortrim.ArmorTrim;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.neoforged.neoforge.client.ClientHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,57 +47,72 @@ import java.util.Map;
 public abstract class HumanoidArmorLayerMixin extends RenderLayer {
 
     private static final Map<String, ResourceLocation> AC_ARMOR_LOCATION_CACHE = Maps.newHashMap();
-    private ItemStack lastArmorItemStackRendered = ItemStack.EMPTY;
 
     @Shadow
     protected abstract void setPartVisibility(HumanoidModel humanoidModel, EquipmentSlot equipmentSlot);
+
+    @Shadow
+    private void renderTrim(Holder<ArmorMaterial> material, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, ArmorTrim armorTrim, HumanoidModel humanoidModel, boolean innerModel) {
+    }
+
+    @Shadow
+    private void renderGlint(PoseStack poseStack, MultiBufferSource multiBufferSource, int light, HumanoidModel humanoidModel) {
+    }
 
     public HumanoidArmorLayerMixin(RenderLayerParent renderLayerParent) {
         super(renderLayerParent);
     }
 
-    // In 1.21, renderArmorPiece has 12 parameters (added 6 animation floats)
     @Inject(
-            method = {"Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;FFFFFF)V"},
+            method = {"Lnet/minecraft/client/renderer/entity/layers/HumanoidArmorLayer;renderArmorPiece(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;ILnet/minecraft/client/model/HumanoidModel;)V"},
             at = @At(value = "HEAD"),
             remap = true,
             cancellable = true
     )
-    private void ac_renderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, LivingEntity livingEntity, EquipmentSlot equipmentSlot, int light, HumanoidModel humanoidModel, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
+    private void ac_renderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, LivingEntity livingEntity, EquipmentSlot equipmentSlot, int light, HumanoidModel humanoidModel, CallbackInfo ci) {
         ItemStack itemstack = livingEntity.getItemBySlot(equipmentSlot);
-        if (itemstack.getItem() instanceof CustomArmorPostRender) {
-            ci.cancel();
-            lastArmorItemStackRendered = livingEntity.getItemBySlot(equipmentSlot);
-            Item item = itemstack.getItem();
-            if (item instanceof ArmorItem armorItem) {
-                if (armorItem.getEquipmentSlot() == equipmentSlot) {
-                    boolean legs = equipmentSlot == EquipmentSlot.LEGS;
-                    HumanoidModel model = this.getParentModel() instanceof HumanoidModel humanoidModel1 ? humanoidModel1 : humanoidModel;
-                    Model armorModel = ClientHooks.getArmorModel(livingEntity, itemstack, equipmentSlot, model);
-                    setPartVisibility((HumanoidModel) armorModel, equipmentSlot);
-                    ResourceLocation texture = getACArmorResource(livingEntity, itemstack, equipmentSlot, null);
-                    ACArmorRenderProperties.renderCustomArmor(poseStack, multiBufferSource, light, lastArmorItemStackRendered, armorItem, armorModel, legs, texture);
-                }
+        Item item = itemstack.getItem();
+        if (!(item instanceof ArmorItem armorItem) || !isAlexsCavesArmor(item) || armorItem.getEquipmentSlot() != equipmentSlot) {
+            return;
+        }
+
+        ci.cancel();
+        boolean innerModel = equipmentSlot == EquipmentSlot.LEGS;
+        HumanoidModel parentModel = this.getParentModel() instanceof HumanoidModel humanoidModel1 ? humanoidModel1 : humanoidModel;
+        Model extendedModel = ClientHooks.getArmorModel(livingEntity, itemstack, equipmentSlot, parentModel);
+        HumanoidModel armorModel = extendedModel instanceof HumanoidModel humanoidArmorModel ? humanoidArmorModel : humanoidModel;
+        parentModel.copyPropertiesTo(armorModel);
+        setPartVisibility(armorModel, equipmentSlot);
+
+        ResourceLocation texture = getACArmorResource(livingEntity, itemstack, equipmentSlot, null);
+        if (item instanceof CustomArmorPostRender) {
+            ACArmorRenderProperties.renderCustomArmor(poseStack, multiBufferSource, light, itemstack, armorItem, armorModel, innerModel, texture);
+        } else {
+            int color = itemstack.is(ItemTags.DYEABLE) ? FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(itemstack, -6265536)) : -1;
+            VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.armorCutoutNoCull(texture));
+            armorModel.renderToBuffer(poseStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, color);
+            if (itemstack.hasFoil()) {
+                this.renderGlint(poseStack, multiBufferSource, light, armorModel);
             }
+        }
+
+        ArmorTrim trim = itemstack.get(DataComponents.TRIM);
+        if (trim != null) {
+            this.renderTrim(armorItem.getMaterial(), poseStack, multiBufferSource, light, trim, armorModel, innerModel);
         }
     }
 
 
-    /* Updated for 1.21 ArmorMaterial.Layer system */
     private ResourceLocation getACArmorResource(LivingEntity entity, ItemStack stack, EquipmentSlot slot, @Nullable String type) {
         ArmorItem item = (ArmorItem) stack.getItem();
-        // In 1.21, armor textures are handled via the ArmorMaterial.Layer system
-        net.minecraft.world.item.ArmorMaterial material = item.getMaterial().value();
+        ArmorMaterial material = item.getMaterial().value();
         boolean innerModel = slot == EquipmentSlot.LEGS;
-        
-        // Get the first layer (most armor materials have only one layer, leather has two for dyeing)
+
         if (!material.layers().isEmpty()) {
-            net.minecraft.world.item.ArmorMaterial.Layer layer = material.layers().get(0);
-            // Use the new ClientHooks.getArmorTexture with ArmorMaterial.Layer
+            ArmorMaterial.Layer layer = material.layers().get(0);
             return ClientHooks.getArmorTexture(entity, stack, layer, innerModel, slot);
         }
-        
-        // Fallback: construct texture path manually if no layers defined
+
         ResourceLocation materialName = item.getMaterial().unwrapKey().get().location();
         String domain = materialName.getNamespace();
         String texture = materialName.getPath();
@@ -93,5 +124,14 @@ public abstract class HumanoidArmorLayerMixin extends RenderLayer {
             AC_ARMOR_LOCATION_CACHE.put(s1, resourcelocation);
         }
         return resourcelocation;
+    }
+
+    private static boolean isAlexsCavesArmor(Item item) {
+        return item instanceof PrimordialArmorItem
+            || item instanceof HazmatArmorItem
+            || item instanceof DivingArmorItem
+            || item instanceof DarknessArmorItem
+            || item instanceof RainbounceBootsItem
+            || item instanceof GingerbreadArmorItem;
     }
 }

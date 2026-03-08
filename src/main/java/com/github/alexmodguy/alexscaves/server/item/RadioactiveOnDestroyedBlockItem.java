@@ -18,10 +18,9 @@ public class RadioactiveOnDestroyedBlockItem extends RadioactiveBlockItem {
         super(blockSupplier, props, randomChanceOfRadiation);
     }
 
-    @Override
-    public void onDestroyed(ItemEntity itemEntity, DamageSource damageSource){
-        super.onDestroyed(itemEntity, damageSource);
-        if(!damageSource.isCreativePlayer() && !itemEntity.isRemoved()){
+    public void onDestroyed(ItemEntity itemEntity){
+        super.onDestroyed(itemEntity);
+        if(!itemEntity.isRemoved()){
             itemEntity.discard();
             AreaEffectCloud cloud = new AreaEffectCloud(itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ());
             cloud.setParticle(ACParticleRegistry.GAMMAROACH.get());

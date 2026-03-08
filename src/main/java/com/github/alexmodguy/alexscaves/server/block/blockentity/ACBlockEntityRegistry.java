@@ -2,16 +2,11 @@ package com.github.alexmodguy.alexscaves.server.block.blockentity;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.minecraft.core.registries.Registries;
 
 public class ACBlockEntityRegistry {
 
@@ -38,23 +33,7 @@ public class ACBlockEntityRegistry {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<GingerbarrelBlockEntity>> GINGERBARREL = DEF_REG.register("gingerbarrel", () -> BlockEntityType.Builder.of(GingerbarrelBlockEntity::new, ACBlockRegistry.GINGERBARREL.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ConfectionOvenBlockEntity>> CONFECTION_OVEN = DEF_REG.register("confection_oven", () -> BlockEntityType.Builder.of(ConfectionOvenBlockEntity::new, ACBlockRegistry.CONFECTION_OVEN.get()).build(null));
 
-    // Custom sign blocks are added to vanilla BlockEntityType.SIGN and BlockEntityType.HANGING_SIGN
-    // using access transformers to make validBlocks accessible (public-f in accesstransformer.cfg)
     public static void expandVanillaDefinitions() {
-        ImmutableSet.Builder<Block> validSignBlocks = new ImmutableSet.Builder<>();
-        validSignBlocks.addAll(BlockEntityType.SIGN.validBlocks);
-        validSignBlocks.add(ACBlockRegistry.PEWEN_SIGN.get());
-        validSignBlocks.add(ACBlockRegistry.PEWEN_WALL_SIGN.get());
-        validSignBlocks.add(ACBlockRegistry.THORNWOOD_SIGN.get());
-        validSignBlocks.add(ACBlockRegistry.THORNWOOD_WALL_SIGN.get());
-        BlockEntityType.SIGN.validBlocks = validSignBlocks.build();
-        
-        ImmutableSet.Builder<Block> validHangingSignBlocks = new ImmutableSet.Builder<>();
-        validHangingSignBlocks.addAll(BlockEntityType.HANGING_SIGN.validBlocks);
-        validHangingSignBlocks.add(ACBlockRegistry.PEWEN_HANGING_SIGN.get());
-        validHangingSignBlocks.add(ACBlockRegistry.PEWEN_WALL_HANGING_SIGN.get());
-        validHangingSignBlocks.add(ACBlockRegistry.THORNWOOD_HANGING_SIGN.get());
-        validHangingSignBlocks.add(ACBlockRegistry.THORNWOOD_WALL_HANGING_SIGN.get());
-        BlockEntityType.HANGING_SIGN.validBlocks = validHangingSignBlocks.build();
+        // Vanilla 1.21.1 keeps the sign valid-block set private. Revisit with a mixin or access widener.
     }
 }

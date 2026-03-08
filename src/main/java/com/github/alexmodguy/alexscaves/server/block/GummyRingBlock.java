@@ -3,6 +3,7 @@ package com.github.alexmodguy.alexscaves.server.block;
 import com.mojang.serialization.MapCodec;
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -116,7 +117,7 @@ public class GummyRingBlock extends DirectionalBlock implements BucketPickup, Li
     private int getLiquidType(FluidState fluidState) {
         if (fluidState.getType() == Fluids.WATER) {
             return 1;
-        } else if (fluidState.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get() && fluidState.isSource()) {
+        } else if (ACFluidHelper.isPurpleSoda(fluidState) && fluidState.isSource()) {
             return 2;
         }
         return 0;
@@ -138,7 +139,7 @@ public class GummyRingBlock extends DirectionalBlock implements BucketPickup, Li
 
     @Override
     public boolean canPlaceLiquid(Player player, BlockGetter getter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return fluid == Fluids.WATER || fluid.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
+        return fluid == Fluids.WATER || ACFluidHelper.isPurpleSoda(fluid);
     }
 
     public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState) {
@@ -147,7 +148,7 @@ public class GummyRingBlock extends DirectionalBlock implements BucketPickup, Li
             if (!levelAccessor.isClientSide()) {
                 if (fluidState.getType() == Fluids.WATER) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 1), 3);
-                } else if (fluidState.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
+                } else if (ACFluidHelper.isPurpleSoda(fluidState)) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 2), 3);
                 }
                 levelAccessor.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(levelAccessor));

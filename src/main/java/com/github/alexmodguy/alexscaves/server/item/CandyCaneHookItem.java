@@ -2,6 +2,7 @@ package com.github.alexmodguy.alexscaves.server.item;
 
 import com.github.alexmodguy.alexscaves.server.entity.item.CandyCaneHookEntity;
 import com.github.alexmodguy.alexscaves.server.entity.living.GumWormSegmentEntity;
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -166,8 +167,7 @@ public class CandyCaneHookItem extends Item {
         return stack.getCount() == 1;
     }
 
-    @Override
     public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility toolAction) {
-        return toolAction == ItemAbilities.FISHING_ROD_CAST || super.canPerformAction(stack, toolAction);
+        return ACItemCompat.canPerformAction(stack, toolAction);
     }
 }

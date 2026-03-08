@@ -29,12 +29,10 @@ public class RainbounceBootsItem extends ArmorItem implements CustomArmorPostRen
         this.acMaterial = rainbounceArmorMaterial;
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
 
-    @Override
     @Nullable
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
         return ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/armor/rainbounce_boots.png");

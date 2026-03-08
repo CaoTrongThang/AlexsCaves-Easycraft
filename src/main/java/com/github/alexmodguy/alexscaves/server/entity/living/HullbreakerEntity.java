@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ai.HullbreakerMeleeGoal;
 import com.github.alexmodguy.alexscaves.server.entity.ai.VerticalSwimmingMoveControl;
 import com.github.alexmodguy.alexscaves.server.entity.item.SubmarineEntity;
 import com.github.alexmodguy.alexscaves.server.entity.util.KaijuMob;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.github.alexthe666.citadel.animation.Animation;
@@ -53,7 +54,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.entity.PartEntity;
 
 import java.util.ArrayList;
@@ -255,7 +255,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         float pulseBy = getInterestLevel() * 0.45F;
         pulseAmount += pulseBy;
         if (!level().isClientSide) {
-            double waterHeight = getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value());
+            double waterHeight = ACFluidHelper.getWaterHeight(this);
             if (waterHeight > 0 && waterHeight < this.getBbHeight() - 1.0F) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
             }
@@ -380,12 +380,10 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         this.walkAnimation.update(f2, 0.4F);
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

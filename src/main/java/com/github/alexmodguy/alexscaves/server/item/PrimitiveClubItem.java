@@ -112,7 +112,6 @@ public class PrimitiveClubItem extends Item {
         return repairItem.is(ACItemRegistry.HEAVY_BONE.get()) || super.isValidRepairItem(item, repairItem);
     }
 
-    @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         int swift = ACEnchantmentHelper.getEnchantmentLevelFromStack(ACEnchantmentRegistry.SWIFTWOOD, stack);
         if (swift > 0) {
@@ -121,17 +120,14 @@ public class PrimitiveClubItem extends Item {
         return createDefaultAttributes();
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
 
-    @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         return player.getAttackStrengthScale(0) < 0.95 || player.attackAnim != 0;
     }
 
-    @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (entity instanceof Player player) {
             if (player.getAttackStrengthScale(0) < 1 && player.attackAnim > 0) {

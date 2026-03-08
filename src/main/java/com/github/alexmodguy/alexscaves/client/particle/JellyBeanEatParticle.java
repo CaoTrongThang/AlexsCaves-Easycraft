@@ -23,7 +23,7 @@ public class JellyBeanEatParticle extends BreakingItemParticle {
         this.xd += xd;
         this.yd += yd;
         this.zd += zd;
-        int colorizer = Minecraft.getInstance().getItemColors().getColor(stack, 0);
+        int colorizer = -1;
         if(stack.getItem() == ACItemRegistry.BIOME_TREAT.get()){
             colorizer = BiomeTreatItem.getBiomeTreatColorOf(Minecraft.getInstance().level, stack);
         }

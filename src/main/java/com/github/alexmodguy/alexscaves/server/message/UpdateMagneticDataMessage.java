@@ -71,7 +71,7 @@ public class UpdateMagneticDataMessage implements CustomPacketPayload {
         if (player != null) {
             Entity entity = player.level().getEntity(message.entityId);
             if (entity != null) {
-                MagneticEntityData data = entity.getData(ACAttachmentRegistry.MAGNETIC_DATA);
+                MagneticEntityData data = ACAttachmentRegistry.getMagneticData(entity);
                 data.setDeltaX(message.deltaX);
                 data.setDeltaY(message.deltaY);
                 data.setDeltaZ(message.deltaZ);

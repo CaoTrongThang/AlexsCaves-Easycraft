@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.42-beta'
+    id 'fabric-loom' version "${loom_version}"
 }
 
 version = project.mod_version
@@ -12,15 +12,19 @@ group = 'com.github.alexscaves'
 repositories {
     mavenLocal()
     maven {
-        name = "CurseMaven"
-        url = "https://www.cursemaven.com"
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://www.cursemaven.com'
         content {
-            includeGroup "curse.maven"
+            includeGroup 'curse.maven'
         }
     }
     maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev"
+        name = 'ModMaven'
+        url = 'https://modmaven.dev'
     }
 }
 
@@ -28,77 +32,62 @@ base {
     archivesName = 'alexscaves'
 }
 
+def prismModsDirPath = providers.gradleProperty('prismModsDir')
+    .orElse(providers.environmentVariable('PRISM_MODS_DIR'))
+
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-neoForge {
-    version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
-
-    runs {
-        client {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        server {
-            server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        data {
-            data()
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet sourceSets.main
-        }
+loom {
+    accessWidenerPath = file('src/main/resources/alexscaves.accesswidener')
+    mixin {
+        defaultRefmapName = 'alexscaves.refmap.json'
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets {
+    main {
+        java {
+            exclude 'com/github/alexmodguy/alexscaves/compat/jei/**'
+        }
+        resources { srcDir 'src/generated/resources' }
+    }
+}
 
 dependencies {
-    // JEI for recipe viewing
-    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    // Citadel dependency - local jar from sibling project
-    implementation files('../Citadel/build/libs/citadel-1.21.1-2.7.0.jar')
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+    // Citadel has not been resolved to a Fabric artifact yet.
+    // Keep the dependency surface explicit until that gate is closed.
+    // compileOnly "group:artifact:${citadel_version}"
 }
 
-var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+tasks.processResources {
     var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_description        : mod_description
+        minecraft_version    : minecraft_version,
+        fabric_loader_version: fabric_loader_version,
+        fabric_api_version   : fabric_api_version,
+        mod_id               : mod_id,
+        mod_name             : mod_name,
+        mod_license          : mod_license,
+        mod_version          : mod_version,
+        mod_authors          : mod_authors,
+        mod_description      : mod_description
     ]
-    inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
-    into "build/generated/sources/modMetadata"
-}
 
-sourceSets.main.resources.srcDir generateModMetadata
-neoForge.ideSyncTask generateModMetadata
+    inputs.properties replaceProperties
+    filesMatching('fabric.mod.json') {
+        expand replaceProperties
+    }
+}
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+    options.release = 21
 }
 
 idea {
@@ -111,14 +100,45 @@ idea {
 jar {
     manifest {
         attributes([
-            "Specification-Title"     : project.mod_id,
-            "Specification-Vendor"    : mod_authors,
-            "Specification-Version"   : "1",
-            "Implementation-Title"    : project.name,
-            "Implementation-Version"  : project.jar.archiveVersion,
-            "Implementation-Vendor"   : mod_authors
+            'Specification-Title'    : project.mod_id,
+            'Specification-Vendor'   : mod_authors,
+            'Specification-Version'  : '1',
+            'Implementation-Title'   : project.name,
+            'Implementation-Version' : project.jar.archiveVersion,
+            'Implementation-Vendor'  : mod_authors
         ])
     }
+}
+
+tasks.register('deployToPrismMods') {
+    onlyIf {
+        prismModsDirPath.present && !prismModsDirPath.get().isBlank()
+    }
+
+    doLast {
+        def source = tasks.named('remapJar').get().archiveFile.get().asFile.toPath()
+        def prismModsDir = file(prismModsDirPath.get())
+        def targetDir = prismModsDir.toPath()
+        def target = targetDir.resolve(source.fileName.toString())
+        def temp = targetDir.resolve("${source.fileName}.tmp")
+
+        java.nio.file.Files.createDirectories(targetDir)
+        java.nio.file.Files.copy(source, temp, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        try {
+            java.nio.file.Files.move(
+                temp,
+                target,
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                java.nio.file.StandardCopyOption.ATOMIC_MOVE
+            )
+        } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
+            java.nio.file.Files.move(temp, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+}
+
+tasks.named('remapJar') {
+    finalizedBy tasks.named('deployToPrismMods')
 }
 
 publishing {

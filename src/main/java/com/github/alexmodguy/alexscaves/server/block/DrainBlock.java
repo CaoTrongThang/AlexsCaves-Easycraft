@@ -2,6 +2,7 @@ package com.github.alexmodguy.alexscaves.server.block;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.message.WorldEventMessage;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.google.common.collect.Lists;
@@ -25,10 +26,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.List;
 import java.util.Queue;
@@ -101,7 +102,7 @@ public class DrainBlock extends TransparentBlock {
                 boolean flag = false;
                 for (int i = 0; i < count; i++) {
                     List<BlockPos> ignoredPoses = Lists.newArrayList();
-                    BlockPos setPos = getFirstEmptyNeighborPosition(worldIn, lowest, copyState.getFluidType(), 0, ignoredPoses);
+                    BlockPos setPos = getFirstEmptyNeighborPosition(worldIn, lowest, copyState.getType(), 0, ignoredPoses);
                     if (setPos == null) {
                         lowest = lowest.above();
                         if (lowest.getY() >= pos.getY()) {
@@ -161,7 +162,7 @@ public class DrainBlock extends TransparentBlock {
         return highest;
     }
 
-    private BlockPos getFirstEmptyNeighborPosition(Level level, BlockPos pos, FluidType ourType, int tries, List<BlockPos> ignoredPoses) {
+    private BlockPos getFirstEmptyNeighborPosition(Level level, BlockPos pos, Fluid ourType, int tries, List<BlockPos> ignoredPoses) {
         if (tries < 20 && !ignoredPoses.contains(pos)) {
             ignoredPoses.add(pos);
             if (canMergeWith(level, pos)) {
@@ -171,7 +172,7 @@ public class DrainBlock extends TransparentBlock {
                 BlockPos pos1 = pos.relative(direction);
                 if (canMergeWith(level, pos1)) {
                     return pos1;
-                } else if (level.getFluidState(pos1).getFluidType() == ourType) {
+                } else if (ACFluidHelper.matches(level.getFluidState(pos1), ourType)) {
                     BlockPos pos2 = getFirstEmptyNeighborPosition(level, pos1, ourType, tries + 1, ignoredPoses);
                     if (pos2 != null) {
                         return pos2;
@@ -210,7 +211,7 @@ public class DrainBlock extends TransparentBlock {
                 BlockPos blockpos1 = blockpos.relative(direction);
                 BlockState blockstate = level.getBlockState(blockpos1);
                 FluidState fluidstate = level.getFluidState(blockpos1);
-                if (lastFluidState != null && !fluidstate.isEmpty() && lastFluidState.getFluidType() != fluidstate.getFluidType()) {
+                if (lastFluidState != null && !fluidstate.isEmpty() && !ACFluidHelper.sameFluid(lastFluidState, fluidstate)) {
                     continue;
                 }
                 if (blockstate.getBlock() instanceof SimpleWaterloggedBlock) {

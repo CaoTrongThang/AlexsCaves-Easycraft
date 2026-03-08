@@ -2,10 +2,14 @@ package com.github.alexmodguy.alexscaves.server.entity.util;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -17,9 +21,12 @@ import java.util.function.Supplier;
  * manually via UpdateMagneticDataMessage.
  */
 public class ACAttachmentRegistry {
-    
-    public static final DeferredRegister<AttachmentType<?>> DEF_REG = 
-        DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, AlexsCaves.MODID);
+
+    private static final Map<Entity, MagneticEntityData> MAGNETIC_DATA_STORE = Collections.synchronizedMap(new WeakHashMap<>());
+
+    @SuppressWarnings("unchecked")
+    public static final DeferredRegister<AttachmentType<?>> DEF_REG =
+        DeferredRegister.create((net.minecraft.resources.ResourceKey) NeoForgeRegistries.Keys.ATTACHMENT_TYPES, AlexsCaves.MODID);
     
     /**
      * Attachment for magnetic entity data (delta movement and attachment direction).
@@ -33,4 +40,8 @@ public class ACAttachmentRegistry {
             .copyOnDeath()
             .build()
     );
+
+    public static MagneticEntityData getMagneticData(Entity entity) {
+        return MAGNETIC_DATA_STORE.computeIfAbsent(entity, ignored -> MagneticEntityData.DEFAULT.copy());
+    }
 }

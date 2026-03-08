@@ -1,11 +1,11 @@
 package com.github.alexmodguy.alexscaves.server.block;
 
-import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.item.FallingFrostmintEntity;
 import com.github.alexmodguy.alexscaves.server.entity.item.FallingGuanoEntity;
 import com.github.alexmodguy.alexscaves.server.entity.util.FrostmintExplosion;
 import com.github.alexmodguy.alexscaves.server.entity.util.MineExplosion;
 import com.github.alexmodguy.alexscaves.server.misc.ACAdvancementTriggerRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -69,7 +69,7 @@ public class FrostmintBlock extends SlabBlock implements Fallable {
     }
 
     public void onLand(Level level, BlockPos blockPos, BlockState blockState, BlockState blockState1, FallingBlockEntity fallingBlockEntity) {
-        if(blockState1.getFluidState().getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get() && !level.isClientSide){
+        if (ACFluidHelper.isPurpleSoda(blockState1.getFluidState()) && !level.isClientSide) {
             FrostmintExplosion explosion = new FrostmintExplosion(level, fallingBlockEntity, blockPos.getX() + 0.5F, blockPos.getY() + 0.5F, blockPos.getZ() + 0.5F, 4.0F, Explosion.BlockInteraction.DESTROY_WITH_DECAY, false);
             explosion.explode();
             explosion.finalizeExplosion(true);

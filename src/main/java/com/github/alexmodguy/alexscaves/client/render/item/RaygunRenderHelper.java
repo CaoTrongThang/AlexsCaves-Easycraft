@@ -3,6 +3,7 @@ package com.github.alexmodguy.alexscaves.client.render.item;
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
 import com.github.alexmodguy.alexscaves.client.render.ACRenderTypes;
+import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentHelper;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
 import com.github.alexmodguy.alexscaves.server.item.RaygunItem;
 import com.github.alexthe666.citadel.client.shader.PostEffectRegistry;
@@ -81,8 +82,7 @@ public class RaygunRenderHelper {
             boolean blue = false;
             Level level = Minecraft.getInstance().level;
             if (level != null) {
-                var gammaRayHolder = ACEnchantmentRegistry.getEnchantmentHolder(level, ACEnchantmentRegistry.GAMMA_RAY);
-                blue = gammaRayHolder.isPresent() && stack.getEnchantmentLevel(gammaRayHolder.get()) > 0;
+                blue = ACEnchantmentHelper.getEnchantmentLevel(level, ACEnchantmentRegistry.GAMMA_RAY, stack) > 0;
             }
             if (rayPosition != null && RaygunItem.getUseTime(stack) >= 5F) {
                 Vec3 gunPos = getGunOffset(entity, partialTick, firstPerson, entity.getMainArm() == HumanoidArm.LEFT);
@@ -106,8 +106,7 @@ public class RaygunRenderHelper {
             boolean blue = false;
             Level level = Minecraft.getInstance().level;
             if (level != null) {
-                var gammaRayHolder = ACEnchantmentRegistry.getEnchantmentHolder(level, ACEnchantmentRegistry.GAMMA_RAY);
-                blue = gammaRayHolder.isPresent() && stack.getEnchantmentLevel(gammaRayHolder.get()) > 0;
+                blue = ACEnchantmentHelper.getEnchantmentLevel(level, ACEnchantmentRegistry.GAMMA_RAY, stack) > 0;
             }
             if (rayPosition != null && RaygunItem.getUseTime(stack) >= 5F) {
                 Vec3 gunPos = getGunOffset(entity, partialTick, firstPerson, entity.getMainArm() == HumanoidArm.RIGHT);

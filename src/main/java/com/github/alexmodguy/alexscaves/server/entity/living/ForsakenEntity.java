@@ -461,7 +461,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
                                 int i1 = j2 + k2;
                                 BlockPos blockpos = new BlockPos(l2, l, i1);
                                 BlockState blockstate = this.level().getBlockState(blockpos);
-                                if (blockstate.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(ACTagRegistry.UNMOVEABLE) && net.neoforged.neoforge.event.EventHooks.onEntityDestroyBlock(this, blockpos, blockstate)) {
+                                if (!blockstate.is(ACTagRegistry.UNMOVEABLE) && net.neoforged.neoforge.event.EventHooks.onEntityDestroyBlock(this, blockpos, blockstate)) {
                                     flag = this.level().destroyBlock(blockpos, true, this) || flag;
                                 }
                             }

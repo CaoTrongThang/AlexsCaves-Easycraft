@@ -232,7 +232,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         prevBeamProgress = beamProgress;
         prevClientBeamEndPosition = clientBeamEndPosition;
         prevClientSpikesDownAmount = clientSpikesDownAmount;
-        boolean water = this.isInFluidType();
+        boolean water = ACFluidHelper.isInAnyFluid(this);
         if (water && this.isLandNavigator) {
             switchNavigator(false);
         }
@@ -298,7 +298,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.15F);
         }
-        if (this.onGround() && !this.isInFluidType() && this.walkAnimation.speed() > 0.1F && !this.isBaby() && !this.isNoAi() && this.isAlive()) {
+        if (this.onGround() && !ACFluidHelper.isInAnyFluid(this) && this.walkAnimation.speed() > 0.1F && !this.isBaby() && !this.isNoAi() && this.isAlive()) {
             float f = (float) Math.cos(this.walkAnimation.position() * 0.25F - 1.5F);
             float f1 = (float) Math.cos(this.walkAnimation.position() * 0.25F - 1.0F);
             float f2 = (float) Math.sin(this.walkAnimation.position() * 0.25F - 1.0F);
@@ -552,7 +552,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     private double getMaxFluidHeight() {
-        return getFluidTypeHeight(getMaxHeightFluidType());
+        return ACFluidHelper.getMaxFluidHeight(this);
     }
 
     private void healEveryTick(int i, float health) {
@@ -602,7 +602,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (this.getAnimation() == ANIMATION_LEFT_STOMP || this.getAnimation() == ANIMATION_RIGHT_STOMP || this.getAnimation() == ANIMATION_LEFT_TAIL || this.getAnimation() == ANIMATION_RIGHT_TAIL || this.isFiring() && !this.isVehicle()) {
             vec3d = Vec3.ZERO;
             super.travel(vec3d);
-        } else if (this.isInFluidType() && (this.isEffectiveAi() || this.isVehicle())) {
+        } else if (ACFluidHelper.isInAnyFluid(this) && (this.isEffectiveAi() || this.isVehicle())) {
             this.moveRelative(this.getSpeed(), vec3d);
             Vec3 delta = this.getDeltaMovement();
             this.move(MoverType.SELF, delta);
@@ -892,7 +892,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 if (random.nextFloat() <= dropChance && !nuke) {
                     level().destroyBlock(blockpos, true);
                 } else {
-                    blockstate.onBlockExploded(level(), blockpos, dummyExplosion);
+                    ACBlockCompat.explodeBlock(level(), blockpos, blockstate, dummyExplosion);
                 }
                 if (triggerExplosions) {
                     if (nuke) {
@@ -1060,12 +1060,10 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         return ACBlockRegistry.TREMORZILLA_EGG.get().defaultBlockState();
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }
@@ -1194,7 +1192,6 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         return this.entityData.get(TAME_ATTEMPTS);
     }
 
-    @Override
     public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
         return true;
     }
@@ -1209,7 +1206,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     protected Vec3 getRiddenInput(Player player, Vec3 deltaIn) {
         float f = player.zza < 0.0F ? 0.5F : 1.0F;
-        if (this.isInFluidType()) {
+        if (ACFluidHelper.isInAnyFluid(this)) {
             Vec3 lookVec = player.getLookAngle();
             float y = (float) lookVec.y;
             return new Vec3(player.xxa * 0.25F, y, player.zza * 0.8F * f);

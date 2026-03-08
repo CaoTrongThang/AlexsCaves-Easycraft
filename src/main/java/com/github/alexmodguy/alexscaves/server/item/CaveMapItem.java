@@ -42,7 +42,6 @@ public class CaveMapItem extends Item implements UpdatesStackTags {
         super(properties);
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

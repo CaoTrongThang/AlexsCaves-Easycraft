@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.client.render.ACRenderTypes;
 import com.github.alexmodguy.alexscaves.client.render.ColorUtil;
 import com.github.alexmodguy.alexscaves.client.render.misc.CaveMapRenderHelper;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
+import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentHelper;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
 import com.github.alexmodguy.alexscaves.server.item.*;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -258,13 +259,7 @@ public class ACItemstackRenderer extends BlockEntityWithoutLevelRenderer {
             RAYGUN_MODEL.setupAnim(null, useAmount, ageInTicks,  0, 0, 0);
             boolean gamma = false;
             if (level != null) {
-                var enchantmentLookup = level.registryAccess().lookup(Registries.ENCHANTMENT);
-                if (enchantmentLookup.isPresent()) {
-                    var gammaRayHolder = enchantmentLookup.get().get(ACEnchantmentRegistry.GAMMA_RAY);
-                    if (gammaRayHolder.isPresent()) {
-                        gamma = itemStackIn.getEnchantmentLevel(gammaRayHolder.get()) > 0;
-                    }
-                }
+                gamma = ACEnchantmentHelper.getEnchantmentLevel(level, ACEnchantmentRegistry.GAMMA_RAY, itemStackIn) > 0;
             }
             ResourceLocation texture = gamma ? RAYGUN_BLUE_TEXTURE : RAYGUN_TEXTURE;
             ResourceLocation textureActive = gamma ? RAYGUN_BLUE_ACTIVE_TEXTURE : RAYGUN_ACTIVE_TEXTURE;

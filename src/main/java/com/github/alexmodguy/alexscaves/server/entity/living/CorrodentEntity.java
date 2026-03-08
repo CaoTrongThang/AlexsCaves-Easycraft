@@ -360,12 +360,10 @@ public class CorrodentEntity extends Monster implements ICustomCollisions, IAnim
         this.entityData.set(AFRAID, bool);
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

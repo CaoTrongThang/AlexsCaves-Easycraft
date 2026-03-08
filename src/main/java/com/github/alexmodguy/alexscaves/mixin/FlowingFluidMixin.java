@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,6 +40,18 @@ public abstract class FlowingFluidMixin extends Fluid {
     )
     public void ac_spreadTo(LevelAccessor levelAccessor, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState, CallbackInfo ci) {
         if (blockState.getBlock() instanceof LiquidBlockContainer && this.is(ACTagRegistry.DOES_NOT_FLOW_INTO_WATERLOGGABLE_BLOCKS)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(
+            method = {"Lnet/minecraft/world/level/material/FlowingFluid;tick(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/material/FluidState;)V"},
+            cancellable = true,
+            remap = true,
+            at = @At(value = "HEAD")
+    )
+    public void ac_tick(net.minecraft.world.level.Level level, BlockPos blockPos, FluidState fluidState, CallbackInfo ci) {
+        if (!level.isClientSide() && FluidInteractionRegistry.tryApplyInteraction(level, blockPos, fluidState)) {
             ci.cancel();
         }
     }

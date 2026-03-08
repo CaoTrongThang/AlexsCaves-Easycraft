@@ -25,7 +25,7 @@ public class PrehistoricMixtureItem extends ACBowlFoodItem {
     }
 
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player player, LivingEntity livingEntity, InteractionHand hand) {
-        FoodProperties foodProperties = itemStack.getFoodProperties(livingEntity);
+        FoodProperties foodProperties = ACFoodCompat.getFoodProperties(itemStack);
         if (!livingEntity.level().isClientSide && livingEntity instanceof Mob && canFeedMob(player, (Mob) livingEntity) && foodProperties != null) {
             livingEntity.heal(foodProperties.nutrition());
             if (!(livingEntity instanceof DinosaurEntity dinosaur && dinosaur.onFeedMixture(itemStack, player))) {

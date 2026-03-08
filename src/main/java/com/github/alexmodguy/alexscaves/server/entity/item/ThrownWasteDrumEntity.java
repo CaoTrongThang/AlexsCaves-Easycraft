@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.living.BrainiacEntity;
 import com.github.alexmodguy.alexscaves.server.misc.ACDamageTypes;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -56,7 +57,7 @@ public class ThrownWasteDrumEntity extends Entity {
         if (this.getOnGroundFor() >= MAX_TIME && !level().isClientSide) {
             if (this.getOnGroundFor() == MAX_TIME) {
                 BlockPos landed = this.blockPosition();
-                while (landed.getY() < level().getMaxBuildHeight() && (!level().getBlockState(landed).isAir() || !level().getBlockState(landed).getFluidState().isEmpty() && level().getBlockState(landed).getFluidState().getFluidType() != ACFluidRegistry.ACID_FLUID_TYPE.get())) {
+                while (landed.getY() < level().getMaxBuildHeight() && (!level().getBlockState(landed).isAir() || !level().getBlockState(landed).getFluidState().isEmpty() && !ACFluidHelper.isAcid(level().getBlockState(landed).getFluidState()))) {
                     landed = landed.above();
                 }
                 removeWasteAt = landed;
@@ -67,7 +68,7 @@ public class ThrownWasteDrumEntity extends Entity {
             }
             if (this.getOnGroundFor() >= MAX_TIME + 15 && removeWasteAt != null) {
                 this.remove(RemovalReason.DISCARDED);
-                if (level().getFluidState(removeWasteAt).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+                if (ACFluidHelper.isAcid(level().getFluidState(removeWasteAt))) {
                     level().setBlockAndUpdate(removeWasteAt, Blocks.AIR.defaultBlockState());
                 }
             }

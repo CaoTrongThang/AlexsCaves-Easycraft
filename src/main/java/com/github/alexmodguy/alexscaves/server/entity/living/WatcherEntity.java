@@ -8,6 +8,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ai.WatcherAttackGoal;
 import com.github.alexmodguy.alexscaves.server.entity.util.PossessesCamera;
 import com.github.alexmodguy.alexscaves.server.entity.util.WatcherPossessionAccessor;
 import com.github.alexmodguy.alexscaves.server.message.PossessionKeyMessage;
+import com.github.alexmodguy.alexscaves.server.misc.ACRuntimeData;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexthe666.citadel.animation.Animation;
 import com.github.alexthe666.citadel.animation.AnimationHandler;
@@ -307,12 +308,8 @@ public class WatcherEntity extends Monster implements IAnimatedEntity, Possesses
 
     public boolean canPossessTargetEntity(Entity entity) {
         if (entity instanceof Player player) {
-            CompoundTag playerData = player.getPersistentData();
-            CompoundTag data = playerData.getCompound(Player.PERSISTED_NBT_TAG);
-            if (data != null) {
-                long timeElapsed = level().getGameTime() - data.getLong(LAST_POSSESSED_TIME_IDENTIFIER);
-                return timeElapsed >= AlexsCaves.COMMON_CONFIG.watcherPossessionCooldown.get();
-            }
+            long timeElapsed = level().getGameTime() - ACRuntimeData.getOrCreate(player).getLong(LAST_POSSESSED_TIME_IDENTIFIER);
+            return timeElapsed >= AlexsCaves.COMMON_CONFIG.watcherPossessionCooldown.get();
         }
         return true;
     }
@@ -369,12 +366,7 @@ public class WatcherEntity extends Monster implements IAnimatedEntity, Possesses
     }
 
     public static void setLastPossessedTimeFor(Player player){
-        CompoundTag playerData = player.getPersistentData();
-        CompoundTag data = playerData.getCompound(Player.PERSISTED_NBT_TAG);
-        if (data != null) {
-            data.putLong(LAST_POSSESSED_TIME_IDENTIFIER, player.level().getGameTime());
-            playerData.put(Player.PERSISTED_NBT_TAG, data);
-        }
+        ACRuntimeData.getOrCreate(player).putLong(LAST_POSSESSED_TIME_IDENTIFIER, player.level().getGameTime());
     }
 
     public void onPossessionKeyPacket(Entity keyPresser, int type) {

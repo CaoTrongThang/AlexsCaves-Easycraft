@@ -3,7 +3,7 @@ package com.github.alexmodguy.alexscaves.server.level.feature;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.FrostmintBlock;
 import com.github.alexmodguy.alexscaves.server.block.GummyRingBlock;
-import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -26,7 +26,7 @@ public class FloatingGummyRingFeature extends Feature<NoneFeatureConfiguration> 
         boolean aboveSoda = false;
         BlockPos.MutableBlockPos scanPos = new BlockPos.MutableBlockPos();
         for (scanPos.set(context.origin()); scanPos.getY() > worldgenlevel.getMinBuildHeight(); scanPos.move(0, -1, 0)) {
-            if (worldgenlevel.getFluidState(scanPos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
+            if (ACFluidHelper.isPurpleSoda(worldgenlevel, scanPos)) {
                 aboveSoda = true;
                 break;
             }
@@ -34,7 +34,7 @@ public class FloatingGummyRingFeature extends Feature<NoneFeatureConfiguration> 
         if (aboveSoda) {
             boolean sunk = randomsource.nextBoolean();
             if(sunk){
-                while(scanPos.getY() > worldgenlevel.getMinBuildHeight() && worldgenlevel.getFluidState(scanPos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+                while(scanPos.getY() > worldgenlevel.getMinBuildHeight() && ACFluidHelper.isPurpleSoda(worldgenlevel, scanPos)){
                     scanPos.move(0, -1, 0);
                 }
             }

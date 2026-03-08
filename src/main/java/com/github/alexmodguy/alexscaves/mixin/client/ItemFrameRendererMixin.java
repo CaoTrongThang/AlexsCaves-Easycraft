@@ -25,7 +25,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.neoforged.neoforge.common.NeoForge;
 
 @Mixin(ItemFrameRenderer.class)
 public abstract class ItemFrameRendererMixin {
@@ -56,10 +55,8 @@ public abstract class ItemFrameRendererMixin {
         ItemStack itemstack = entity.getItem();
         if (itemstack.is(ACItemRegistry.CAVE_MAP.get()) && CaveMapItem.isFilled(itemstack)) {
             ci.cancel();
-            var renderNameTagEvent = new net.neoforged.neoforge.client.event.RenderNameTagEvent(entity, entity.getDisplayName(), (ItemFrameRenderer) (Object) this, poseStack, bufferSource, packedLight, partialTicks);
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(renderNameTagEvent);
-            if (renderNameTagEvent.canRender().isTrue() || (renderNameTagEvent.canRender().isDefault() && shouldShowName(entity))) {
-                renderNameTag(entity, renderNameTagEvent.getContent(), poseStack, bufferSource, packedLight, partialTicks);
+            if (shouldShowName(entity)) {
+                renderNameTag(entity, entity.getDisplayName(), poseStack, bufferSource, packedLight, partialTicks);
             }
             poseStack.pushPose();
             Direction direction = entity.getDirection();

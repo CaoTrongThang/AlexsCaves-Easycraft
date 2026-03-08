@@ -57,8 +57,8 @@ public class ACBlockRegistry {
     public static final BlockBehaviour.Properties LICOROOT_PROPERTIES = BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F, 1.5F).sound(SoundType.NETHER_WOOD).instrument(NoteBlockInstrument.SNARE);
     public static final BlockBehaviour.Properties ROCK_CANDY_PROPERTIES = BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_WHITE).strength(1.0F, 1.5F).sound(SoundType.STONE).instrument(NoteBlockInstrument.BASS);
     public static final BlockBehaviour.Properties GINGERBREAD_PROPERTIES = BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).strength(1.0F, 1.5F).sound(ACSoundTypes.DENSE_CANDY).instrument(NoteBlockInstrument.BASS);
-    public static final WoodType PEWEN_WOOD_TYPE = WoodType.register(new WoodType("alexscaves:pewen", BlockSetType.OAK));
-    public static final WoodType THORNWOOD_WOOD_TYPE = WoodType.register(new WoodType("alexscaves:thornwood", BlockSetType.OAK));
+    public static final WoodType PEWEN_WOOD_TYPE = new WoodType("alexscaves:pewen", BlockSetType.OAK);
+    public static final WoodType THORNWOOD_WOOD_TYPE = new WoodType("alexscaves:thornwood", BlockSetType.OAK);
 
     public static final DeferredRegister<Block> DEF_REG = DeferredRegister.create(Registries.BLOCK, AlexsCaves.MODID);
     public static final DeferredHolder<Block, Block> SPELUNKERY_TABLE = registerBlockAndItem("spelunkery_table", () -> new SpelunkeryTableBlock());
@@ -164,26 +164,26 @@ public class ACBlockRegistry {
     public static final DeferredHolder<Block, Block> PEWEN_PRESSURE_PLATE = registerBlockAndItem("pewen_pressure_plate", () -> new PressurePlateBlock(BlockSetType.CHERRY, BlockBehaviour.Properties.ofFullCopy(PEWEN_PLANKS.get()).noCollission().strength(0.5F).sound(SoundType.CHERRY_WOOD)));
     public static final DeferredHolder<Block, Block> PEWEN_TRAPDOOR = registerBlockAndItem("pewen_trapdoor", () -> new TrapDoorBlock(BlockSetType.CHERRY, BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(3.0F).sound(SoundType.CHERRY_WOOD).noOcclusion()));
     public static final DeferredHolder<Block, Block> PEWEN_BUTTON = registerBlockAndItem("pewen_button", () -> new ButtonBlock(BlockSetType.CHERRY, 30, BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).noCollission().strength(0.5F).sound(SoundType.CHERRY_WOOD)));
-    public static final DeferredHolder<Block, Block> PEWEN_FENCE_GATE = registerBlockAndItem("pewen_fence_gate", () -> new FenceGateBlock(BlockBehaviour.Properties.ofFullCopy(PEWEN_PLANKS.get()).strength(2.0F, 3.0F).sound(SoundType.CHERRY_WOOD).forceSolidOn(), SoundEvents.CHERRY_WOOD_FENCE_GATE_CLOSE, SoundEvents.CHERRY_WOOD_FENCE_GATE_CLOSE));
+    public static final DeferredHolder<Block, Block> PEWEN_FENCE_GATE = registerBlockAndItem("pewen_fence_gate", () -> new FenceGateBlock(PEWEN_WOOD_TYPE, BlockBehaviour.Properties.ofFullCopy(PEWEN_PLANKS.get()).strength(2.0F, 3.0F).sound(SoundType.CHERRY_WOOD).forceSolidOn()));
     public static final DeferredHolder<Block, Block> PEWEN_DOOR = DEF_REG.register("pewen_door", () -> new DoorBlock(BlockSetType.CHERRY, BlockBehaviour.Properties.ofFullCopy(PEWEN_PLANKS.get()).strength(3.0F).sound(SoundType.CHERRY_WOOD).noOcclusion()));
     public static final DeferredHolder<Block, Block> PEWEN_BRANCH = registerBlockAndItem("pewen_branch", () -> new PewenBranchBlock());
     public static final DeferredHolder<Block, Block> PEWEN_PINES = registerBlockAndItem("pewen_pines", () -> new PewenPinesBlock());
-    public static final DeferredHolder<Block, Block> POTTED_PEWEN_PINES = DEF_REG.register("potted_pewen_pines", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, PEWEN_PINES, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_PEWEN_PINES = DEF_REG.register("potted_pewen_pines", () -> new FlowerPotBlock(PEWEN_PINES.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> PEWEN_SAPLING = registerBlockAndItem("pewen_sapling", () -> new SaplingBlock(PewenGrower.GROWER, BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
-    public static final DeferredHolder<Block, Block> POTTED_PEWEN_SAPLING = DEF_REG.register("potted_pewen_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, PEWEN_SAPLING, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_PEWEN_SAPLING = DEF_REG.register("potted_pewen_sapling", () -> new FlowerPotBlock(PEWEN_SAPLING.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> FIDDLEHEAD = registerBlockAndItem("fiddlehead", () -> new FiddleheadBlock());
-    public static final DeferredHolder<Block, Block> POTTED_FIDDLEHEAD = DEF_REG.register("potted_fiddlehead", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, FIDDLEHEAD, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_FIDDLEHEAD = DEF_REG.register("potted_fiddlehead", () -> new FlowerPotBlock(FIDDLEHEAD.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> CURLY_FERN = registerBlockAndItem("curly_fern", () -> new DoublePlantWithRotationBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).noCollission().instabreak().sound(SoundType.GRASS).offsetType(BlockBehaviour.OffsetType.XZ)));
-    public static final DeferredHolder<Block, Block> POTTED_CURLY_FERN = DEF_REG.register("potted_curly_fern", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, CURLY_FERN, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_CURLY_FERN = DEF_REG.register("potted_curly_fern", () -> new FlowerPotBlock(CURLY_FERN.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> FLYTRAP = registerBlockAndItem("flytrap", () -> new FlytrapBlock());
     public static final DeferredHolder<Block, Block> POTTED_FLYTRAP = DEF_REG.register("potted_flytrap", () -> new PottedFlytrapBlock());
     public static final DeferredHolder<Block, Block> CYCAD = registerBlockAndItem("cycad", () -> new CycadBlock());
-    public static final DeferredHolder<Block, Block> POTTED_CYCAD = DEF_REG.register("potted_cycad", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, CYCAD, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_CYCAD = DEF_REG.register("potted_cycad", () -> new FlowerPotBlock(CYCAD.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> ARCHAIC_VINE = registerBlockAndItem("archaic_vine", () -> new ArchaicVineBlock());
     public static final DeferredHolder<Block, Block> ARCHAIC_VINE_PLANT = DEF_REG.register("archaic_vine_plant", () -> new ArchaicVinePlantBlock());
     public static final DeferredHolder<Block, Block> ANCIENT_LEAVES = registerBlockAndItem("ancient_leaves", () -> new LeavesBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion().isSuffocating((blockState, getter, pos) -> false)));
     public static final DeferredHolder<Block, Block> ANCIENT_SAPLING = registerBlockAndItem("ancient_sapling", () -> new AncientSaplingBlock(AncientTreeGrower.GROWER, BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).noCollission().randomTicks().instabreak().sound(SoundType.GRASS)));
-    public static final DeferredHolder<Block, Block> POTTED_ANCIENT_SAPLING = DEF_REG.register("potted_ancient_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, ANCIENT_SAPLING, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_ANCIENT_SAPLING = DEF_REG.register("potted_ancient_sapling", () -> new FlowerPotBlock(ANCIENT_SAPLING.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> TREE_STAR = registerBlockAndItem("tree_star", () -> new TreeStarBlock());
     public static final DeferredHolder<Block, Block> FERN_THATCH = registerBlockAndItem("fern_thatch", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(0.5F).sound(SoundType.GRASS).noOcclusion()));
     public static final DeferredHolder<Block, Block> PRIMAL_MAGMA = registerBlockAndItem("primal_magma", () -> new PrimalMagmaBlock());
@@ -206,7 +206,7 @@ public class ACBlockRegistry {
     public static final DeferredHolder<Block, Block> GEOTHERMAL_VENT_THIN = registerBlockAndItem("geothermal_vent_thin", () -> new ThinGeothermalVentBlock(8));
     public static final DeferredHolder<Block, Block> ACID = DEF_REG.register("acid", () -> new AcidBlock(ACFluidRegistry.ACID_FLUID_SOURCE, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GREEN).noCollission().strength(100.0F).lightLevel(state -> 7).emissiveRendering((state, world, pos) -> false).noLootTable().replaceable().liquid().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> UNDERWEED = registerBlockAndItem("underweed", () -> new CavePlantBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).instabreak().offsetType(BlockBehaviour.OffsetType.XZ).sound(SoundType.GRASS).noOcclusion().noCollission().replaceable(), false));
-    public static final DeferredHolder<Block, Block> POTTED_UNDERWEED = DEF_REG.register("potted_underweed", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, UNDERWEED, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_UNDERWEED = DEF_REG.register("potted_underweed", () -> new FlowerPotBlock(UNDERWEED.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> METAL_BARREL = registerBlockAndItem("metal_barrel", () -> new MetalBarrelBlock());
     public static final DeferredHolder<Block, Block> WASTE_DRUM = registerBlockAndItem("waste_drum", () -> new WasteDrumBlock(), 5);
     public static final DeferredHolder<Block, Block> RUSTY_SCRAP_METAL = registerBlockAndItem("rusty_scrap_metal", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).requiresCorrectToolForDrops().strength(5F, 15.0F).sound(ACSoundTypes.SCRAP_METAL)));
@@ -313,7 +313,7 @@ public class ACBlockRegistry {
     public static final DeferredHolder<Block, Block> FORSAKEN_IDOL = registerBlockAndItem("forsaken_idol", () -> new ForsakenIdolBlock());
     public static final DeferredHolder<Block, Block> THORNWOOD_LOG = registerBlockAndItem("thornwood_log", () -> new StrippableLogBlock(THORNWOOD_LOG_PROPERTIES));
     public static final DeferredHolder<Block, Block> THORNWOOD_BRANCH = registerBlockAndItem("thornwood_branch", () -> new ThornwoodBranchBlock());
-    public static final DeferredHolder<Block, Block> POTTED_THORNWOOD_BRANCH = DEF_REG.register("potted_thornwood_branch", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, THORNWOOD_BRANCH, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_THORNWOOD_BRANCH = DEF_REG.register("potted_thornwood_branch", () -> new FlowerPotBlock(THORNWOOD_BRANCH.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> THORNWOOD_WOOD = registerBlockAndItem("thornwood_wood", () -> new StrippableLogBlock(THORNWOOD_LOG_PROPERTIES));
     public static final DeferredHolder<Block, Block> STRIPPED_THORNWOOD_LOG = registerBlockAndItem("stripped_thornwood_log", () -> new RotatedPillarBlock(THORNWOOD_LOG_PROPERTIES));
     public static final DeferredHolder<Block, Block> STRIPPED_THORNWOOD_WOOD = registerBlockAndItem("stripped_thornwood_wood", () -> new RotatedPillarBlock(THORNWOOD_LOG_PROPERTIES));
@@ -328,10 +328,10 @@ public class ACBlockRegistry {
     public static final DeferredHolder<Block, Block> THORNWOOD_PRESSURE_PLATE = registerBlockAndItem("thornwood_pressure_plate", () -> new PressurePlateBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(THORNWOOD_PLANKS.get()).noCollission().strength(0.5F).sound(SoundType.WOOD)));
     public static final DeferredHolder<Block, Block> THORNWOOD_TRAPDOOR = registerBlockAndItem("thornwood_trapdoor", () -> new TrapDoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY).strength(3.0F).sound(SoundType.WOOD).noOcclusion()));
     public static final DeferredHolder<Block, Block> THORNWOOD_BUTTON = registerBlockAndItem("thornwood_button", () -> new ButtonBlock(BlockSetType.OAK, 30, BlockBehaviour.Properties.ofFullCopy(THORNWOOD_PLANKS.get()).noCollission().strength(0.5F).sound(SoundType.WOOD)));
-    public static final DeferredHolder<Block, Block> THORNWOOD_FENCE_GATE = registerBlockAndItem("thornwood_fence_gate", () -> new FenceGateBlock(BlockBehaviour.Properties.ofFullCopy(THORNWOOD_PLANKS.get()).strength(2.0F, 3.0F).sound(SoundType.WOOD).forceSolidOn(), SoundEvents.FENCE_GATE_CLOSE, SoundEvents.FENCE_GATE_OPEN));
+    public static final DeferredHolder<Block, Block> THORNWOOD_FENCE_GATE = registerBlockAndItem("thornwood_fence_gate", () -> new FenceGateBlock(THORNWOOD_WOOD_TYPE, BlockBehaviour.Properties.ofFullCopy(THORNWOOD_PLANKS.get()).strength(2.0F, 3.0F).sound(SoundType.WOOD).forceSolidOn()));
     public static final DeferredHolder<Block, Block> THORNWOOD_DOOR = DEF_REG.register("thornwood_door", () -> new DoorBlock(BlockSetType.OAK, BlockBehaviour.Properties.ofFullCopy(THORNWOOD_PLANKS.get()).strength(3.0F).sound(SoundType.WOOD).noOcclusion()));
     public static final DeferredHolder<Block, Block> THORNWOOD_SAPLING = registerBlockAndItem("thornwood_sapling", () -> new CaveSaplingBlock(ThornwoodGrower.GROWER, BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).noCollission().randomTicks().instabreak().sound(SoundType.GRASS), true));
-    public static final DeferredHolder<Block, Block> POTTED_THORNWOOD_SAPLING = DEF_REG.register("potted_thornwood_sapling", () -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, THORNWOOD_SAPLING, BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredHolder<Block, Block> POTTED_THORNWOOD_SAPLING = DEF_REG.register("potted_thornwood_sapling", () -> new FlowerPotBlock(THORNWOOD_SAPLING.get(), BlockBehaviour.Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY)));
     public static final DeferredHolder<Block, Block> MOTH_BALL = registerBlockAndItem("moth_ball", () -> new MothBallBlock());
     public static final DeferredHolder<Block, Block> BEHOLDER = registerBlockAndItem("beholder", () -> new BeholderBlock(), 3);
     public static final DeferredHolder<Block, Block> BLOCK_OF_CHOCOLATE = registerBlockAndItemEdible("block_of_chocolate", () -> new ChocolateBlock(CHOCOLATE_PROPERTIES), ACFoods.BLOCK_OF_CHOCOLATE);
@@ -457,16 +457,6 @@ public class ACBlockRegistry {
 
 
     public static void setup() {
-        FlowerPotBlock flowerPotBlock = (FlowerPotBlock) Blocks.FLOWER_POT;
-        flowerPotBlock.addPlant(FLYTRAP.getId(), POTTED_FLYTRAP);
-        flowerPotBlock.addPlant(CURLY_FERN.getId(), POTTED_CURLY_FERN);
-        flowerPotBlock.addPlant(CYCAD.getId(), POTTED_CYCAD);
-        flowerPotBlock.addPlant(PEWEN_SAPLING.getId(), POTTED_PEWEN_SAPLING);
-        flowerPotBlock.addPlant(PEWEN_PINES.getId(), POTTED_PEWEN_PINES);
-        flowerPotBlock.addPlant(FIDDLEHEAD.getId(), POTTED_FIDDLEHEAD);
-        flowerPotBlock.addPlant(ANCIENT_SAPLING.getId(), POTTED_ANCIENT_SAPLING);
-        flowerPotBlock.addPlant(UNDERWEED.getId(), POTTED_UNDERWEED);
-        flowerPotBlock.addPlant(THORNWOOD_BRANCH.getId(), POTTED_THORNWOOD_BRANCH);
-        flowerPotBlock.addPlant(THORNWOOD_SAPLING.getId(), POTTED_THORNWOOD_SAPLING);
+        // Vanilla 1.21.1 no longer exposes the mutable flower-pot mapping that NeoForge patched.
     }
 }

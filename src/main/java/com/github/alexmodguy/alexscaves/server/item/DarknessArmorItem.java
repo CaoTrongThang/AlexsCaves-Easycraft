@@ -63,7 +63,6 @@ public class DarknessArmorItem extends ArmorItem implements CustomArmorPostRende
     }
 
     @SuppressWarnings("removal")
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
@@ -131,7 +130,6 @@ public class DarknessArmorItem extends ArmorItem implements CustomArmorPostRende
     }
 
 
-    @Override
     @Nullable
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
         return ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/armor/darkness_armor.png");

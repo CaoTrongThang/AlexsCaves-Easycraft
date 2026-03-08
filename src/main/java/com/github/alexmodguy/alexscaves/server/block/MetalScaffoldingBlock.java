@@ -2,6 +2,7 @@ package com.github.alexmodguy.alexscaves.server.block;
 
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -86,7 +87,7 @@ public class MetalScaffoldingBlock extends Block implements BucketPickup, Liquid
     private int getLiquidType(FluidState fluidState) {
         if (fluidState.getType() == Fluids.WATER) {
             return 1;
-        } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get() && fluidState.isSource()) {
+        } else if (ACFluidHelper.isAcid(fluidState) && fluidState.isSource()) {
             return 2;
         }
         return 0;
@@ -184,7 +185,7 @@ public class MetalScaffoldingBlock extends Block implements BucketPickup, Liquid
 
     @Override
     public boolean canPlaceLiquid(Player player, BlockGetter getter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return fluid == Fluids.WATER || fluid.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        return fluid == Fluids.WATER || ACFluidHelper.isAcid(fluid);
     }
 
     public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState) {
@@ -193,7 +194,7 @@ public class MetalScaffoldingBlock extends Block implements BucketPickup, Liquid
             if (!levelAccessor.isClientSide()) {
                 if (fluidState.getType() == Fluids.WATER) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 1), 3);
-                } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+                } else if (ACFluidHelper.isAcid(fluidState)) {
                     BlockState state = blockState;
                     if (blockState.getBlock() == ACBlockRegistry.METAL_SCAFFOLDING.get()) {
                         levelAccessor.levelEvent(1501, pos, 0);

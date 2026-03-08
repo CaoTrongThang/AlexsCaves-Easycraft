@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.living.TeletorEntity;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACAdvancementTriggerRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACBlockCompat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -202,8 +203,7 @@ public class MagneticWeaponEntity extends Entity {
                             itemStack.mineBlock(this.level(), miningState, miningBlock, player);
                             var enchRegistry = level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
                             // In 1.21 NeoForge: getExpDrop(Level, BlockPos, BlockEntity, Entity breaker, ItemStack tool)
-                            int exp = miningState.getExpDrop(level(), miningBlock, level().getBlockEntity(miningBlock), player, itemStack);
-                            net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(player, itemStack, InteractionHand.MAIN_HAND);
+                            int exp = ACBlockCompat.getExpDrop(miningState, level(), miningBlock, player, itemStack);
                             boolean flag;
                             if (miningState.getBlock() instanceof ShulkerBoxBlock) {
                                 flag = level().destroyBlock(miningBlock, true);
@@ -215,7 +215,7 @@ public class MagneticWeaponEntity extends Entity {
                                 miningState.getBlock().playerDestroy(level(), player, miningBlock, miningState, level().getBlockEntity(miningBlock), itemStack);
                             }
                             if (flag && exp > 0 && level() instanceof ServerLevel serverLevel) {
-                                miningState.getBlock().popExperience(serverLevel, miningBlock, exp);
+                                ACBlockCompat.awardExperience(serverLevel, miningBlock, exp);
                             }
                             destroyBlockProgress = 0.0F;
                         }
@@ -325,10 +325,6 @@ public class MagneticWeaponEntity extends Entity {
             f /= 5.0F;
         }
 
-        // Use NeoForge event to allow mods to modify break speed
-        var event = new net.neoforged.neoforge.event.entity.player.PlayerEvent.BreakSpeed(player, state, f, pos);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
-        f = event.isCanceled() ? -1 : event.getNewSpeed();
         return f;
     }
 
@@ -399,17 +395,13 @@ public class MagneticWeaponEntity extends Entity {
 
     public double getDamageForItem(ItemStack itemStack) {
         // 1.21: getAttributeModifiers now returns ItemAttributeModifiers
-        var modifiers = itemStack.getAttributeModifiers();
-        if (!modifiers.modifiers().isEmpty()) {
-            double d = 0;
-            for (var entry : modifiers.modifiers()) {
-                if (entry.attribute().equals(Attributes.ATTACK_DAMAGE)) {
-                    d += entry.modifier().amount();
-                }
+        final double[] damage = new double[1];
+        itemStack.forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+            if (attribute.is(Attributes.ATTACK_DAMAGE)) {
+                damage[0] += modifier.amount();
             }
-            return d;
-        }
-        return 0;
+        });
+        return damage[0];
     }
 
     @Override

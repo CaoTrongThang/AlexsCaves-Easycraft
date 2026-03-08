@@ -54,12 +54,6 @@ public class AncientSaplingBlock extends SaplingBlock {
             return false;
         }
 
-        var event = net.neoforged.neoforge.event.EventHooks.fireBlockGrowFeature(level, random, pos, holder);
-        holder = event.getFeature();
-        if (event.isCanceled()) {
-            return false;
-        }
-
         ChunkGenerator chunkGenerator = level.getChunkSource().getGenerator();
 
         // Check all 9 possible corner positions where this sapling could be the origin

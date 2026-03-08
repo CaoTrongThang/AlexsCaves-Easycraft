@@ -8,6 +8,7 @@ import com.github.alexmodguy.alexscaves.client.gui.book.CaveBookScreen;
 import com.github.alexmodguy.alexscaves.client.model.baked.BakedModelShadeLayerFullbright;
 import com.github.alexmodguy.alexscaves.client.particle.*;
 import com.github.alexmodguy.alexscaves.client.render.ACInternalShaders;
+import com.github.alexmodguy.alexscaves.client.render.ACBlockRenderLayerRegistry;
 import com.github.alexmodguy.alexscaves.client.render.blockentity.*;
 import com.github.alexmodguy.alexscaves.client.render.entity.*;
 import com.github.alexmodguy.alexscaves.client.render.entity.layer.ClientLayerRegistry;
@@ -32,6 +33,8 @@ import com.github.alexmodguy.alexscaves.server.entity.living.*;
 import com.github.alexmodguy.alexscaves.server.inventory.ACMenuRegistry;
 import com.github.alexmodguy.alexscaves.server.item.*;
 import com.github.alexmodguy.alexscaves.server.item.tooltip.SackOfSatingTooltip;
+import com.github.alexmodguy.alexscaves.server.level.biome.ACBiomeRegistry;
+import com.github.alexmodguy.alexscaves.server.level.biome.BiomeSampler;
 import com.github.alexmodguy.alexscaves.server.misc.ACKeybindRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexthe666.citadel.client.shader.PostEffectRegistry;
@@ -46,6 +49,13 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
+import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -54,7 +64,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -78,6 +87,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.*;
@@ -89,6 +99,7 @@ import net.neoforged.fml.ModContainer;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ClientProxy extends CommonProxy {
 
@@ -132,19 +143,29 @@ public class ClientProxy extends CommonProxy {
     public static final Map<BlockEntity, AbstractTickableSoundInstance> BLOCK_ENTITY_SOUND_INSTANCE_MAP = new HashMap<>();
     private final ACItemRenderProperties isterProperties = new ACItemRenderProperties();
     private final ACArmorRenderProperties armorProperties = new ACArmorRenderProperties();
+    @FunctionalInterface
+    private interface ShaderRegistrar {
+        void register(ResourceLocation id, VertexFormat vertexFormat, Consumer<ShaderInstance> consumer)
+                throws IOException;
+    }
     public static boolean spelunkeryTutorialComplete;
     public static boolean hasACSplashText = false;
     public static CameraType lastPOV = CameraType.FIRST_PERSON;
     public static int shaderLoadAttemptCooldown = 0;
-    public static Vec3 lastBiomeLightColor = Vec3.ZERO;
+    public static Vec3 lastBiomeLightColor = new Vec3(1.0D, 1.0D, 1.0D);
     public static float lastBiomeAmbientLightAmount = 0;
-    public static Vec3 lastBiomeLightColorPrev = Vec3.ZERO;
+    public static Vec3 lastBiomeLightColorPrev = new Vec3(1.0D, 1.0D, 1.0D);
     public static float lastBiomeAmbientLightAmountPrev = 0;
     public static Map<UUID, Integer> bossBarRenderTypes = new HashMap<>();
     private static Entity lastCameraEntity;
     public static float acSkyOverrideAmount;
     public static Vec3 acSkyOverrideColor = Vec3.ZERO;
     public static boolean disabledBiomeAmbientLightByOtherMod = false;
+    private static float lastSampledFogNearness = 1.0F;
+    private static float lastSampledWaterFogFarness = 1.0F;
+    private static Vec3 lastSampledFogColor = Vec3.ZERO;
+    private static Vec3 lastSampledWaterFogColor = Vec3.ZERO;
+    private static final com.github.alexmodguy.alexscaves.client.render.item.ACItemstackRenderer FABRIC_ITEM_RENDERER = new com.github.alexmodguy.alexscaves.client.render.item.ACItemstackRenderer();
 
     /**
      * Ticks down all bubbled effect timers. Called from ClientEvents.
@@ -163,9 +184,192 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
+    public static void registerFabricShaders() {
+        CoreShaderRegistrationCallback.EVENT.register(context -> registerInternalShaders(context::register));
+    }
+
+    public static void registerFabricClientLifecycle() {
+        ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onFabricClientTick);
+    }
+
+    public static void registerFabricBuiltinItemRenderers() {
+        registerBuiltinItemRenderer(ACItemRegistry.CAVE_MAP.get());
+        registerBuiltinItemRenderer(ACItemRegistry.DREADBOW.get());
+        registerBuiltinItemRenderer(ACItemRegistry.RAYGUN.get());
+        registerBuiltinItemRenderer(ACItemRegistry.PRIMITIVE_CLUB.get());
+        registerBuiltinItemRenderer(ACItemRegistry.LIMESTONE_SPEAR.get());
+        registerBuiltinItemRenderer(ACItemRegistry.EXTINCTION_SPEAR.get());
+        registerBuiltinItemRenderer(ACItemRegistry.FROSTMINT_SPEAR.get());
+        registerBuiltinItemRenderer(ACItemRegistry.SEA_STAFF.get());
+        registerBuiltinItemRenderer(ACItemRegistry.ORTHOLANCE.get());
+        registerBuiltinItemRenderer(ACItemRegistry.GALENA_GAUNTLET.get());
+        registerBuiltinItemRenderer(ACItemRegistry.RESISTOR_SHIELD.get());
+        registerBuiltinItemRenderer(ACItemRegistry.SHOT_GUM.get());
+        registerBuiltinItemRenderer(ACItemRegistry.SUGAR_STAFF.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.SIREN_LIGHT.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.COPPER_VALVE.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.BEHOLDER.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.GOBTHUMPER.get());
+    }
+
+    public static void registerFabricFluidRendering() {
+        FluidRenderHandlerRegistry.INSTANCE.register(
+                ACFluidRegistry.ACID_FLUID_SOURCE.get(),
+                ACFluidRegistry.ACID_FLUID_FLOWING.get(),
+                new SimpleFluidRenderHandler(
+                        com.github.alexmodguy.alexscaves.server.block.fluid.AcidFluidType.FLUID_STILL,
+                        com.github.alexmodguy.alexscaves.server.block.fluid.AcidFluidType.FLUID_FLOWING
+                )
+        );
+        FluidRenderHandlerRegistry.INSTANCE.register(
+                ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(),
+                ACFluidRegistry.PURPLE_SODA_FLUID_FLOWING.get(),
+                new SimpleFluidRenderHandler(
+                        com.github.alexmodguy.alexscaves.server.block.fluid.PurpleSodaFluidType.FLUID_STILL,
+                        com.github.alexmodguy.alexscaves.server.block.fluid.PurpleSodaFluidType.FLUID_FLOWING
+                )
+        );
+    }
+
+    private static void registerBuiltinItemRenderer(net.minecraft.world.level.ItemLike itemLike) {
+        BuiltinItemRendererRegistry.INSTANCE.register(itemLike.asItem(), (stack, mode, matrices, vertexConsumers, light, overlay) ->
+                FABRIC_ITEM_RENDERER.renderByItem(stack, mode, matrices, vertexConsumers, light, overlay));
+    }
+
+    private static void onFabricClientTick(Minecraft minecraft) {
+        Entity cameraEntity = minecraft.cameraEntity;
+        tickBubbledEffects();
+        if (shaderLoadAttemptCooldown > 0) {
+            shaderLoadAttemptCooldown--;
+        }
+        if (cameraEntity == null || minecraft.level == null) {
+            acSkyOverrideAmount = 0.0F;
+            acSkyOverrideColor = Vec3.ZERO;
+            lastBiomeLightColorPrev = lastBiomeLightColor;
+            lastBiomeLightColor = new Vec3(1.0D, 1.0D, 1.0D);
+            lastBiomeAmbientLightAmountPrev = lastBiomeAmbientLightAmount;
+            lastBiomeAmbientLightAmount = 0.0F;
+            lastSampledFogNearness = 1.0F;
+            lastSampledWaterFogFarness = 1.0F;
+            lastSampledFogColor = Vec3.ZERO;
+            lastSampledWaterFogColor = Vec3.ZERO;
+            return;
+        }
+        acSkyOverrideAmount = ACBiomeRegistry.calculateBiomeSkyOverride(cameraEntity);
+        if (acSkyOverrideAmount > 0.0F) {
+            acSkyOverrideColor = BiomeSampler.sampleBiomesVec3(
+                    minecraft.level,
+                    cameraEntity.position(),
+                    biomeHolder -> Vec3.fromRGB24(biomeHolder.value().getSkyColor())
+            );
+        } else {
+            acSkyOverrideColor = Vec3.ZERO;
+        }
+        lastBiomeLightColorPrev = lastBiomeLightColor;
+        lastBiomeLightColor = calculateBiomeLightColor(cameraEntity);
+        lastBiomeAmbientLightAmountPrev = lastBiomeAmbientLightAmount;
+        lastBiomeAmbientLightAmount = calculateBiomeAmbientLight(cameraEntity);
+        lastSampledFogNearness = calculateBiomeFogNearness(cameraEntity);
+        lastSampledWaterFogFarness = calculateBiomeWaterFogFarness(cameraEntity);
+        if (cameraEntity.level() instanceof ClientLevel) {
+            lastSampledFogColor = calculateBiomeFogColor(cameraEntity);
+            lastSampledWaterFogColor = calculateBiomeWaterFogColor(cameraEntity);
+        } else {
+            lastSampledFogColor = Vec3.ZERO;
+            lastSampledWaterFogColor = Vec3.ZERO;
+        }
+    }
+
+    private static float calculateBiomeAmbientLight(Entity player) {
+        int blendRadius = Minecraft.getInstance().options.biomeBlendRadius().get();
+        if (blendRadius == 0) {
+            return ACBiomeRegistry.getBiomeAmbientLight(player.level().getBiome(player.blockPosition()));
+        }
+        return BiomeSampler.sampleBiomesFloat(player.level(), player.position(), ACBiomeRegistry::getBiomeAmbientLight);
+    }
+
+    private static Vec3 calculateBiomeLightColor(Entity player) {
+        int blendRadius = Minecraft.getInstance().options.biomeBlendRadius().get();
+        if (blendRadius == 0) {
+            return ACBiomeRegistry.getBiomeLightColorOverride(player.level().getBiome(player.blockPosition()));
+        }
+        return BiomeSampler.sampleBiomesVec3(player.level(), player.position(), ACBiomeRegistry::getBiomeLightColorOverride);
+    }
+
+    private static float calculateBiomeFogNearness(Entity player) {
+        int blendRadius = Minecraft.getInstance().options.biomeBlendRadius().get();
+        if (blendRadius == 0) {
+            return ACBiomeRegistry.getBiomeFogNearness(player.level().getBiome(player.blockPosition()));
+        }
+        return BiomeSampler.sampleBiomesFloat(player.level(), player.position(), ACBiomeRegistry::getBiomeFogNearness);
+    }
+
+    private static float calculateBiomeWaterFogFarness(Entity player) {
+        int blendRadius = Minecraft.getInstance().options.biomeBlendRadius().get();
+        if (blendRadius == 0) {
+            return ACBiomeRegistry.getBiomeWaterFogFarness(player.level().getBiome(player.blockPosition()));
+        }
+        return BiomeSampler.sampleBiomesFloat(player.level(), player.position(), ACBiomeRegistry::getBiomeWaterFogFarness);
+    }
+
+    private static Vec3 calculateBiomeFogColor(Entity player) {
+        ClientLevel level = (ClientLevel) player.level();
+        int blendRadius = Minecraft.getInstance().options.biomeBlendRadius().get();
+        if (blendRadius == 0) {
+            return level.effects().getBrightnessDependentFogColor(
+                    Vec3.fromRGB24(level.getBiomeManager().getNoiseBiomeAtPosition(player.blockPosition()).value().getFogColor()),
+                    1.0F
+            );
+        }
+        return level.effects().getBrightnessDependentFogColor(
+                BiomeSampler.sampleBiomesVec3(player.level(), player.position(), biomeHolder -> Vec3.fromRGB24(biomeHolder.value().getFogColor())),
+                1.0F
+        );
+    }
+
+    private static Vec3 calculateBiomeWaterFogColor(Entity player) {
+        ClientLevel level = (ClientLevel) player.level();
+        int blendRadius = Minecraft.getInstance().options.biomeBlendRadius().get();
+        if (blendRadius == 0) {
+            return level.effects().getBrightnessDependentFogColor(
+                    Vec3.fromRGB24(level.getBiomeManager().getNoiseBiomeAtPosition(player.blockPosition()).value().getWaterFogColor()),
+                    1.0F
+            );
+        }
+        return level.effects().getBrightnessDependentFogColor(
+                BiomeSampler.sampleBiomesVec3(player.level(), player.position(), biomeHolder -> Vec3.fromRGB24(biomeHolder.value().getWaterFogColor())),
+                1.0F
+        );
+    }
+
+    public static float getLastSampledFogNearness() {
+        return lastSampledFogNearness;
+    }
+
+    public static float getLastSampledWaterFogFarness() {
+        return lastSampledWaterFogFarness;
+    }
+
+    public static Vec3 getLastSampledFogColor() {
+        return lastSampledFogColor;
+    }
+
+    public static Vec3 getLastSampledWaterFogColor() {
+        return lastSampledWaterFogColor;
+    }
+
     @SuppressWarnings("removal")
     @Override
     public void commonInit(IEventBus modEventBus) {
+        if (modEventBus == null) {
+            this.setupParticles(new RegisterParticleProvidersEvent());
+            this.registerKeybinds(new RegisterKeyMappingsEvent());
+            this.onItemColors(new RegisterColorHandlersEvent.Item());
+            this.onBlockColors(new RegisterColorHandlersEvent.Block());
+            this.onRegisterTooltips(new RegisterClientTooltipComponentFactoriesEvent());
+            this.onRegisterMenuScreens(new RegisterMenuScreensEvent());
+            return;
+        }
         modEventBus.addListener(this::setupParticles);
         modEventBus.addListener(this::registerKeybinds);
         modEventBus.addListener(this::onItemColors);
@@ -183,13 +387,18 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void clientInit(IEventBus modEventBus) {
         NeoForge.EVENT_BUS.register(new ClientEvents());
-        modEventBus.addListener(ClientLayerRegistry::addLayers);
-        modEventBus.addListener(this::bakeModels);
-        modEventBus.addListener(this::registerShaders);
-        EntityRenderers.register(ACEntityRegistry.BOAT.get(), (context) -> {
+        if (modEventBus == null) {
+            ClientLayerRegistry.addLayers(new EntityRenderersEvent.AddLayers());
+            this.bakeModels(new ModelEvent.ModifyBakingResult());
+        } else {
+            modEventBus.addListener(ClientLayerRegistry::addLayers);
+            modEventBus.addListener(this::bakeModels);
+            modEventBus.addListener(this::registerShaders);
+        }
+        EntityRendererRegistry.register(ACEntityRegistry.BOAT.get(), (context) -> {
             return new AlexsCavesBoatRenderer(context, false);
         });
-        EntityRenderers.register(ACEntityRegistry.CHEST_BOAT.get(), (context) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.CHEST_BOAT.get(), (context) -> {
             return new AlexsCavesBoatRenderer(context, true);
         });
         BlockEntityRenderers.register(ACBlockEntityRegistry.MAGNET.get(), MagnetBlockRenderer::new);
@@ -207,101 +416,99 @@ public class ClientProxy extends CommonProxy {
         BlockEntityRenderers.register(ACBlockEntityRegistry.GOBTHUMPER.get(), GobthumperBlockRenderer::new);
         BlockEntityRenderers.register(ACBlockEntityRegistry.CONVERSION_CRUCIBLE.get(),
                 ConversionCrucibleBlockRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.MOVING_METAL_BLOCK.get(), MovingMetalBlockRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.TELETOR.get(), TeletorRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.MAGNETIC_WEAPON.get(), MagneticWeaponRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.MAGNETRON.get(), MagnetronRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.BOUNDROID.get(), BoundroidRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.BOUNDROID_WINCH.get(), BoundroidWinchRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.FERROUSLIME.get(), FerrouslimeRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.NOTOR.get(), NotorRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.QUARRY_SMASHER.get(), QuarrySmasherRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SEEKING_ARROW.get(), SeekingArrowRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SUBTERRANODON.get(), SubterranodonRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.VALLUMRAPTOR.get(), VallumraptorRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GROTTOCERATOPS.get(), GrottoceratopsRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.TRILOCARIS.get(), TrilocarisRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.TREMORSAURUS.get(), TremorsaurusRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.RELICHEIRUS.get(), RelicheirusRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.FALLING_TREE_BLOCK.get(), FallingTreeBlockRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CRUSHED_BLOCK.get(), CrushedBlockRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.LIMESTONE_SPEAR.get(), LimestoneSpearRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.EXTINCTION_SPEAR.get(), ExtinctionSpearRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.DINOSAUR_SPIRIT.get(), DinosaurSpiritRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.LUXTRUCTOSAURUS.get(), LuxtructosaurusRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.TEPHRA.get(), TephraRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.ATLATITAN.get(), AtlatitanRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.NUCLEAR_EXPLOSION.get(), EmptyRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.NUCLEAR_BOMB.get(), NuclearBombRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.NUCLEEPER.get(), NucleeperRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.RADGILL.get(), RadgillRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.BRAINIAC.get(), BrainiacRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.THROWN_WASTE_DRUM.get(), ThrownWasteDrumEntityRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GAMMAROACH.get(), GammaroachRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.RAYCAT.get(), RaycatRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CINDER_BRICK.get(), (context) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.MOVING_METAL_BLOCK.get(), MovingMetalBlockRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.TELETOR.get(), TeletorRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.MAGNETIC_WEAPON.get(), MagneticWeaponRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.MAGNETRON.get(), MagnetronRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.BOUNDROID.get(), BoundroidRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.BOUNDROID_WINCH.get(), BoundroidWinchRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.FERROUSLIME.get(), FerrouslimeRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.NOTOR.get(), NotorRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.QUARRY_SMASHER.get(), QuarrySmasherRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SEEKING_ARROW.get(), SeekingArrowRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SUBTERRANODON.get(), SubterranodonRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.VALLUMRAPTOR.get(), VallumraptorRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GROTTOCERATOPS.get(), GrottoceratopsRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.TRILOCARIS.get(), TrilocarisRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.TREMORSAURUS.get(), TremorsaurusRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.RELICHEIRUS.get(), RelicheirusRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.FALLING_TREE_BLOCK.get(), FallingTreeBlockRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CRUSHED_BLOCK.get(), CrushedBlockRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.LIMESTONE_SPEAR.get(), LimestoneSpearRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.EXTINCTION_SPEAR.get(), ExtinctionSpearRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.DINOSAUR_SPIRIT.get(), DinosaurSpiritRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.LUXTRUCTOSAURUS.get(), LuxtructosaurusRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.TEPHRA.get(), TephraRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.ATLATITAN.get(), AtlatitanRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.NUCLEAR_EXPLOSION.get(), EmptyRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.NUCLEAR_BOMB.get(), NuclearBombRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.NUCLEEPER.get(), NucleeperRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.RADGILL.get(), RadgillRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.BRAINIAC.get(), BrainiacRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.THROWN_WASTE_DRUM.get(), ThrownWasteDrumEntityRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GAMMAROACH.get(), GammaroachRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.RAYCAT.get(), RaycatRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CINDER_BRICK.get(), (context) -> {
             return new ThrownItemRenderer<>(context, 1.25F, false);
         });
-        EntityRenderers.register(ACEntityRegistry.TREMORZILLA.get(), TremorzillaRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.LANTERNFISH.get(), LanternfishRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SEA_PIG.get(), SeaPigRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SUBMARINE.get(), SubmarineRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.HULLBREAKER.get(), HullbreakerRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GOSSAMER_WORM.get(), GossamerWormRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.TRIPODFISH.get(), TripodfishRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.DEEP_ONE.get(), DeepOneRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.INK_BOMB.get(), (context) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.TREMORZILLA.get(), TremorzillaRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.LANTERNFISH.get(), LanternfishRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SEA_PIG.get(), SeaPigRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SUBMARINE.get(), SubmarineRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.HULLBREAKER.get(), HullbreakerRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GOSSAMER_WORM.get(), GossamerWormRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.TRIPODFISH.get(), TripodfishRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.DEEP_ONE.get(), DeepOneRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.INK_BOMB.get(), (context) -> {
             return new ThrownItemRenderer<>(context, 1.25F, false);
         });
-        EntityRenderers.register(ACEntityRegistry.DEEP_ONE_KNIGHT.get(), DeepOneKnightRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.DEEP_ONE_MAGE.get(), DeepOneMageRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.WATER_BOLT.get(), WaterBoltRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.WAVE.get(), WaveRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.MINE_GUARDIAN.get(), MineGuardianRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.MINE_GUARDIAN_ANCHOR.get(), MineGuardianAnchorRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.DEPTH_CHARGE.get(), (context) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.DEEP_ONE_KNIGHT.get(), DeepOneKnightRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.DEEP_ONE_MAGE.get(), DeepOneMageRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.WATER_BOLT.get(), WaterBoltRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.WAVE.get(), WaveRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.MINE_GUARDIAN.get(), MineGuardianRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.MINE_GUARDIAN_ANCHOR.get(), MineGuardianAnchorRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.DEPTH_CHARGE.get(), (context) -> {
             return new ThrownItemRenderer<>(context, 1.75F, true);
         });
-        EntityRenderers.register(ACEntityRegistry.FLOATER.get(), FloaterRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GUANO.get(), (context) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.FLOATER.get(), FloaterRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GUANO.get(), (context) -> {
             return new ThrownItemRenderer<>(context, 1.25F, false);
         });
-        EntityRenderers.register(ACEntityRegistry.FALLING_GUANO.get(), FallingBlockRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GLOOMOTH.get(), GloomothRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.UNDERZEALOT.get(), UnderzealotRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.WATCHER.get(), WatcherRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CORRODENT.get(), CorrodentRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.VESPER.get(), VesperRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.FORSAKEN.get(), ForsakenRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.BEHOLDER_EYE.get(), EmptyRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.DESOLATE_DAGGER.get(), DesolateDaggerRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.BURROWING_ARROW.get(), BurrowingArrowRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.DARK_ARROW.get(), DarkArrowRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SWEETISH_FISH.get(), SweetishFishRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CANIAC.get(), CaniacRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GUMBEEPER.get(), GumbeeperRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GUMBALL.get(), GumballRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CANDICORN.get(), CandicornRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GUM_WORM.get(), GumWormRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GUM_WORM_SEGMENT.get(), GumWormSegmentRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CARAMEL_CUBE.get(), CaramelCubeRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.MELTED_CARAMEL.get(), MeltedCaramelRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GUMMY_BEAR.get(), GummyBearRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.LICOWITCH.get(), LicowitchRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SPINNING_PEPPERMINT.get(), SpinningPeppermintRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SUGAR_STAFF_HEX.get(), SugarStaffHexRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.GINGERBREAD_MAN.get(), GingerbreadManRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.FALLING_FROSTMINT.get(), FallingBlockRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.CANDY_CANE_HOOK.get(), CandyCaneHookRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.SODA_BOTTLE_ROCKET.get(), (render) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.FALLING_GUANO.get(), FallingBlockRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GLOOMOTH.get(), GloomothRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.UNDERZEALOT.get(), UnderzealotRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.WATCHER.get(), WatcherRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CORRODENT.get(), CorrodentRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.VESPER.get(), VesperRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.FORSAKEN.get(), ForsakenRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.BEHOLDER_EYE.get(), EmptyRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.DESOLATE_DAGGER.get(), DesolateDaggerRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.BURROWING_ARROW.get(), BurrowingArrowRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.DARK_ARROW.get(), DarkArrowRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SWEETISH_FISH.get(), SweetishFishRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CANIAC.get(), CaniacRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GUMBEEPER.get(), GumbeeperRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GUMBALL.get(), GumballRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CANDICORN.get(), CandicornRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GUM_WORM.get(), GumWormRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GUM_WORM_SEGMENT.get(), GumWormSegmentRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CARAMEL_CUBE.get(), CaramelCubeRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.MELTED_CARAMEL.get(), MeltedCaramelRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GUMMY_BEAR.get(), GummyBearRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.LICOWITCH.get(), LicowitchRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SPINNING_PEPPERMINT.get(), SpinningPeppermintRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SUGAR_STAFF_HEX.get(), SugarStaffHexRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.GINGERBREAD_MAN.get(), GingerbreadManRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.FALLING_FROSTMINT.get(), FallingBlockRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.CANDY_CANE_HOOK.get(), CandyCaneHookRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.SODA_BOTTLE_ROCKET.get(), (render) -> {
             return new ThrownItemRenderer<>(render, 1.25F, true);
         });
-        EntityRenderers.register(ACEntityRegistry.FROSTMINT_SPEAR.get(), FrostmintSpearRenderer::new);
-        EntityRenderers.register(ACEntityRegistry.THROWN_ICE_CREAM_SCOOP.get(), (context) -> {
+        EntityRendererRegistry.register(ACEntityRegistry.FROSTMINT_SPEAR.get(), FrostmintSpearRenderer::new);
+        EntityRendererRegistry.register(ACEntityRegistry.THROWN_ICE_CREAM_SCOOP.get(), (context) -> {
             return new ThrownItemRenderer<>(context, 1.25F, false);
         });
-        Sheets.addWoodType(ACBlockRegistry.PEWEN_WOOD_TYPE);
-        Sheets.addWoodType(ACBlockRegistry.THORNWOOD_WOOD_TYPE);
         ItemProperties.register(ACItemRegistry.HOLOCODER.get(), ResourceLocation.withDefaultNamespace("bound"),
                 (stack, level, living, j) -> {
                     return HolocoderItem.isBound(stack) ? 1.0F : 0.0F;
@@ -356,12 +563,11 @@ public class ClientProxy extends CommonProxy {
         PostEffectRegistry.registerEffect(IRRADIATED_SHADER);
         PostEffectRegistry.registerEffect(HOLOGRAM_SHADER);
         PostEffectRegistry.registerEffect(PURPLE_WITCH_SHADER);
+        ACBlockRenderLayerRegistry.register();
         // Menu screens are now registered via RegisterMenuScreensEvent in commonInit
         hasACSplashText = random.nextInt(300) == 0;
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.ACID_FLUID_SOURCE.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.ACID_FLUID_FLOWING.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.PURPLE_SODA_FLUID_FLOWING.get(), RenderType.translucent());
+        BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutoutMipped(), ACFluidRegistry.ACID_FLUID_SOURCE.get(), ACFluidRegistry.ACID_FLUID_FLOWING.get());
+        BlockRenderLayerMap.INSTANCE.putFluids(RenderType.translucent(), ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(), ACFluidRegistry.PURPLE_SODA_FLUID_FLOWING.get());
     }
 
     public void setupParticles(RegisterParticleProvidersEvent registry) {
@@ -546,39 +752,32 @@ public class ClientProxy extends CommonProxy {
 
     private void registerShaders(final RegisterShadersEvent e) {
         try {
-            e.registerShader(new ShaderInstance(e.getResourceProvider(),
-                    ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_ferrouslime_gel"),
-                    DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeFerrouslimeGelShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(),
-                    ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_hologram"),
-                    DefaultVertexFormat.POSITION_COLOR), ACInternalShaders::setRenderTypeHologramShader);
-            e.registerShader(
-                    new ShaderInstance(e.getResourceProvider(),
-                            ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_irradiated"),
-                            DefaultVertexFormat.NEW_ENTITY),
-                    ACInternalShaders::setRenderTypeIrradiatedShader);
-            e.registerShader(
-                    new ShaderInstance(e.getResourceProvider(),
-                            ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_blue_irradiated"),
-                            DefaultVertexFormat.NEW_ENTITY),
-                    ACInternalShaders::setRenderTypeBlueIrradiatedShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(),
-                    ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_bubbled"),
-                    DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeBubbledShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(),
-                    ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_sepia"),
-                    DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeSepiaShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(),
-                    ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_red_ghost"),
-                    DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeRedGhostShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(),
-                    ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_purple_witch"),
-                    DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypePurpleWitchShader);
-            AlexsCaves.LOGGER.info("registered internal shaders");
+            registerInternalShaders((id, vertexFormat, consumer) -> e.registerShader(
+                    new ShaderInstance(e.getResourceProvider(), id.toString(), vertexFormat), consumer));
         } catch (IOException exception) {
             AlexsCaves.LOGGER.error("could not register internal shaders");
             exception.printStackTrace();
         }
+    }
+
+    private static void registerInternalShaders(ShaderRegistrar registrar) throws IOException {
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_ferrouslime_gel"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeFerrouslimeGelShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_hologram"),
+                DefaultVertexFormat.POSITION_COLOR, ACInternalShaders::setRenderTypeHologramShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_irradiated"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeIrradiatedShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_blue_irradiated"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeBlueIrradiatedShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_bubbled"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeBubbledShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_sepia"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeSepiaShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_red_ghost"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeRedGhostShader);
+        registrar.register(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_purple_witch"),
+                DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypePurpleWitchShader);
+        AlexsCaves.LOGGER.info("registered internal shaders");
     }
 
     private void registerKeybinds(RegisterKeyMappingsEvent e) {

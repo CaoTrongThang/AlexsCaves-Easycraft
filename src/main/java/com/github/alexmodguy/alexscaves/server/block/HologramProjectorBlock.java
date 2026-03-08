@@ -8,6 +8,7 @@ import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -88,10 +89,7 @@ public class HologramProjectorBlock extends BaseEntityBlock implements SimpleWat
                 entityType = EntityType.PLAYER;
                 CompoundTag playerTag = new CompoundTag();
                 playerTag.putUUID("UUID", player.getUUID());
-                String s = player.getEncodeId();
-                if (s != null) {
-                    playerTag.putString("id", s);
-                }
+                playerTag.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.PLAYER).toString());
                 entityTag = playerTag;
             }
             projectorBlockEntity.setEntity(entityType, entityTag, player.getYHeadRot());

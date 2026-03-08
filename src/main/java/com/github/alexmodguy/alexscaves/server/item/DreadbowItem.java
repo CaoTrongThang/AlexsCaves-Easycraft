@@ -64,7 +64,6 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
         return null;
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

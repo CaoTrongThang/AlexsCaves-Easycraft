@@ -434,7 +434,6 @@ public class GumWormSegmentEntity extends Entity implements ICustomCollisions, K
         return GumWormEntity.canDigBlock(blockstate) && super.isColliding(pos, blockstate);
     }
 
-    @Override
     public Vec3 collide(Vec3 vec3) {
         return ICustomCollisions.getAllowedMovementForEntity(this, vec3);
     }
@@ -512,7 +511,6 @@ public class GumWormSegmentEntity extends Entity implements ICustomCollisions, K
         return prevZRot + (zRot - prevZRot) * partialTicks;
     }
 
-    @Override
     public boolean shouldRiderSit() {
         return false;
     }

@@ -138,7 +138,7 @@ public class SackOfSatingItem extends Item {
     }
 
      public static int calculateWholeStackHungerValue(ItemStack foodStack, LivingEntity eater){
-        FoodProperties foodProperties = foodStack.getFoodProperties(eater);
+        FoodProperties foodProperties = ACFoodCompat.getFoodProperties(foodStack);
         if(foodProperties != null && !foodStack.is(ACTagRegistry.RESTRICTED_FROM_SACK_OF_SATING)){
             return foodProperties.nutrition() * foodStack.getCount();
         }

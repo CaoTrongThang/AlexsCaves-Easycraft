@@ -8,6 +8,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACFrogRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.item.SeekingArrowEntity;
 import com.github.alexmodguy.alexscaves.server.entity.item.SubmarineEntity;
+import com.github.alexmodguy.alexscaves.server.entity.util.MobTargetAccessor;
 import com.github.alexmodguy.alexscaves.server.entity.living.*;
 import com.github.alexmodguy.alexscaves.server.entity.util.*;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
@@ -16,12 +17,15 @@ import com.github.alexmodguy.alexscaves.server.item.ExtinctionSpearItem;
 import com.github.alexmodguy.alexscaves.server.level.biome.ACBiomeRarity;
 import com.github.alexmodguy.alexscaves.server.level.biome.ACBiomeRegistry;
 import com.github.alexmodguy.alexscaves.server.level.biome.BiomeSourceAccessor;
+import com.github.alexmodguy.alexscaves.mixin.ChunkGeneratorAccessor;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.DarknessIncarnateEffect;
 import com.github.alexmodguy.alexscaves.server.potion.SugarRushEffect;
 import com.github.alexthe666.citadel.server.tick.ServerTickRateTracker;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.*;
@@ -30,6 +34,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.component.CustomData;
@@ -66,6 +71,9 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.BiomeGenerationSettings;
+import net.minecraft.world.level.biome.FeatureSorter;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
@@ -88,6 +96,7 @@ import net.neoforged.neoforge.event.village.WandererTradesEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -95,6 +104,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class CommonEvents {
     @SuppressWarnings("removal")
@@ -180,7 +190,7 @@ public class CommonEvents {
             CompoundTag tag = new CompoundTag();
             tag.putUUID("BoundEntityUUID", event.getTarget().getUUID());
             // In 1.21, serializeNBT requires RegistryAccess provider
-            CompoundTag entityTag = event.getTarget() instanceof Player ? new CompoundTag() : event.getTarget().serializeNBT(event.getLevel().registryAccess());
+            CompoundTag entityTag = event.getTarget() instanceof Player ? new CompoundTag() : event.getTarget().saveWithoutId(new CompoundTag());
             entityTag.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(event.getTarget().getType()).toString());
             if (event.getTarget() instanceof Player) {
                 entityTag.putUUID("UUID", event.getTarget().getUUID());
@@ -256,9 +266,7 @@ public class CommonEvents {
      * Helper method to check if an item has an enchantment (1.21 data-driven enchantments)
      */
     private boolean hasEnchantment(ItemStack stack, Level level, ResourceKey<Enchantment> enchantmentKey) {
-        if (level.registryAccess() == null) return false;
-        var holder = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(enchantmentKey);
-        return holder.isPresent() && stack.getEnchantmentLevel(holder.get()) > 0;
+        return ACEnchantmentRegistry.getEnchantmentLevel(level, stack, enchantmentKey) > 0;
     }
 
     @SubscribeEvent
@@ -273,7 +281,7 @@ public class CommonEvents {
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) {
             return;
         }
-        if (livingEntity.hasEffect(ACEffectRegistry.BUBBLED) && livingEntity.isInFluidType()) {
+        if (livingEntity.hasEffect(ACEffectRegistry.BUBBLED) && ACFluidHelper.isInAnyFluid(livingEntity)) {
             livingEntity.removeEffect(ACEffectRegistry.BUBBLED);
         }
         if (livingEntity.hasEffect(ACEffectRegistry.DARKNESS_INCARNATE) && livingEntity.tickCount % 5 == 0 && DarknessIncarnateEffect.isInLight(livingEntity, 11)) {
@@ -291,7 +299,7 @@ public class CommonEvents {
     public void onEntityJoinWorld(FinalizeSpawnEvent event) {
         try {
             if (event.getEntity() instanceof Creeper creeper) {
-                creeper.targetSelector.addGoal(3, new AvoidEntityGoal<>(creeper, RaycatEntity.class, 10.0F, 1.0D, 1.2D));
+                ((MobTargetAccessor) creeper).ac_getTargetSelector().addGoal(3, new AvoidEntityGoal<>(creeper, RaycatEntity.class, 10.0F, 1.0D, 1.2D));
             }
             if (event.getEntity() instanceof Drowned drowned && drowned.level().getBiome(drowned.blockPosition()).is(ACBiomeRegistry.ABYSSAL_CHASM)) {
                 if (drowned.getItemBySlot(EquipmentSlot.FEET).isEmpty() && drowned.getItemBySlot(EquipmentSlot.LEGS).isEmpty() && drowned.getItemBySlot(EquipmentSlot.CHEST).isEmpty() && drowned.getItemBySlot(EquipmentSlot.HEAD).isEmpty()) {
@@ -314,7 +322,7 @@ public class CommonEvents {
                 }
             }
             if (event.getEntity() instanceof Fox fox) {
-                fox.targetSelector.addGoal(7, new NearestAttackableTargetGoal<>(fox, GingerbreadManEntity.class, 40, false, false, null));
+                ((MobTargetAccessor) fox).ac_getTargetSelector().addGoal(7, new NearestAttackableTargetGoal<>(fox, GingerbreadManEntity.class, 40, false, false, null));
             }
         } catch (Exception e) {
             AlexsCaves.LOGGER.warn("Tried to add unique behaviors to vanilla mobs and encountered an error");
@@ -368,17 +376,26 @@ public class CommonEvents {
 
     @SubscribeEvent
     public void onServerStopping(ServerStoppingEvent event) {
+        onServerStopped(event.getServer());
+    }
+
+    public static void onServerStopped(MinecraftServer server) {
+        ServerLifecycleHooks.setCurrentServer(null);
         if (AlexsCaves.COMMON_CONFIG.sugarRushSlowsTime.get()) {
-            ServerTickRateTracker tracker = ServerTickRateTracker.getForServer(event.getServer());
+            ServerTickRateTracker tracker = ServerTickRateTracker.getForServer(server);
             tracker.tickRateModifierList.clear();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onServerAboutToStart(ServerAboutToStartEvent event) {
+        onServerStarting(event.getServer());
+    }
+
+    public static void onServerStarting(MinecraftServer server) {
+        ServerLifecycleHooks.setCurrentServer(server);
         ACBiomeRarity.init();
-        //moved from citadel
-        RegistryAccess registryAccess = event.getServer().registryAccess();
+        RegistryAccess registryAccess = server.registryAccess();
         Registry<Biome> allBiomes = registryAccess.registryOrThrow(Registries.BIOME);
         Registry<LevelStem> levelStems = registryAccess.registryOrThrow(Registries.LEVEL_STEM);
         Map<ResourceKey<Biome>, Holder<Biome>> biomeMap = new HashMap<>();
@@ -396,9 +413,25 @@ public class CommonEvents {
                         allBiomes.getHolder(biomeResourceKey).ifPresent(biomeHolders::add);
                     }
                     expandedBiomeSource.expandBiomesWith(biomeHolders.build());
+                    refreshGeneratorFeatures(holderOptional.get().value().generator());
                 }
             }
         }
+    }
+
+    private static void refreshGeneratorFeatures(ChunkGenerator generator) {
+        if (!(generator instanceof ChunkGeneratorAccessor accessor)) {
+            return;
+        }
+        Function<Holder<Biome>, BiomeGenerationSettings> generationSettingsGetter = accessor.alexscaves$getGenerationSettingsGetter();
+        accessor.alexscaves$setFeaturesPerStep(Suppliers.memoize(() ->
+            FeatureSorter.buildFeaturesPerStep(
+                List.copyOf(generator.getBiomeSource().possibleBiomes()),
+                biome -> generationSettingsGetter.apply(biome).features(),
+                true
+            )
+        ));
+        generator.validate();
     }
 
     @SubscribeEvent
@@ -470,7 +503,7 @@ public class CommonEvents {
             if (raytraceresult.getType() == HitResult.Type.BLOCK) {
                 BlockPos blockpos = ((BlockHitResult) raytraceresult).getBlockPos();
                 if (event.getLevel().mayInteract(player, blockpos)) {
-                    if (event.getLevel().getFluidState(blockpos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
+                    if (ACFluidHelper.isPurpleSoda(event.getLevel().getFluidState(blockpos))) {
                         player.gameEvent(GameEvent.ITEM_INTERACT_START);
                         event.getLevel().playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F);
                         player.awardStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));

@@ -819,9 +819,9 @@ public class CandicornEntity extends TamableAnimal implements KeybindUsingMount,
     protected void playStepSound(BlockPos blockPos, BlockState blockState) {
         if (!blockState.liquid()) {
             BlockState blockstate = this.level().getBlockState(blockPos.above());
-            SoundType soundtype = blockState.getSoundType(level(), blockPos, this);
+            SoundType soundtype = blockState.getSoundType();
             if (blockstate.is(Blocks.SNOW)) {
-                soundtype = blockstate.getSoundType(level(), blockPos, this);
+                soundtype = blockstate.getSoundType();
             }
             if (this.isVehicle()) {
                 ++this.gallopSoundCounter;

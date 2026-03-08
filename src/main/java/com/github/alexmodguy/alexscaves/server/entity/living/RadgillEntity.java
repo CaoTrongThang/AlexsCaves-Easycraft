@@ -6,6 +6,7 @@ import net.minecraft.world.item.component.CustomData;
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ai.NotLavaSwimNodeEvaluator;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -138,7 +139,7 @@ public class RadgillEntity extends WaterAnimal implements Bucketable {
     }
 
     public static boolean checkRadgillSpawnRules(EntityType<? extends LivingEntity> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
-        return spawnType == MobSpawnType.SPAWNER || !level.getFluidState(pos).isEmpty() && level.getFluidState(pos).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        return spawnType == MobSpawnType.SPAWNER || ACFluidHelper.isAcid(level.getFluidState(pos));
     }
 
     @Override
@@ -191,7 +192,7 @@ public class RadgillEntity extends WaterAnimal implements Bucketable {
     }
 
     private boolean isInAcid() {
-        return this.getFluidTypeHeight(ACFluidRegistry.ACID_FLUID_TYPE.get()) > 0;
+        return ACFluidHelper.getAcidHeight(this) > 0;
     }
 
     public void calculateEntityAnimation(boolean flying) {
@@ -281,7 +282,7 @@ public class RadgillEntity extends WaterAnimal implements Bucketable {
 
         private boolean isLiquidAt(BlockPos pos) {
             FluidState state = RadgillEntity.this.level().getFluidState(pos);
-            return state.is(FluidTags.WATER) || state.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+            return ACFluidHelper.isWaterOrAcid(state);
         }
 
         private BlockPos findMoveToPos(boolean jump) {

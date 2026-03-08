@@ -1,6 +1,7 @@
 package com.github.alexmodguy.alexscaves.client.particle;
 
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -29,10 +30,10 @@ public class PurpleSodaBubbleParticle extends TextureSheetParticle {
         BlockPos slightlyBelow = BlockPos.containing(this.x, this.y, this.z);
         float fluidHeight = 0.0F;
         BlockPos lastSodaBlock = null;
-        if(level.getFluidState(slightlyAbove).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+        if (ACFluidHelper.isPurpleSoda(level.getFluidState(slightlyAbove))) {
             fluidHeight = level.getFluidState(slightlyAbove).getHeight(level, slightlyAbove);
             lastSodaBlock = slightlyAbove;
-        }else if(level.getFluidState(slightlyBelow).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+        } else if (ACFluidHelper.isPurpleSoda(level.getFluidState(slightlyBelow))) {
             fluidHeight = level.getFluidState(slightlyBelow).getHeight(level, slightlyBelow);
             lastSodaBlock = slightlyBelow;
         }

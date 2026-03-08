@@ -156,7 +156,6 @@ public abstract class LightTextureMixin {
                                 }
                             }
 
-                            clientlevel.effects().adjustLightmapColors(clientlevel, partialTicks, f, f7, f8, j, i, vector3f1);
                             //INSERTION BY AC...
                             this.applyACLightingColors(clientlevel, vector3f1);
 
@@ -208,6 +207,9 @@ public abstract class LightTextureMixin {
         if (!clientLevel.effects().forceBrightLightmap()) {
             Vec3 in = new Vec3(vector3f);
             Vec3 to = ClientProxy.lastBiomeLightColorPrev.add(ClientProxy.lastBiomeLightColor.subtract(ClientProxy.lastBiomeLightColorPrev).scale(Minecraft.getInstance().getTimer().getRealtimeDeltaTicks()));
+            if (to.lengthSqr() < 1.0E-6D) {
+                return;
+            }
             vector3f.set(to.x * in.x, to.y * in.y, to.z * in.z);
         }
     }

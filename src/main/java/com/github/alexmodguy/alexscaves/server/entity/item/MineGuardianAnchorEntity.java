@@ -2,6 +2,7 @@ package com.github.alexmodguy.alexscaves.server.entity.item;
 
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.living.MineGuardianEntity;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -12,7 +13,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -62,7 +62,7 @@ public class MineGuardianAnchorEntity extends Entity {
                 double distance = this.distanceTo(mineGuardian);
                 int i = mineGuardian.getMaxChainLength();
                 double distanceGoal = (mineGuardian.isInWaterOrBubble() ? i + Math.sin(tickCount * 0.1F + i * 0.5F) * 0.25F : 5) + (hasTarget ? 5 : 0);
-                double waterHeight = mineGuardian.getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value());
+                double waterHeight = ACFluidHelper.getWaterHeight(mineGuardian);
                 double waterUp = Math.min(waterHeight, 1F) * 0.005F;
                 if (mineGuardian.isInWaterOrBubble() && !hasTarget) {
                     double f = this.getX() + (float) -Math.sin(tickCount * 0.025F + i) * 0.5F;

@@ -20,7 +20,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 
 import javax.annotation.Nullable;
-import net.neoforged.neoforge.common.NeoForge;
 import com.github.alexmodguy.alexscaves.client.render.ColorUtil;
 
 public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
@@ -37,12 +36,10 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
     }
 
     public void render(WatcherEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light) {
-        if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<WatcherEntity, WatcherModel>(entity, this, partialTicks, poseStack, bufferSource, light)).isCanceled())
-            return;
         poseStack.pushPose();
         this.model.attackTime = this.getAttackAnim(entity, partialTicks);
 
-        boolean shouldSit = entity.isPassenger() && (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
+        boolean shouldSit = entity.isPassenger();
         this.model.riding = shouldSit;
         this.model.young = entity.isBaby();
         float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
@@ -121,13 +118,10 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
                 renderlayer.render(poseStack, bufferSource, light, entity, f5, f8, partialTicks, f7, f2, f6);
             }
         }
-        var renderNameTagEvent = new net.neoforged.neoforge.client.event.RenderNameTagEvent(entity, entity.getDisplayName(), this, poseStack, bufferSource, light, partialTicks);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(renderNameTagEvent);
-        if (renderNameTagEvent.canRender().isTrue() || (renderNameTagEvent.canRender().isDefault() && this.shouldShowName(entity))) {
-            this.renderNameTag(entity, renderNameTagEvent.getContent(), poseStack, bufferSource, light, partialTicks);
+        if (this.shouldShowName(entity)) {
+            this.renderNameTag(entity, entity.getDisplayName(), poseStack, bufferSource, light, partialTicks);
         }
         poseStack.popPose();
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Post<WatcherEntity, WatcherModel>(entity, this, partialTicks, poseStack, bufferSource, light));
     }
 
     private float getWatcherTransparency(WatcherEntity entity, float partialTicks) {
@@ -158,4 +152,3 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
         }
     }
 }
-

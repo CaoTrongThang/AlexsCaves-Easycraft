@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.item.CaveInfoItem;
 import com.github.alexmodguy.alexscaves.server.message.WorldEventMessage;
+import com.github.alexmodguy.alexscaves.server.misc.ACRuntimeData;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -216,18 +217,11 @@ public class SpelunkeryTableMenu extends AbstractContainerMenu {
     }
 
     public static void setTutorialComplete(Player player, boolean done) {
-        CompoundTag playerData = player.getPersistentData();
-        CompoundTag data = playerData.getCompound(Player.PERSISTED_NBT_TAG);
-        if (data != null) {
-            data.putBoolean(NEEDS_TUTORIAL_IDENTIFIER, done);
-            playerData.put(Player.PERSISTED_NBT_TAG, data);
-        }
+        ACRuntimeData.getOrCreate(player).putBoolean(NEEDS_TUTORIAL_IDENTIFIER, done);
     }
 
     public static boolean hasCompletedTutorial(Player player) {
-        CompoundTag playerData = player.getPersistentData();
-        CompoundTag data = playerData.getCompound(Player.PERSISTED_NBT_TAG);
-        return data != null && data.getBoolean(NEEDS_TUTORIAL_IDENTIFIER);
+        return ACRuntimeData.getOrCreate(player).getBoolean(NEEDS_TUTORIAL_IDENTIFIER);
     }
 
     public void makeStoneParticles(Level level, BlockPos blockPos) {
@@ -244,4 +238,3 @@ public class SpelunkeryTableMenu extends AbstractContainerMenu {
         return -1;
     }
 }
-

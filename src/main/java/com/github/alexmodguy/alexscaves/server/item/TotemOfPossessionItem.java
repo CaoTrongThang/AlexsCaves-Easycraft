@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentHelper;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.util.TotemExplosion;
 import com.github.alexmodguy.alexscaves.server.message.UpdateItemTagMessage;
+import com.github.alexmodguy.alexscaves.server.misc.ACRuntimeData;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.minecraft.ChatFormatting;
@@ -188,7 +189,7 @@ public class TotemOfPossessionItem extends Item implements UpdatesStackTags {
                                     setPossessed(target, true);
                                     CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
                                     tag.putUUID("BoundEntityUUID", target.getUUID());
-                                    CompoundTag entityTag = target.serializeNBT(level.registryAccess());
+                                    CompoundTag entityTag = target.saveWithoutId(new CompoundTag());
                                     entityTag.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(target.getType()).toString());
                                     tag.put("BoundEntityTag", entityTag);
                                     stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
@@ -299,7 +300,7 @@ public class TotemOfPossessionItem extends Item implements UpdatesStackTags {
             setPossessed(hurtMob, true);
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
             tag.putUUID("BoundEntityUUID", hurtMob.getUUID());
-            CompoundTag entityTag = hurtMob.serializeNBT(hurtMob.level().registryAccess());
+            CompoundTag entityTag = hurtMob.saveWithoutId(new CompoundTag());
             entityTag.putString("id", BuiltInRegistries.ENTITY_TYPE.getKey(hurtMob.getType()).toString());
             tag.put("BoundEntityTag", entityTag);
             stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
@@ -312,12 +313,10 @@ public class TotemOfPossessionItem extends Item implements UpdatesStackTags {
     private static void setPossessed(@Nullable Entity e, boolean v) {
         if (e == null) return;
         if (v) {
-            e.getPersistentData().putBoolean("TotemPossessed", true);
+            ACRuntimeData.getOrCreate(e).putBoolean("TotemPossessed", true);
         } else {
-            e.getPersistentData().remove("TotemPossessed");
+            ACRuntimeData.getOrCreate(e).remove("TotemPossessed");
         }
     }
 
 }
-
-

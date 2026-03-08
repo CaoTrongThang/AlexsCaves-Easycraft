@@ -8,6 +8,7 @@
     "AbstractArrowMixin",
     "AbstractMinecartMixin",
     "BiomeSourceMixin",
+    "ChunkGeneratorAccessor",
     "ChunkStatusMixin",
     "CoralFeatureMixin",
     "CorrodentCollisionMixin",
@@ -23,6 +24,7 @@
     "JigsawStructureMixin",
     "KelpFeatureMixin",
     "LakeFeatureMixin",
+    "LevelChunkSectionAccessor",
     "LivingEntityMixin",
     "MobMixin",
     "MonsterMixin",
@@ -36,6 +38,8 @@
     "SeagrassFeatureMixin",
     "ShipwreckStructureMixin",
     "SwampHutPieceMixin"
+    ,
+    "UtilMixin"
   ],
   "client": [
     "client.AdvancementTabAccessor",
@@ -50,6 +54,7 @@
     "client.ClientLevelDataMixin",
     "client.ClientLevelMixin",
     "client.ClientPacketListenerMixin",
+    "client.FogRendererMixin",
     "client.GameRendererAccessor",
     "client.GameRendererMixin",
     "client.HumanoidArmorLayerMixin",
@@ -63,6 +68,7 @@
     "client.MinecraftMixin",
     "client.OptionsMixin",
     "client.RidingMinecartSoundInstanceMixin",
+    "client.ScreenEffectRendererMixin",
     "client.SoundEngineAccessor",
     "client.SoundEngineMixin",
     "client.SoundManagerAccessor",

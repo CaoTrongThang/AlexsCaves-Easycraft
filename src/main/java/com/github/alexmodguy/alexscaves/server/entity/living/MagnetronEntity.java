@@ -175,7 +175,6 @@ public class MagnetronEntity extends Monster {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

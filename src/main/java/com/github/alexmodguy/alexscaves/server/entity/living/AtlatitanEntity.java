@@ -10,6 +10,7 @@ import com.github.alexmodguy.alexscaves.server.entity.util.KeybindUsingMount;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.message.MountedEntityKeyMessage;
 import com.github.alexmodguy.alexscaves.server.misc.ACAdvancementTriggerRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.core.BlockPos;
@@ -226,8 +227,9 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
         InteractionResult prev = super.mobInteract(player, hand);
         ItemStack itemstack = player.getItemInHand(hand);
         if (!prev.consumesAction() && itemstack.is(ACItemRegistry.SERENE_SALAD.get()) && !this.isBaby()) {
-            if (!itemstack.getCraftingRemainingItem().isEmpty()) {
-                this.spawnAtLocation(itemstack.getCraftingRemainingItem().copy());
+            ItemStack remainingItem = ACItemCompat.getCraftingRemainingItem(itemstack);
+            if (!remainingItem.isEmpty()) {
+                this.spawnAtLocation(remainingItem);
             }
             this.usePlayerItem(player, hand, itemstack);
             return InteractionResult.SUCCESS;

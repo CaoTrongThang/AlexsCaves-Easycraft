@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.block.PewenBranchBlock;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ai.*;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexthe666.citadel.animation.Animation;
 import com.github.alexthe666.citadel.animation.AnimationHandler;
@@ -117,8 +118,9 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
         InteractionResult prev = super.mobInteract(player, hand);
         ItemStack itemstack = player.getItemInHand(hand);
         if (!prev.consumesAction() && itemstack.is(ACItemRegistry.PRIMORDIAL_SOUP.get())) {
-            if (!itemstack.getCraftingRemainingItem().isEmpty()) {
-                this.spawnAtLocation(itemstack.getCraftingRemainingItem().copy());
+            ItemStack remainingItem = ACItemCompat.getCraftingRemainingItem(itemstack);
+            if (!remainingItem.isEmpty()) {
+                this.spawnAtLocation(remainingItem);
             }
             this.usePlayerItem(player, hand, itemstack);
             return InteractionResult.SUCCESS;

@@ -122,7 +122,7 @@ public class EntityWidget extends BookWidget {
                     EntityModel model = renderer.getModel();
                     VertexConsumer ivertexbuilder = bufferIn.getBuffer(ACRenderTypes.getBookWidget(render.getTextureLocation(entityIn), sepia));
                     matrixStack.pushPose();
-                    boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+                    boolean shouldSit = entityIn.isPassenger();
                     model.young = living.isBaby();
                     model.riding = shouldSit;
                     model.setupAnim(living, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F);

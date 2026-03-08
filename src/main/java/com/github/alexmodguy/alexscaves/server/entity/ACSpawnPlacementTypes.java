@@ -1,6 +1,7 @@
 package com.github.alexmodguy.alexscaves.server.entity;
 
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacementType;
@@ -23,7 +24,7 @@ public class ACSpawnPlacementTypes {
         if (entityType != null && level.getWorldBorder().isWithinBounds(pos)) {
             FluidState fluidState = level.getFluidState(pos);
             BlockPos blockpos = pos.above();
-            return fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get() 
+            return ACFluidHelper.isAcid(fluidState)
                     && !level.getBlockState(blockpos).isRedstoneConductor(level, blockpos);
         }
         return false;
@@ -37,7 +38,7 @@ public class ACSpawnPlacementTypes {
         if (entityType != null && level.getWorldBorder().isWithinBounds(pos)) {
             FluidState fluidState = level.getFluidState(pos);
             BlockPos blockpos = pos.above();
-            return fluidState.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get() 
+            return ACFluidHelper.isPurpleSoda(fluidState)
                     && !level.getBlockState(blockpos).isRedstoneConductor(level, blockpos);
         }
         return false;

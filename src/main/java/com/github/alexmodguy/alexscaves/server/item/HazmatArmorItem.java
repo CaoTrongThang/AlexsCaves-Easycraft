@@ -26,7 +26,6 @@ public class HazmatArmorItem extends ArmorItem {
     }
 
     @SuppressWarnings("removal")
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
@@ -50,7 +49,6 @@ public class HazmatArmorItem extends ArmorItem {
         }
     }
 
-    @Override
     @Nullable
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
         if (slot == EquipmentSlot.LEGS) {

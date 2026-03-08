@@ -93,7 +93,7 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
             return null;
         }
         Entity thisEntity = (Entity) (Object) this;
-        return thisEntity.getData(ACAttachmentRegistry.MAGNETIC_DATA);
+        return ACAttachmentRegistry.getMagneticData(thisEntity);
     }
     
     /**
@@ -107,7 +107,7 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         Entity thisEntity = (Entity) (Object) this;
         // Only sync from server side
         if (!thisEntity.level().isClientSide) {
-            MagneticEntityData data = thisEntity.getData(ACAttachmentRegistry.MAGNETIC_DATA);
+            MagneticEntityData data = ACAttachmentRegistry.getMagneticData(thisEntity);
             // Send sync packet to all tracking players
             com.github.alexmodguy.alexscaves.server.message.UpdateMagneticDataMessage msg = 
                 new com.github.alexmodguy.alexscaves.server.message.UpdateMagneticDataMessage(thisEntity, data);

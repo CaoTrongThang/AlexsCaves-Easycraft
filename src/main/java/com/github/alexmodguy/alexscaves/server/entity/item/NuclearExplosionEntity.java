@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.server.block.TremorzillaEggBlock;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.living.RaycatEntity;
 import com.github.alexmodguy.alexscaves.server.entity.living.TremorzillaEntity;
+import com.github.alexmodguy.alexscaves.server.misc.ACBlockCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACDamageTypes;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
@@ -193,7 +194,7 @@ public class NuclearExplosionEntity extends Entity {
                             }else if (AlexsCaves.COMMON_CONFIG.nukesSpawnItemDrops.get() && random.nextFloat() < itemDropModifier && state.getFluidState().isEmpty()) {
                                 level().destroyBlock(carve, true);
                             } else {
-                                state.onBlockExploded(level(), carve, dummyExplosion);
+                                ACBlockCompat.explodeBlock(level(), carve, state, dummyExplosion);
                             }
                         }
                     }

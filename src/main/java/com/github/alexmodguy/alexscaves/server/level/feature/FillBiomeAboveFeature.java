@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.level.feature;
 
+import com.github.alexmodguy.alexscaves.mixin.LevelChunkSectionAccessor;
 import com.github.alexmodguy.alexscaves.server.level.feature.config.FillBiomeAboveConfiguration;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -11,9 +12,6 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
-
-import java.lang.reflect.Field;
 
 public class FillBiomeAboveFeature extends Feature<FillBiomeAboveConfiguration> {
 
@@ -45,13 +43,7 @@ public class FillBiomeAboveFeature extends Feature<FillBiomeAboveConfiguration> 
                                 }
                             }
                         }
-                        try {
-                            Field biomesField = ObfuscationReflectionHelper.findField(LevelChunkSection.class, "biomes");
-                            biomesField.setAccessible(true);
-                            biomesField.set(section, container);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        ((LevelChunkSectionAccessor) section).alexscaves$setBiomes(container);
                     }
                 }
             }

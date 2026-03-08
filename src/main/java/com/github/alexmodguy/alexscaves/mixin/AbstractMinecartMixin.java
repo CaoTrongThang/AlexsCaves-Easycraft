@@ -25,6 +25,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -78,6 +79,31 @@ public abstract class AbstractMinecartMixin extends VehicleEntity implements Min
 
     public AbstractMinecartMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Unique
+    private AbstractMinecart ac_self() {
+        return (AbstractMinecart) (Object) this;
+    }
+
+    @Unique
+    private boolean ac_canBeRidden() {
+        return ac_self().getMinecartType() == AbstractMinecart.Type.RIDEABLE;
+    }
+
+    @Unique
+    private boolean ac_shouldDoRailFunctions() {
+        return true;
+    }
+
+    @Unique
+    private double ac_getSlopeAdjustment() {
+        return 0.0078125D;
+    }
+
+    @Unique
+    private RailShape ac_getRailShape(BlockState railState) {
+        return railState.getValue(((BaseRailBlock) railState.getBlock()).getShapeProperty());
     }
 
     @Inject(
@@ -164,7 +190,7 @@ public abstract class AbstractMinecartMixin extends VehicleEntity implements Min
 
                     this.setRot(this.getYRot(), this.getXRot());
                     AABB box = this.getBoundingBox().inflate(0.2F, 0.0D, 0.2F);
-                    if (((AbstractMinecart) (Entity) this).canBeRidden() && this.getDeltaMovement().horizontalDistanceSqr() > 0.01D) {
+                    if (ac_canBeRidden() && this.getDeltaMovement().horizontalDistanceSqr() > 0.01D) {
                         List<Entity> list = this.level().getEntities(this, box, EntitySelector.pushableBy(this));
                         if (!list.isEmpty()) {
                             for (int l = 0; l < list.size(); ++l) {
@@ -210,7 +236,7 @@ public abstract class AbstractMinecartMixin extends VehicleEntity implements Min
     }
 
     private void moveAlongMagLev(BlockPos railPos, BlockState railState) {
-        boolean doRailFunctions = ((AbstractMinecart) (Entity) this).shouldDoRailFunctions();
+        boolean doRailFunctions = ac_shouldDoRailFunctions();
         this.resetFallDistance();
         double d0 = this.getX();
         double d1 = this.getY();
@@ -218,13 +244,13 @@ public abstract class AbstractMinecartMixin extends VehicleEntity implements Min
         Vec3 vec3 = this.getPos(d0, d1, d2);
         boolean flag = true;
         boolean flag1 = true;
-        double d3 = ((AbstractMinecart) (Entity) this).getSlopeAdjustment();
+        double d3 = ac_getSlopeAdjustment();
         if (this.isInWater()) {
             d3 *= 0.2D;
         }
 
         Vec3 vec31 = this.getDeltaMovement();
-        RailShape railshape = ((BaseRailBlock) railState.getBlock()).getRailDirection(railState, this.level(), railPos, ((AbstractMinecart) (Entity) this));
+        RailShape railshape = ac_getRailShape(railState);
         switch (railshape) {
             case ASCENDING_EAST:
                 this.setDeltaMovement(vec31.add(-d3, 0.0D, 0.0D));
@@ -328,9 +354,6 @@ public abstract class AbstractMinecartMixin extends VehicleEntity implements Min
             double d26 = vec35.horizontalDistance();
             this.setDeltaMovement(d26 * (double) (j - railPos.getX()), vec35.y, d26 * (double) (i - railPos.getZ()));
         }
-
-        if (doRailFunctions)
-            ((BaseRailBlock) railState.getBlock()).onMinecartPass(railState, level(), railPos, ((AbstractMinecart) (Entity) this));
 
         if (flag && doRailFunctions) {
             Vec3 vec36 = this.getDeltaMovement();

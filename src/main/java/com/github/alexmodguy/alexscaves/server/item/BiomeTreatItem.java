@@ -33,8 +33,9 @@ public class BiomeTreatItem extends CaveInfoItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-        if (itemstack.has(DataComponents.FOOD) && getCaveBiome(itemstack) == null) {
-            if (player.canEat(itemstack.getFoodProperties(player).canAlwaysEat())) {
+        FoodProperties foodProperties = itemstack.get(DataComponents.FOOD);
+        if (foodProperties != null && getCaveBiome(itemstack) == null) {
+            if (player.canEat(foodProperties.canAlwaysEat())) {
                 player.startUsingItem(hand);
                 return InteractionResultHolder.consume(itemstack);
             } else {
@@ -74,7 +75,6 @@ public class BiomeTreatItem extends CaveInfoItem {
         return super.finishUsingItem(stack, level, livingEntity);
     }
 
-    @Override
     public FoodProperties getFoodProperties(ItemStack stack, @Nullable LivingEntity entity) {
         return getCaveBiome(stack) == null ? ACFoods.BIOME_TREAT : ACFoods.BIOME_TREAT_DONE;
     }

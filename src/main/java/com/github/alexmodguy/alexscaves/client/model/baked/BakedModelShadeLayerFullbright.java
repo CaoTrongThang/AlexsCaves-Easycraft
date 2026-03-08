@@ -7,8 +7,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -21,11 +19,11 @@ public class BakedModelShadeLayerFullbright extends BakedModelWrapper {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, RandomSource rand) {
         if (state == null) {
-            return originalModel.getQuads(state, side, rand, extraData, renderType);
+            return originalModel.getQuads(state, side, rand);
         }
-        return transformUnshadedQuad(originalModel.getQuads(state, side, rand, extraData, renderType));
+        return transformUnshadedQuad(originalModel.getQuads(state, side, rand));
     }
 
     private static List<BakedQuad> transformUnshadedQuad(List<BakedQuad> oldQuads) {

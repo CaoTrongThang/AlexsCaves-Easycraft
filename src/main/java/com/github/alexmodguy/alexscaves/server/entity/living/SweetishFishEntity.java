@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ai.VerticalSwimmingMoveCon
 import com.github.alexmodguy.alexscaves.server.entity.util.GummyColors;
 import com.github.alexmodguy.alexscaves.server.entity.util.HasGummyColors;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -116,7 +117,7 @@ public class SweetishFishEntity extends WaterAnimal implements Bucketable, HasGu
     }
 
     public static boolean checkSweetishFishSpawnRules(EntityType<? extends LivingEntity> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
-        return spawnType == MobSpawnType.SPAWNER || !level.getFluidState(pos).isEmpty() && level.getFluidState(pos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
+        return spawnType == MobSpawnType.SPAWNER || ACFluidHelper.isPurpleSoda(level.getFluidState(pos));
     }
 
     @Override
@@ -146,7 +147,7 @@ public class SweetishFishEntity extends WaterAnimal implements Bucketable, HasGu
     }
 
     private boolean isInSoda() {
-        return this.getFluidTypeHeight(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) > 0;
+        return ACFluidHelper.getPurpleSodaHeight(this) > 0;
     }
 
     protected void handleAirSupply(int prevAir) {
@@ -329,7 +330,7 @@ public class SweetishFishEntity extends WaterAnimal implements Bucketable, HasGu
 
         private boolean isLiquidAt(BlockPos pos) {
             FluidState state = SweetishFishEntity.this.level().getFluidState(pos);
-            return state.is(FluidTags.WATER) || state.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
+            return ACFluidHelper.isWaterOrPurpleSoda(state);
         }
 
         private BlockPos findMoveToPos() {

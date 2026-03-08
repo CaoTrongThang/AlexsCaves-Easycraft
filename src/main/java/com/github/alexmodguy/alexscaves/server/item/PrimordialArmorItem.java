@@ -21,12 +21,10 @@ public class PrimordialArmorItem extends ArmorItem {
         this.acMaterial = armorMaterial;
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
 
-    @Override
     @Nullable
     public ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
         if (slot == EquipmentSlot.LEGS) {

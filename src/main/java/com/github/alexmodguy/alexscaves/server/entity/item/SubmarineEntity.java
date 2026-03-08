@@ -5,6 +5,8 @@ import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.util.KeybindUsingMount;
 import com.github.alexmodguy.alexscaves.server.message.MountedEntityKeyMessage;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -27,7 +29,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.fluids.FluidType;
 
@@ -348,9 +349,8 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         this.entityData.set(DANGER_ALERT_TICKS, ticks);
     }
 
-    @Override
     public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
-        return type.supportsBoating(null);
+        return true;
     }
 
     @Nullable
@@ -448,7 +448,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
             return InteractionResult.PASS;
         } else {
             ItemStack itemStack = player.getItemInHand(hand);
-            if (itemStack.canPerformAction(ItemAbilities.AXE_SCRAPE) && (this.getOxidizationLevel() > 0 || this.isWaxed())) {
+            if (ACItemCompat.canPerformAction(itemStack, ItemAbilities.AXE_SCRAPE) && (this.getOxidizationLevel() > 0 || this.isWaxed())) {
                 player.swing(hand);
                 if (!player.isCreative()) {
                     itemStack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
@@ -581,7 +581,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
     }
 
     public float getWaterHeight() {
-        return (float) getFluidTypeHeight(NeoForgeMod.WATER_TYPE.value());
+        return (float) ACFluidHelper.getWaterHeight(this);
     }
 
     @Override

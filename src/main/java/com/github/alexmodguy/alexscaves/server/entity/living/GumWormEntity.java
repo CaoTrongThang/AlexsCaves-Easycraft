@@ -6,6 +6,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ai.*;
 import com.github.alexmodguy.alexscaves.server.entity.item.CandyCaneHookEntity;
 import com.github.alexmodguy.alexscaves.server.entity.util.KaijuMob;
 import com.github.alexmodguy.alexscaves.server.entity.util.ShakesScreen;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.github.alexthe666.citadel.server.entity.collision.ICustomCollisions;
@@ -465,7 +466,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
             if (!canDigBlock(centralStateBelow)) {
                 this.setDeltaMovement(random.nextFloat() - 0.5F, 0.8F, random.nextFloat() - 0.5F);
                 flag = true;
-            } else if((surfaceY < this.getEyeY() || centralStateBelow.isAir() || this.isInFluidType()) && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode()){
+            } else if((surfaceY < this.getEyeY() || centralStateBelow.isAir() || ACFluidHelper.isInAnyFluid(this)) && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode()){
                 if(outOfGroundTime++ > 10){
                     this.setDeltaMovement(this.getDeltaMovement().add(0, -0.5, 0));
                 }
@@ -589,8 +590,6 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
     @Override
     protected void dropAllDeathLoot(ServerLevel serverLevel, DamageSource damageSource) {
-        this.captureDrops(new java.util.ArrayList<>());
-
         boolean flag = this.lastHurtByPlayerTime > 0;
         if (this.shouldDropLoot() && serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
             this.dropFromLootTable(damageSource, flag);
@@ -599,11 +598,6 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
         this.dropEquipment();
         this.dropExperience(damageSource.getEntity());
-
-        Collection<ItemEntity> drops = captureDrops(null);
-        if (!net.neoforged.neoforge.common.CommonHooks.onLivingDrops(this, damageSource, drops, lastHurtByPlayerTime > 0)){
-            drops.forEach(e -> dropItemAtSurface(e));
-        }
     }
 
     private void dropItemAtSurface(ItemEntity itementity) {
@@ -889,7 +883,6 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         return (!this.isDigging() || canDigBlock(blockstate)) && super.isColliding(pos, blockstate);
     }
 
-    @Override
     public Vec3 collide(Vec3 vec3) {
         return ICustomCollisions.getAllowedMovementForEntity(this, vec3);
     }

@@ -22,6 +22,10 @@ eclipse
 run
 .vscode
 
+# local notes
+PLAN.md
+ALEXS_MOBS_PORTING_NOTES.md
+
 # Files from Forge MDK
 forge*changelog.txt
 

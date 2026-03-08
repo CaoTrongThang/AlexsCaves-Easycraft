@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.block;
 
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -15,7 +16,7 @@ public class StrippableLogBlock extends RotatedPillarBlock {
 
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility toolAction, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!ACItemCompat.canPerformAction(itemStack, toolAction))
             return null;
 
         if (ItemAbilities.AXE_STRIP == toolAction) {
@@ -32,7 +33,6 @@ public class StrippableLogBlock extends RotatedPillarBlock {
                 return ACBlockRegistry.STRIPPED_THORNWOOD_WOOD.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS));
             }
         }
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+        return null;
     }
 }
-

@@ -125,8 +125,7 @@ public class HologramProjectorBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void applyUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
         if (tag.contains("EntityType")) {
             String str = tag.getString("EntityType");
             this.entityType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(str));

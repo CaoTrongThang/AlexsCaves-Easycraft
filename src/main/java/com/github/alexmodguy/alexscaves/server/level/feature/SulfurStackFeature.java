@@ -2,7 +2,7 @@ package com.github.alexmodguy.alexscaves.server.level.feature;
 
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.SulfurBudBlock;
-import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -82,7 +82,7 @@ public class SulfurStackFeature extends Feature<NoneFeatureConfiguration> {
         if (crystal.getBlock() instanceof SulfurBudBlock) {
             if (level.getFluidState(placeAt).is(Fluids.WATER)) {
                 crystal = crystal.setValue(SulfurBudBlock.LIQUID_LOGGED, 1);
-            } else if (level.getFluidState(placeAt).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+            } else if (ACFluidHelper.isAcid(level, placeAt)) {
                 crystal = crystal.setValue(SulfurBudBlock.LIQUID_LOGGED, 2);
             }
         }

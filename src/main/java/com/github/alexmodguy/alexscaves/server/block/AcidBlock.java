@@ -52,7 +52,7 @@ public class AcidBlock extends LiquidBlock {
     }
 
     public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        if (!entity.getType().is(ACTagRegistry.RESISTS_ACID) && entity.getFluidTypeHeight(ACFluidRegistry.ACID_FLUID_TYPE.get()) > 0.1) {
+        if (!entity.getType().is(ACTagRegistry.RESISTS_ACID) && ACFluidHelper.getAcidHeight(entity) > 0.1) {
             boolean armor = false;
             boolean hurtSound = false;
             float dmgMultiplier = 1.0F;

@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.entity.ai;
 
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -22,7 +23,7 @@ public class AllFluidsPathNavigator extends SemiAquaticPathNavigatorNoSpin {
 
     @Override
     protected Vec3 getTempMobPos() {
-        return this.mob.isInFluidType() ? super.getTempMobPos() :  new Vec3(this.mob.getX(), Math.floor(this.mob.getY() + 0.5D), this.mob.getZ());
+        return ACFluidHelper.isInAnyFluid(this.mob) ? super.getTempMobPos() :  new Vec3(this.mob.getX(), Math.floor(this.mob.getY() + 0.5D), this.mob.getZ());
     }
 
 
@@ -34,6 +35,6 @@ public class AllFluidsPathNavigator extends SemiAquaticPathNavigatorNoSpin {
     }
 
     protected boolean isInLiquid() {
-        return this.mob.isInFluidType();
+        return ACFluidHelper.isInAnyFluid(this.mob);
     }
 }

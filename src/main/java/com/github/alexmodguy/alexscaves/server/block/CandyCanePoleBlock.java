@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.block;
 
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -91,11 +92,11 @@ public class CandyCanePoleBlock extends CrossCollisionBlock {
 
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility toolAction, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!ACItemCompat.canPerformAction(itemStack, toolAction))
             return null;
         if (ItemAbilities.AXE_STRIP == toolAction && this == ACBlockRegistry.CANDY_CANE_POLE.get()) {
             return ACBlockRegistry.STRIPPED_CANDY_CANE_POLE.get().defaultBlockState().setValue(WATERLOGGED, state.getValue(WATERLOGGED)).setValue(NORTH, state.getValue(NORTH)).setValue(EAST, state.getValue(EAST)).setValue(WEST, state.getValue(WEST)).setValue(SOUTH, state.getValue(SOUTH));
         }
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+        return null;
     }
 }

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "license": "${mod_license}",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.alexmodguy.alexscaves.fabric.AlexsCavesFabric"
+    ],
+    "client": [
+      "com.github.alexmodguy.alexscaves.fabric.AlexsCavesFabricClient"
+    ],
+    "fabric-datagen": [
+      "com.github.alexmodguy.alexscaves.fabric.AlexsCavesFabricDataGen"
+    ]
+  },
+  "mixins": [
+    "alexscaves.mixins.json"
+  ],
+  "accessWidener": "alexscaves.accesswidener",
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21"
+  },
+  "breaks": {
+    "citadel": "*"
+  }
+}

@@ -85,6 +85,10 @@ public class CaveBookScreen extends Screen {
         return false;
     }
 
+    public Minecraft getMinecraft() {
+        return minecraft;
+    }
+
     public void init() {
     }
 

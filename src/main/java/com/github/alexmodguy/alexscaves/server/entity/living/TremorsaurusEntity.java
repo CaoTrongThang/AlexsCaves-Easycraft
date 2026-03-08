@@ -8,6 +8,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ai.*;
 import com.github.alexmodguy.alexscaves.server.entity.util.KeybindUsingMount;
 import com.github.alexmodguy.alexscaves.server.entity.util.ShakesScreen;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.message.MountedEntityKeyMessage;
 import com.github.alexmodguy.alexscaves.server.message.UpdateEffectVisualityEntityMessage;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
@@ -139,7 +140,7 @@ public class TremorsaurusEntity extends DinosaurEntity implements KeybindUsingMo
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.34F);
         }
-        if (this.onGround() && !this.isInFluidType() && this.walkAnimation.speed() > 0.1F && !this.isBaby()) {
+        if (this.onGround() && !ACFluidHelper.isInAnyFluid(this) && this.walkAnimation.speed() > 0.1F && !this.isBaby()) {
             float f = (float) Math.cos(this.walkAnimation.position() * 0.8F - 1.5F);
             if (Math.abs(f) < 0.2) {
                 if (screenShakeAmount <= 0.3) {

@@ -111,8 +111,7 @@ public class BeholderBlockEntity extends BlockEntity  {
         return this.saveWithoutMetadata(registries);
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void applyUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
         this.currentlyUsingEntityId = tag.getInt("UsingEntityID");
     }
 

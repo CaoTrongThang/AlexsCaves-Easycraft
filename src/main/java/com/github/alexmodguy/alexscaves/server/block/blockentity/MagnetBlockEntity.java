@@ -10,6 +10,7 @@ import com.github.alexmodguy.alexscaves.server.entity.util.FallingBlockEntityAcc
 import com.github.alexmodguy.alexscaves.server.entity.util.MagnetUtil;
 import com.github.alexmodguy.alexscaves.server.entity.util.MovingBlockData;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACBlockCompat;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -203,10 +204,10 @@ public class MagnetBlockEntity extends BlockEntity {
             return false;
         } else if (state.is(ACTagRegistry.MAGNETIC_BLOCKS)) {
             return true;
-        } else if (state.isStickyBlock()) {
-            return state.canStickTo(other);
+        } else if (ACBlockCompat.isStickyBlock(state)) {
+            return ACBlockCompat.canStickTo(state, other);
         }
-        return other.isStickyBlock();
+        return ACBlockCompat.isStickyBlock(other);
     }
 
     public Direction getDirection() {

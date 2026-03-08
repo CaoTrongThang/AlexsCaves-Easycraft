@@ -2,10 +2,10 @@ package com.github.alexmodguy.alexscaves.server.entity.item;
 
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.FrostmintBlock;
-import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.util.FrostmintExplosion;
 import com.github.alexmodguy.alexscaves.server.misc.ACAdvancementTriggerRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -69,7 +69,7 @@ public class FallingFrostmintEntity extends FallingBlockEntity {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
             }
             BlockPos blockpos = this.blockPosition();
-            if(level().getFluidState(blockpos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+            if (ACFluidHelper.isPurpleSoda(level(), blockpos)) {
                 if(!level().isClientSide){
                     FrostmintExplosion explosion = new FrostmintExplosion(level(), this, this.getX(), this.getY() + 0.5F, this.getZ(), 4.0F, Explosion.BlockInteraction.DESTROY_WITH_DECAY, false);
                     explosion.explode();

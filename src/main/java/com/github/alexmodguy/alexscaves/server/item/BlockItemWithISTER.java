@@ -13,7 +13,6 @@ public class BlockItemWithISTER extends BlockItemWithSupplier {
         super(blockSupplier, props);
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

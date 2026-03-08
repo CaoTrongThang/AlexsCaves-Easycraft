@@ -4,6 +4,7 @@ import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.level.biome.ACBiomeRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSimplexNoise;
 import com.github.alexmodguy.alexscaves.server.misc.VoronoiGenerator;
 import com.google.common.collect.ImmutableList;
@@ -103,7 +104,7 @@ public class CakeCaveStructurePiece extends AbstractCaveGenerationStructurePiece
             offset.move(dir);
             BlockState state = checkedGetBlock(level, offset);
             if (!state.getFluidState().isEmpty()){
-                if(state.getFluidState().getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+                if(ACFluidHelper.isPurpleSoda(state.getFluidState())){
                     double riveriness = getRiveriness(offset);
                     if(riveriness > RIVER_WIDTH_SQ / 2){
                         checkedSetBlock(level, offset, ACBlockRegistry.CAKE_LAYER.get().defaultBlockState());

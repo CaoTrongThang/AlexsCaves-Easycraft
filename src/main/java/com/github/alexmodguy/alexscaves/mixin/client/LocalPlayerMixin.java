@@ -1,8 +1,7 @@
 package com.github.alexmodguy.alexscaves.mixin.client;
 
-
-import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -39,8 +38,8 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     @Inject(method = "Lnet/minecraft/client/player/LocalPlayer;updateIsUnderwater()Z",
             at = @At("TAIL"))
     private void ac_updateIsUnderwater(CallbackInfoReturnable<Boolean> cir) {
-        boolean underAcid = this.getEyeInFluidType().equals(ACFluidRegistry.ACID_FLUID_TYPE.get());
-        boolean underPurpleSoda = this.getEyeInFluidType().equals(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get());
+        boolean underAcid = this.isEyeInFluid(ACFluidHelper.ACID);
+        boolean underPurpleSoda = this.isEyeInFluid(ACFluidHelper.PURPLE_SODA);
         if(wasUnderAcid != underAcid){
             if(underAcid){
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ACSoundRegistry.ACID_SUBMERGE.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
@@ -63,12 +62,8 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
      * Save the original movement input values before vanilla applies the using-item slowdown.
      * This is injected right after the MovementInputUpdateEvent is fired.
      */
-    @Inject(method = "aiStep",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/neoforged/neoforge/client/ClientHooks;onMovementInputUpdate(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/client/player/Input;)V",
-                    shift = At.Shift.AFTER))
+    @Inject(method = "aiStep", at = @At("HEAD"))
     private void ac_saveMovementInputBeforeSlowdown(CallbackInfo ci) {
-        // Save the original input values before vanilla applies the 0.2x slowdown for using items
         ac_savedForwardImpulse = this.input.forwardImpulse;
         ac_savedLeftImpulse = this.input.leftImpulse;
     }
@@ -83,7 +78,6 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
                     target = "Lnet/minecraft/client/player/LocalPlayer;autoJumpTime:I",
                     ordinal = 0))
     private void ac_restoreMovementInputForGalenaGauntlet(CallbackInfo ci) {
-        // If the player is using the Galena Gauntlet, restore the original movement speed
         if (this.isUsingItem() && this.getUseItem().is(ACItemRegistry.GALENA_GAUNTLET.get())) {
             this.input.forwardImpulse = ac_savedForwardImpulse;
             this.input.leftImpulse = ac_savedLeftImpulse;

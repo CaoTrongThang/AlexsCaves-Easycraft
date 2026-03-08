@@ -50,7 +50,7 @@ public class MultipartEntityMessage implements CustomPacketPayload {
             Player player = context.player();
             if (player != null && !player.level().isClientSide) {
                 Entity parent = player.level().getEntity(message.parentId);
-                if (parent != null && parent.isMultipartEntity() && player.distanceTo(parent) < 16) {
+                if (parent != null && player.distanceTo(parent) < 16) {
                     if (message.type == 0) {
                         parent.interact(player, player.getUsedItemHand());
                     } else if (message.type == 1) {

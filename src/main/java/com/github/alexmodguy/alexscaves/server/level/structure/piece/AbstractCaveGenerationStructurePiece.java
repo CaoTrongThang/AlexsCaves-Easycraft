@@ -1,6 +1,7 @@
 package com.github.alexmodguy.alexscaves.server.level.structure.piece;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
+import com.github.alexmodguy.alexscaves.mixin.LevelChunkSectionAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -21,9 +22,6 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
-
-import java.lang.reflect.Field;
 
 public abstract class AbstractCaveGenerationStructurePiece extends StructurePiece {
     protected final BlockPos chunkCorner;
@@ -93,13 +91,7 @@ public abstract class AbstractCaveGenerationStructurePiece extends StructurePiec
                                     }
                                 }
                             }
-                            try {
-                                Field biomesField = ObfuscationReflectionHelper.findField(LevelChunkSection.class, "biomes");
-                                biomesField.setAccessible(true);
-                                biomesField.set(section, container);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
+                            ((LevelChunkSectionAccessor) section).alexscaves$setBiomes(container);
                         }
                     }
                 }

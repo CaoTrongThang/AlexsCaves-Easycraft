@@ -54,7 +54,6 @@ public class RaygunItem extends Item implements UpdatesStackTags, AlwaysCombinab
         super(new Item.Properties().stacksTo(1));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

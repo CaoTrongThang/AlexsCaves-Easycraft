@@ -402,12 +402,10 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         }
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

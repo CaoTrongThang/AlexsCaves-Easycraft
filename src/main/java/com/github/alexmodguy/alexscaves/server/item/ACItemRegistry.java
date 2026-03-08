@@ -57,31 +57,39 @@ public class ACItemRegistry {
     private static Rarity RARITY_NUCLEAR_CACHE = null;
     private static Rarity RARITY_SWEET_CACHE = null;
     private static Rarity RARITY_RAINBOW_CACHE = null;
+
+    private static Rarity resolveRarity(String name, Rarity fallback) {
+        try {
+            return Rarity.valueOf(name);
+        } catch (IllegalArgumentException ignored) {
+            return fallback;
+        }
+    }
     
     public static Rarity getRarityDemonic() {
         if (RARITY_DEMONIC_CACHE == null) {
-            RARITY_DEMONIC_CACHE = Rarity.valueOf("ALEXSCAVES_DEMONIC");
+            RARITY_DEMONIC_CACHE = resolveRarity("ALEXSCAVES_DEMONIC", Rarity.EPIC);
         }
         return RARITY_DEMONIC_CACHE;
     }
     
     public static Rarity getRarityNuclear() {
         if (RARITY_NUCLEAR_CACHE == null) {
-            RARITY_NUCLEAR_CACHE = Rarity.valueOf("ALEXSCAVES_NUCLEAR");
+            RARITY_NUCLEAR_CACHE = resolveRarity("ALEXSCAVES_NUCLEAR", Rarity.EPIC);
         }
         return RARITY_NUCLEAR_CACHE;
     }
     
     public static Rarity getRaritySweet() {
         if (RARITY_SWEET_CACHE == null) {
-            RARITY_SWEET_CACHE = Rarity.valueOf("ALEXSCAVES_SWEET");
+            RARITY_SWEET_CACHE = resolveRarity("ALEXSCAVES_SWEET", Rarity.RARE);
         }
         return RARITY_SWEET_CACHE;
     }
     
     public static Rarity getRarityRainbow() {
         if (RARITY_RAINBOW_CACHE == null) {
-            RARITY_RAINBOW_CACHE = Rarity.valueOf("ALEXSCAVES_RAINBOW");
+            RARITY_RAINBOW_CACHE = resolveRarity("ALEXSCAVES_RAINBOW", Rarity.EPIC);
         }
         return RARITY_RAINBOW_CACHE;
     }

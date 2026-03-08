@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.block;
 
+import com.github.alexmodguy.alexscaves.server.misc.ACItemCompat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
@@ -20,11 +21,11 @@ public class CandyCaneBlock extends RotatedPillarBlock {
 
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ItemAbility toolAction, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!ACItemCompat.canPerformAction(itemStack, toolAction))
             return null;
         if (ItemAbilities.AXE_STRIP == toolAction && (this == ACBlockRegistry.CANDY_CANE_BLOCK.get() || this == ACBlockRegistry.CHISELED_CANDY_CANE_BLOCK.get())) {
             return ACBlockRegistry.STRIPPED_CANDY_CANE_BLOCK.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
         }
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+        return null;
     }
 }

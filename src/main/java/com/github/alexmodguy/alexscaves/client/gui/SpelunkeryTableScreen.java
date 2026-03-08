@@ -146,14 +146,22 @@ public class SpelunkeryTableScreen extends AbstractContainerScreen<SpelunkeryTab
         float y = getMagnifyPosY(partialTick);
         if (hasTablet()) {
             guiGraphics.pose().pushPose();
-            for (Renderable renderable : renderables) {
-                if (renderable instanceof SpelunkeryTableWordButton tableWordButton) {
+            for (var child : children()) {
+                if (child instanceof SpelunkeryTableWordButton tableWordButton) {
                     tableWordButton.renderTranslationText(tickCount, highlightColor, guiGraphics, font, x + 5, x + 32,
                             y + 6, y + 32);
                 }
             }
             guiGraphics.pose().popPose();
         }
+    }
+
+    public int getGuiLeft() {
+        return this.leftPos;
+    }
+
+    public int getGuiTop() {
+        return this.topPos;
     }
 
     @Override

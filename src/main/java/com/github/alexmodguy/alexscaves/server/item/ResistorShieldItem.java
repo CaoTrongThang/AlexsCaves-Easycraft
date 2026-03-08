@@ -31,7 +31,6 @@ public class ResistorShieldItem extends ShieldItem {
         super(new Item.Properties().stacksTo(1).durability(1000).rarity(Rarity.UNCOMMON));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

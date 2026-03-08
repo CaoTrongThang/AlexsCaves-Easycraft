@@ -1,6 +1,7 @@
 package com.github.alexmodguy.alexscaves.server.block;
 
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,7 +31,7 @@ public class SulfurBlock extends Block {
     }
 
     private boolean isDrippingAcidAbove(Level level, BlockPos pos) {
-        if (level.getFluidState(pos).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+        if (ACFluidHelper.isAcid(level, pos)) {
             return true;
         }
         while (level.getBlockState(pos).isAir() && pos.getY() < level.getMaxBuildHeight()) {
