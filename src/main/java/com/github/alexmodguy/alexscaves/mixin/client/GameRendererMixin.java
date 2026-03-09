@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.client.render.entity.SubmarineRenderer;
 import com.github.alexmodguy.alexscaves.client.render.entity.layer.ACPotionEffectLayer;
 import com.github.alexmodguy.alexscaves.server.entity.item.SubmarineEntity;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
+import com.github.alexthe666.citadel.client.shader.PostEffectRegistry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -62,7 +63,25 @@ public abstract class GameRendererMixin {
     )
     public void ac_render(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         float partialTick = deltaTracker.getGameTimeDeltaPartialTick(true);
+        if (renderLevel) {
+            Minecraft minecraft = Minecraft.getInstance();
+            if (minecraft.player != null && AlexsCaves.CLIENT_CONFIG.sugarRushSaturationEffect.get()
+                    && minecraft.player.hasEffect(ACEffectRegistry.SUGAR_RUSH)) {
+                PostEffectRegistry.renderEffectForNextTick(ClientProxy.SUGAR_RUSH_SHADER);
+            }
+            PostEffectRegistry.processEffects(minecraft.getMainRenderTarget());
+            PostEffectRegistry.blitEffects();
+        }
         ((ClientProxy) AlexsCaves.PROXY).preScreenRender(partialTick);
+    }
+
+    @Inject(
+            method = {"Lnet/minecraft/client/renderer/GameRenderer;renderLevel(Lnet/minecraft/client/DeltaTracker;)V"},
+            remap = true,
+            at = @At("HEAD")
+    )
+    public void ac_beginPostEffects(DeltaTracker deltaTracker, CallbackInfo ci) {
+        PostEffectRegistry.beginFrame(Minecraft.getInstance().getMainRenderTarget());
     }
 
 

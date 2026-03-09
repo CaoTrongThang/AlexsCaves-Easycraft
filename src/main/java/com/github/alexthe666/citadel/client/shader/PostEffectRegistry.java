@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,22 +19,33 @@ public class PostEffectRegistry {
 
     private static List<ResourceLocation> registry = new ArrayList<>();
 
-    private static Map<ResourceLocation, PostEffect> postEffects = new HashMap<>();
+    private static Map<ResourceLocation, PostEffect> postEffects = new LinkedHashMap<>();
+    private static int lastWidth = -1;
+    private static int lastHeight = -1;
 
     public static void clear(){
         for(PostEffect postEffect : postEffects.values()){
             postEffect.close();
         }
         postEffects.clear();
+        lastWidth = -1;
+        lastHeight = -1;
     }
 
     public static void registerEffect(ResourceLocation resourceLocation) {
-        registry.add(resourceLocation);
+        if (!registry.contains(resourceLocation)) {
+            registry.add(resourceLocation);
+        }
     }
 
     public static void onInitializeOutline() {
         clear();
         Minecraft minecraft = Minecraft.getInstance();
+        if (registry.isEmpty()) {
+            return;
+        }
+        lastWidth = minecraft.getWindow().getWidth();
+        lastHeight = minecraft.getWindow().getHeight();
         for (ResourceLocation resourceLocation : registry) {
             PostChain postChain;
             RenderTarget renderTarget;
@@ -55,18 +66,50 @@ public class PostEffectRegistry {
         }
     }
 
+    public static void ensureInitialized() {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (registry.isEmpty()) {
+            return;
+        }
+        if (postEffects.size() != registry.size()) {
+            onInitializeOutline();
+            return;
+        }
+        int width = minecraft.getWindow().getWidth();
+        int height = minecraft.getWindow().getHeight();
+        if (width != lastWidth || height != lastHeight) {
+            resize(width, height);
+            lastWidth = width;
+            lastHeight = height;
+        }
+    }
+
+    public static void beginFrame(RenderTarget mainTarget) {
+        ensureInitialized();
+        for (PostEffect postEffect : postEffects.values()) {
+            if (postEffect.postChain != null && postEffect.renderTarget != null) {
+                postEffect.renderTarget.clear(Minecraft.ON_OSX);
+            }
+        }
+        mainTarget.bindWrite(false);
+    }
+
     public static void resize(int x, int y) {
         for (PostEffect postEffect : postEffects.values()) {
             postEffect.resize(x, y);
         }
+        lastWidth = x;
+        lastHeight = y;
     }
 
     public static RenderTarget getRenderTargetFor(ResourceLocation resourceLocation) {
+        ensureInitialized();
         PostEffect effect = postEffects.get(resourceLocation);
         return effect == null ? null : effect.getRenderTarget();
     }
 
     public static void renderEffectForNextTick(ResourceLocation resourceLocation) {
+        ensureInitialized();
         PostEffect effect = postEffects.get(resourceLocation);
         if (effect != null) {
             effect.setEnabled(true);
@@ -79,8 +122,10 @@ public class PostEffectRegistry {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         for (PostEffect postEffect : postEffects.values()) {
             if (postEffect.postChain != null && postEffect.isEnabled()) {
-                postEffect.getRenderTarget().blitToScreen(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), false);
-                postEffect.getRenderTarget().clear(Minecraft.ON_OSX);
+                if (postEffect.getRenderTarget() != null) {
+                    postEffect.getRenderTarget().blitToScreen(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight(), false);
+                    postEffect.getRenderTarget().clear(Minecraft.ON_OSX);
+                }
                 Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
                 postEffect.setEnabled(false);
             }
@@ -92,7 +137,9 @@ public class PostEffectRegistry {
     public static void clearAndBindWrite(RenderTarget mainTarget) {
         for (PostEffect postEffect : postEffects.values()) {
             if (postEffect.isEnabled() && postEffect.postChain != null) {
-                postEffect.getRenderTarget().clear(Minecraft.ON_OSX);
+                if (postEffect.getRenderTarget() != null) {
+                    postEffect.getRenderTarget().clear(Minecraft.ON_OSX);
+                }
                 mainTarget.bindWrite(false);
             }
         }

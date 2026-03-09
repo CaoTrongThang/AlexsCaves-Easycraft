@@ -118,6 +118,8 @@ public class ClientProxy extends CommonProxy {
             "shaders/post/hologram.json");
     public static final ResourceLocation PURPLE_WITCH_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,
             "shaders/post/purple_witch.json");
+    public static final ResourceLocation SUGAR_RUSH_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,
+            "shaders/post/sugar_rush.json");
     public static final RandomSource random = RandomSource.create();
     public static int lastTremorTick = -1;
     public static float[] randomTremorOffsets = new float[3];
@@ -563,6 +565,7 @@ public class ClientProxy extends CommonProxy {
         PostEffectRegistry.registerEffect(IRRADIATED_SHADER);
         PostEffectRegistry.registerEffect(HOLOGRAM_SHADER);
         PostEffectRegistry.registerEffect(PURPLE_WITCH_SHADER);
+        PostEffectRegistry.registerEffect(SUGAR_RUSH_SHADER);
         ACBlockRenderLayerRegistry.register();
         // Menu screens are now registered via RegisterMenuScreensEvent in commonInit
         hasACSplashText = random.nextInt(300) == 0;

@@ -7,7 +7,7 @@
       "outtarget": "swap"
     },
     {
-      "name": "citadel:blur",
+      "name": "minecraft:blur",
       "intarget": "swap",
       "outtarget": "final",
       "uniforms": [
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "name": "citadel:blur",
+      "name": "minecraft:blur",
       "intarget": "final",
       "outtarget": "swap",
       "uniforms": [
