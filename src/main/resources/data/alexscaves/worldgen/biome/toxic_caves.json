@@ -138,7 +138,7 @@
       }
     ],
     "axolotls": [],
-    "alexscaves:cave_creature": [
+    "creature": [
       {
         "type": "alexscaves:raycat",
         "maxCount": 1,

@@ -202,7 +202,7 @@
         "weight": 1
       }
     ],
-    "alexscaves:deep_sea_creature": [
+    "water_creature": [
       {
         "type": "alexscaves:tripodfish",
         "maxCount": 2,

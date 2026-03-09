@@ -4,12 +4,12 @@ Alex’s Caves adds 6 new cave biomes to the Overworld. Unlike most normal biome
 
 To find any of these cave biomes, you’ll need to discover an Underground Cabin anywhere in the overworld. From there, you will find loot barrels with cave tablets and a Cave Compendium - a guide book for Alex’s Caves that should provide you with all the knowledge needed to find and explore any biome added by the mod. For more information on getting started, see the '[Getting Started](https://alexscaves.wiki.gg/wiki/Guides/Getting_Started)' section on the mod’s wiki.
 
-Alex’s Caves is a very large mod with a great deal of effort put into the look and feel of each new biome. Each biome added may have its own ambient particles, fog, brightness, light color and more. Because of this, it is recommended to experience this mod without shaders, since many shaders can alter or worsen the unique appearance of several of the biomes. However, if you want to - Iris shaders and voxy work well with this mod.
+Alex’s Caves is a very large mod with a great deal of effort put into the look and feel of each new biome. Each biome added may have its own ambient particles, fog, brightness, light color and more. Because of this, it is recommended to experience this mod without shaders, since many shaders can alter or worsen the unique appearance of several of the biomes. However, if you want to - Iris shaders and voxy work well with this mod. 
 
 ---
 
-> This is an unofficial Fabric port of Alex's Caves. Please **do not** contact the original mod authors or submit bug reports to their official trackers for any issues encountered while playing this version.
->
+> This is an unofficial Fabric port of Alex's Caves. Please **do not** contact the original mod authors or submit bug reports to their official trackers for any issues encountered while playing this version. 
+> 
 > If you experience bugs, crashes, found something that has not been properly ported, just open an issue on the dedicated GitHub repository: [q4diffuse/AlexsCavesFabric](https://github.com/q4diffuse/AlexsCavesFabric).
 
 ---

@@ -11,8 +11,9 @@ public class AlexsCavesFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         FabricRegistryBootstrap.bootstrapCommon();
-        AlexsCaves.setProxy(new CommonProxy());
+        AlexsCaves.setProxy(new com.github.alexmodguy.alexscaves.server.CommonProxy());
         AlexsCaves.init();
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(new CommonEvents());
         ServerLifecycleEvents.SERVER_STARTING.register(CommonEvents::onServerStarting);
         ServerLifecycleEvents.SERVER_STOPPED.register(CommonEvents::onServerStopped);
     }

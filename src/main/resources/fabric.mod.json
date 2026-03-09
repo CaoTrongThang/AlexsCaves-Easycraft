@@ -8,6 +8,7 @@
     "${mod_authors}"
   ],
   "license": "${mod_license}",
+  "icon": "assets/alexscaves/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [

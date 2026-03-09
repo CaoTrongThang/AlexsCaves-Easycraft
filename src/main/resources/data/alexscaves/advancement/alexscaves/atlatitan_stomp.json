@@ -1,10 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "citadel:icon_item",
-      "components": {
-        "citadel:icon_location": "alexscaves:textures/misc/advancement/icon/atlatitan_stomp.png"
-      }
+      "id": "minecraft:iron_boots"
     },
     "title": {
       "translate": "advancements.alexscaves.atlatitan_stomp.title"

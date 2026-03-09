@@ -1,10 +1,7 @@
 {
   "display": {
     "icon": {
-      "id": "citadel:icon_item",
-      "components": {
-        "citadel:icon_location": "alexscaves:textures/misc/advancement/icon/abyssal_chasm.png"
-      }
+      "id": "minecraft:heart_of_the_sea"
     },
     "title": {
       "translate": "advancements.alexscaves.discover_abyssal_chasm.title"

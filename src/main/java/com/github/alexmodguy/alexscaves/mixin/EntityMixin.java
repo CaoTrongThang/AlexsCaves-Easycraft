@@ -11,6 +11,7 @@ import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -112,6 +113,30 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
             com.github.alexmodguy.alexscaves.server.message.UpdateMagneticDataMessage msg = 
                 new com.github.alexmodguy.alexscaves.server.message.UpdateMagneticDataMessage(thisEntity, data);
             net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntityAndSelf(thisEntity, msg);
+        }
+    }
+
+    @Inject(method = "saveWithoutId", at = @At("RETURN"))
+    private void ac_saveWithoutId(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
+        MagneticEntityData data = getMagneticData();
+        if (data != null && !data.isDefault()) {
+            tag.putFloat("MagneticDeltaX", data.getDeltaX());
+            tag.putFloat("MagneticDeltaY", data.getDeltaY());
+            tag.putFloat("MagneticDeltaZ", data.getDeltaZ());
+            tag.putInt("MagneticAttachmentDir", data.getAttachmentDirection().ordinal());
+        }
+    }
+
+    @Inject(method = "load", at = @At("RETURN"))
+    private void ac_load(CompoundTag tag, CallbackInfo ci) {
+        if (tag.contains("MagneticAttachmentDir")) {
+            MagneticEntityData data = getMagneticData();
+            if (data != null) {
+                data.setDeltaX(tag.getFloat("MagneticDeltaX"));
+                data.setDeltaY(tag.getFloat("MagneticDeltaY"));
+                data.setDeltaZ(tag.getFloat("MagneticDeltaZ"));
+                data.setAttachmentDirection(Direction.values()[tag.getInt("MagneticAttachmentDir")]);
+            }
         }
     }
 
