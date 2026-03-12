@@ -17,6 +17,7 @@ import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -44,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Mob;
 
@@ -92,6 +94,52 @@ public class ACItemRegistry {
             RARITY_RAINBOW_CACHE = resolveRarity("ALEXSCAVES_RAINBOW", Rarity.EPIC);
         }
         return RARITY_RAINBOW_CACHE;
+    }
+
+    public static UnaryOperator<Style> getCustomRarityStyle(ItemStack stack) {
+        Item item = stack.getItem();
+        if (isDemonicRarityItem(item)) {
+            return ACRarityEnumParams.getDemonicStyleModifier();
+        }
+        if (isNuclearRarityItem(item)) {
+            return ACRarityEnumParams.getNuclearStyleModifier();
+        }
+        if (isSweetRarityItem(item)) {
+            return ACRarityEnumParams.getSweetStyleModifier();
+        }
+        if (isRainbowRarityItem(item)) {
+            return ACRarityEnumParams.getRainbowStyleModifier();
+        }
+        return null;
+    }
+
+    private static boolean isDemonicRarityItem(Item item) {
+        return item == TECTONIC_SHARD.get()
+            || item == EXTINCTION_SPEAR.get()
+            || item == PURE_DARKNESS.get()
+            || item == DESOLATE_DAGGER.get()
+            || item == HOOD_OF_DARKNESS.get()
+            || item == CLOAK_OF_DARKNESS.get()
+            || item == DARKENED_APPLE.get()
+            || item == DREADBOW.get();
+    }
+
+    private static boolean isNuclearRarityItem(Item item) {
+        return item == MUSIC_DISC_FUSION.get()
+            || item == ACBlockRegistry.TREMORZILLA_EGG.get().asItem();
+    }
+
+    private static boolean isSweetRarityItem(Item item) {
+        return item == SUNDAE.get()
+            || item == SWEET_TOOTH.get()
+            || item == SACK_OF_SATING.get()
+            || item == MUSIC_DISC_TASTY.get();
+    }
+
+    private static boolean isRainbowRarityItem(Item item) {
+        return item == RADIANT_ESSENCE.get()
+            || item == LICOWITCH_RADIANT_ESSENCE.get()
+            || item == ALEX_MEAL.get();
     }
     
     public static final ACArmorMaterial PRIMORDIAL_ARMOR_MATERIAL = new ACArmorMaterial("primordial", 20, new int[]{3, 4, 3, 2}, 25, SoundEvents.ARMOR_EQUIP_LEATHER, 0F);

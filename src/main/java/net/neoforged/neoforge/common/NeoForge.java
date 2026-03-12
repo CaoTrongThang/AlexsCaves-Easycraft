@@ -5,6 +5,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,17 +17,27 @@ public class NeoForge {
 
         @Override
         public void register(Object object) {
+            List<RegisteredHandler> registrations = new ArrayList<>();
+
             for (Method method : object.getClass().getMethods()) {
-                if (method.isAnnotationPresent(SubscribeEvent.class) && method.getParameterCount() == 1) {
-                    Class<?> eventType = method.getParameterTypes()[0];
-                    listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(event -> {
-                        try {
-                            method.invoke(object, event);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                SubscribeEvent subscribeEvent = method.getAnnotation(SubscribeEvent.class);
+                if (subscribeEvent == null || method.getParameterCount() != 1) {
+                    continue;
                 }
+
+                Class<?> eventType = method.getParameterTypes()[0];
+                registrations.add(new RegisteredHandler(eventType, subscribeEvent.priority(), event -> {
+                    try {
+                        method.invoke(object, event);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to post " + event.getClass().getName() + " to " + method, e);
+                    }
+                }));
+            }
+
+            registrations.sort(Comparator.comparing((RegisteredHandler handler) -> handler.priority().ordinal()).reversed());
+            for (RegisteredHandler registration : registrations) {
+                listeners.computeIfAbsent(registration.eventType(), ignored -> new ArrayList<>()).add(registration.consumer());
             }
         }
 
@@ -57,6 +68,9 @@ public class NeoForge {
             return event;
         }
     };
+
+    private record RegisteredHandler(Class<?> eventType, net.neoforged.bus.api.EventPriority priority, Consumer<Object> consumer) {
+    }
 
     private NeoForge() {
     }

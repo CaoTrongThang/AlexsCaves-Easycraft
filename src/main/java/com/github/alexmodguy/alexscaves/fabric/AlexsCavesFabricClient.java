@@ -8,6 +8,8 @@ public class AlexsCavesFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ACNetworkingFabricClient.registerClient();
+        ACMultipartFabricClient.registerClient();
         FabricRegistryBootstrap.bootstrapClient();
         AlexsCaves.setProxy(new ClientProxy());
         AlexsCaves.initClient();

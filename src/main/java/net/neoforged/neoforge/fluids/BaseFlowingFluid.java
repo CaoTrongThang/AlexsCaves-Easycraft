@@ -72,7 +72,7 @@ public abstract class BaseFlowingFluid extends FlowingFluid {
 
     @Override
     public Vec3 getFlow(BlockGetter blockGetter, BlockPos blockPos, FluidState fluidState) {
-        return Vec3.ZERO;
+        return super.getFlow(blockGetter, blockPos, fluidState);
     }
 
     @Override

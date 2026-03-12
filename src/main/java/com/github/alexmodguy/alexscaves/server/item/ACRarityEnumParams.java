@@ -24,6 +24,26 @@ import java.util.function.UnaryOperator;
  * - RAINBOW: Animated HSB rainbow
  */
 public class ACRarityEnumParams {
+    private static final UnaryOperator<Style> DEMONIC_STYLE = style -> style.withColor(ChatFormatting.DARK_RED);
+    private static final UnaryOperator<Style> NUCLEAR_STYLE = style -> style.withColor(ChatFormatting.GREEN);
+    private static final UnaryOperator<Style> SWEET_STYLE = style -> style.withColor(0xFF8ACD);
+    private static final UnaryOperator<Style> RAINBOW_STYLE = style -> style.withColor(Color.HSBtoRGB((System.currentTimeMillis() % 5000) / 5000F, 1.0F, 1.0F));
+
+    public static UnaryOperator<Style> getDemonicStyleModifier() {
+        return DEMONIC_STYLE;
+    }
+
+    public static UnaryOperator<Style> getNuclearStyleModifier() {
+        return NUCLEAR_STYLE;
+    }
+
+    public static UnaryOperator<Style> getSweetStyleModifier() {
+        return SWEET_STYLE;
+    }
+
+    public static UnaryOperator<Style> getRainbowStyleModifier() {
+        return RAINBOW_STYLE;
+    }
     
     /**
      * DEMONIC rarity - Dark red color for demonic/fiery items
@@ -34,7 +54,7 @@ public class ACRarityEnumParams {
         return type.cast(switch (idx) {
             case 0 -> -1;
             case 1 -> "alexscaves:demonic";
-            case 2 -> (UnaryOperator<Style>) style -> style.withColor(ChatFormatting.DARK_RED);
+            case 2 -> getDemonicStyleModifier();
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         });
     }
@@ -48,7 +68,7 @@ public class ACRarityEnumParams {
         return type.cast(switch (idx) {
             case 0 -> -1;
             case 1 -> "alexscaves:nuclear";
-            case 2 -> (UnaryOperator<Style>) style -> style.withColor(ChatFormatting.GREEN);
+            case 2 -> getNuclearStyleModifier();
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         });
     }
@@ -62,7 +82,7 @@ public class ACRarityEnumParams {
         return type.cast(switch (idx) {
             case 0 -> -1;
             case 1 -> "alexscaves:sweet";
-            case 2 -> (UnaryOperator<Style>) style -> style.withColor(0xFF8ACD);
+            case 2 -> getSweetStyleModifier();
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         });
     }
@@ -78,7 +98,7 @@ public class ACRarityEnumParams {
         return type.cast(switch (idx) {
             case 0 -> -1;
             case 1 -> "alexscaves:rainbow";
-            case 2 -> (UnaryOperator<Style>) style -> style.withColor(Color.HSBtoRGB((System.currentTimeMillis() % 5000) / 5000F, 1f, 1F));
+            case 2 -> getRainbowStyleModifier();
             default -> throw new IllegalArgumentException("Unexpected parameter index: " + idx);
         });
     }

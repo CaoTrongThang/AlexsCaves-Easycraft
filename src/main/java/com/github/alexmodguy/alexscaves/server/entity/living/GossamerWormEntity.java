@@ -37,12 +37,13 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.MultiPartEntity;
 import net.neoforged.neoforge.entity.PartEntity;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
-public class GossamerWormEntity extends WaterAnimal implements Bucketable {
+public class GossamerWormEntity extends WaterAnimal implements Bucketable, MultiPartEntity {
 
     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(GossamerWormEntity.class, EntityDataSerializers.BOOLEAN);
 

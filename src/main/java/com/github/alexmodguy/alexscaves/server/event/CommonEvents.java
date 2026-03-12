@@ -177,8 +177,10 @@ public class CommonEvents {
 
     @SubscribeEvent
     public void livingHeal(LivingHealEvent event) {
-        if (event.getEntity().hasEffect(ACEffectRegistry.IRRADIATED) && !event.getEntity().getType().is(ACTagRegistry.RESISTS_RADIATION)) {
-            event.setCanceled(true);
+        if (event.getEntity().hasEffect(ACEffectRegistry.IRRADIATED)) {
+            if (!event.getEntity().getType().is(ACTagRegistry.RESISTS_RADIATION)) {
+                event.setCanceled(true);
+            }
         }
     }
 
@@ -466,7 +468,7 @@ public class CommonEvents {
 
     @SubscribeEvent
     public void playerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (AlexsCaves.COMMON_CONFIG.warnGenerationIncompatibility.get() && !AlexsCaves.MOD_GENERATION_CONFLICTS.isEmpty() && event.getEntity().level().isClientSide) {
+        if (AlexsCaves.COMMON_CONFIG.warnGenerationIncompatibility.get() && !AlexsCaves.MOD_GENERATION_CONFLICTS.isEmpty() && !event.getEntity().level().isClientSide) {
             for (String modid : AlexsCaves.MOD_GENERATION_CONFLICTS) {
                 if (ModList.get().isLoaded(modid)) {
                     event.getEntity().sendSystemMessage(Component.translatable("alexscaves.startup_warning.generation_incompatible", modid).withStyle(ChatFormatting.RED));
@@ -514,6 +516,8 @@ public class CommonEvents {
                         if (!player.isCreative()) {
                             event.getItemStack().shrink(1);
                         }
+                        event.setCanceled(true);
+                        event.setCancellationResult(InteractionResult.SUCCESS);
                     }
                 }
             }

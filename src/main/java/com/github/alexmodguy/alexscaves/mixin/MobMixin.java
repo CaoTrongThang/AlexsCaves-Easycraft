@@ -10,8 +10,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import javax.annotation.Nullable;
 
 @Mixin(Mob.class)
 public abstract class MobMixin extends LivingEntity implements EntityDropChanceAccessor, MobTargetAccessor {
@@ -52,5 +59,19 @@ public abstract class MobMixin extends LivingEntity implements EntityDropChanceA
     @Override
     public GoalSelector ac_getTargetSelector() {
         return this.targetSelector;
+    }
+
+    @Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
+    private void ac_changeTarget(@Nullable LivingEntity target, CallbackInfo ci) {
+        LivingChangeTargetEvent event = new LivingChangeTargetEvent((Mob) (Object) this, target);
+        NeoForge.EVENT_BUS.post(event);
+        if (event.isCanceled()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "finalizeSpawn", at = @At("TAIL"))
+    private void ac_finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty, net.minecraft.world.entity.MobSpawnType reason, net.minecraft.world.entity.SpawnGroupData spawnData, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.entity.SpawnGroupData> cir) {
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent((Mob) (Object) this));
     }
 }

@@ -66,6 +66,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     private void ac_saveMovementInputBeforeSlowdown(CallbackInfo ci) {
         ac_savedForwardImpulse = this.input.forwardImpulse;
         ac_savedLeftImpulse = this.input.leftImpulse;
+        if (this.input.shiftKeyDown && this.isAffectedByFluids() && ACFluidHelper.isInModFluid(this) && !this.isInWater()) {
+            this.goDownInWater();
+        }
     }
 
     /**

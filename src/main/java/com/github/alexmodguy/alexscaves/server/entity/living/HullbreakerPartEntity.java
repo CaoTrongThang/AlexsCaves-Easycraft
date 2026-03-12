@@ -80,9 +80,13 @@ public class HullbreakerPartEntity extends PartEntity<HullbreakerEntity> {
             amount *= 0.35F;
         }
         if (!this.isInvulnerableTo(source) && parent != null) {
-            Entity player = source.getEntity();
-            if (player != null && player.level().isClientSide) {
-                AlexsCaves.sendMSGToServer(new MultipartEntityMessage(parent.getId(), player.getId(), 1));
+            Entity attacker = source.getEntity();
+            if (attacker != null && attacker.level().isClientSide) {
+                AlexsCaves.sendMSGToServer(new MultipartEntityMessage(parent.getId(), attacker.getId(), 1));
+                return true;
+            }
+            if (attacker == null || !attacker.level().isClientSide) {
+                return parent.hurt(source, amount);
             }
         }
         return false;

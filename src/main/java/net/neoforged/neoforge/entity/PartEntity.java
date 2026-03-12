@@ -10,7 +10,7 @@ public abstract class PartEntity<T extends Entity> extends Entity {
     private final T parent;
 
     protected PartEntity(T parent) {
-        super(EntityType.ARMOR_STAND, parent.level());
+        super((EntityType<?>) parent.getType(), parent.level());
         this.parent = parent;
     }
 

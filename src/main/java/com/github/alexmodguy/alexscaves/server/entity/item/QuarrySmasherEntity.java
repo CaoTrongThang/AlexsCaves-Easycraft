@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.MultiPartEntity;
 import net.neoforged.neoforge.entity.PartEntity;
 
 import javax.annotation.Nullable;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class QuarrySmasherEntity extends Entity {
+public class QuarrySmasherEntity extends Entity implements MultiPartEntity {
 
     public final QuarrySmasherHeadEntity headPart;
     public final QuarrySmasherHeadEntity[] allParts;

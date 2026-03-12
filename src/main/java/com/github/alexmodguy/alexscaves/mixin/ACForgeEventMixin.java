@@ -39,18 +39,17 @@ public class ACForgeEventMixin {
 
     @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
     private void ac_livingHurtPre(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        LivingDamageEvent.Pre event = new LivingDamageEvent.Pre((LivingEntity) (Object) this, source, amount);
-        NeoForge.EVENT_BUS.post(event);
-        if (event.getNewDamage() <= 0.0F && amount > 0.0F) {
+        // Fire both Pre (damage modification) and IncomingDamage (cancellation) events
+        LivingDamageEvent.Pre preEvent = new LivingDamageEvent.Pre((LivingEntity) (Object) this, source, amount);
+        NeoForge.EVENT_BUS.post(preEvent);
+        if (preEvent.getNewDamage() <= 0.0F && amount > 0.0F) {
             cir.setReturnValue(false);
+            return;
         }
-    }
 
-    @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)V"), cancellable = true)
-    private void ac_livingIncomingDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        LivingIncomingDamageEvent event = new LivingIncomingDamageEvent((LivingEntity) (Object) this, source);
-        NeoForge.EVENT_BUS.post(event);
-        if (event.isCanceled()) {
+        LivingIncomingDamageEvent incomingEvent = new LivingIncomingDamageEvent((LivingEntity) (Object) this, source);
+        NeoForge.EVENT_BUS.post(incomingEvent);
+        if (incomingEvent.isCanceled()) {
             cir.setReturnValue(false);
         }
     }
@@ -68,14 +67,14 @@ public class ACForgeEventMixin {
     }
 
     @SuppressWarnings("unchecked")
-    @Inject(method = "removeEffect(Lnet/minecraft/core/Holder;)Z", at = @At("RETURN"))
+    @Inject(method = "removeEffect", at = @At("RETURN"))
     private void ac_livingRemoveEffect(Holder<?> effect, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValueZ()) {
             NeoForge.EVENT_BUS.post(new MobEffectEvent.Remove((LivingEntity) (Object) this, (Holder<MobEffect>) effect));
         }
     }
 
-    @Inject(method = "onEffectRemoved", at = @At("HEAD"))
+    @Inject(method = "onEffectRemoved", at = @At("HEAD"), require = 0)
     private void ac_livingExpireEffect(MobEffectInstance effectInstance, CallbackInfo ci) {
         NeoForge.EVENT_BUS.post(new MobEffectEvent.Expired((LivingEntity) (Object) this, effectInstance));
     }

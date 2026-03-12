@@ -54,13 +54,14 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.MultiPartEntity;
 import net.neoforged.neoforge.entity.PartEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, KaijuMob {
+public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, KaijuMob, MultiPartEntity {
 
     public static final Animation ANIMATION_PUZZLE = Animation.create(60);
     public static final Animation ANIMATION_BITE = Animation.create(20);

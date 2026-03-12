@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.MultiPartEntity;
 import net.neoforged.neoforge.entity.PartEntity;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class MagnetronEntity extends Monster {
+public class MagnetronEntity extends Monster implements MultiPartEntity {
 
     private static final EntityDataAccessor<CompoundTag> BLOCKSTATES = SynchedEntityData.defineId(MagnetronEntity.class, EntityDataSerializers.COMPOUND_TAG);
     private static final EntityDataAccessor<CompoundTag> BLOCK_POSES = SynchedEntityData.defineId(MagnetronEntity.class, EntityDataSerializers.COMPOUND_TAG);

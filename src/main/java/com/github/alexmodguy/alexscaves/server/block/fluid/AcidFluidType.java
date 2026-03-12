@@ -63,7 +63,6 @@ public class AcidFluidType extends FluidType {
         float f5 = 0.02F;
         var depthStrider = entity.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.DEPTH_STRIDER);
         float f6 = (float) EnchantmentHelper.getEnchantmentLevel(depthStrider, entity);
-        double d0 = 0.08D;
         boolean flag = entity.getDeltaMovement().y <= 0.0D;
         if (f6 > 3.0F) {
             f6 = 3.0F;
@@ -82,7 +81,7 @@ public class AcidFluidType extends FluidType {
             f4 = 0.96F;
         }
 
-        f5 *= (float) entity.getAttribute(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED).getValue();
+        f5 *= (float) (1.0D + entity.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED));
         entity.moveRelative(f5, movementVector);
         entity.move(MoverType.SELF, entity.getDeltaMovement());
         Vec3 vec36 = entity.getDeltaMovement();
@@ -91,7 +90,7 @@ public class AcidFluidType extends FluidType {
         }
 
         entity.setDeltaMovement(vec36.multiply((double) f4, (double) 0.8F, (double) f4));
-        Vec3 vec32 = entity.getFluidFallingAdjustedMovement(d0, flag, entity.getDeltaMovement());
+        Vec3 vec32 = entity.getFluidFallingAdjustedMovement(gravity, flag, entity.getDeltaMovement());
         entity.setDeltaMovement(vec32);
         if (entity.horizontalCollision && entity.isFree(vec32.x, vec32.y + (double) 0.6F - entity.getY() + d9, vec32.z)) {
             entity.setDeltaMovement(vec32.x, (double) 0.3F, vec32.z);

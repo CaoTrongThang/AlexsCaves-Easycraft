@@ -58,6 +58,33 @@ public class PurpleSodaFluidType extends FluidType {
     }
 
     @Override
+    public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
+        double d9 = entity.getY();
+        float f4 = 0.8F;
+        float f5 = 0.02F;
+        boolean flag = entity.getDeltaMovement().y <= 0.0D;
+        if (entity.hasEffect(MobEffects.DOLPHINS_GRACE)) {
+            f4 = 0.96F;
+        }
+
+        f5 *= (float) (1.0D + entity.getAttributeValue(net.neoforged.neoforge.common.NeoForgeMod.SWIM_SPEED));
+        entity.moveRelative(f5, movementVector);
+        entity.move(MoverType.SELF, entity.getDeltaMovement());
+        Vec3 vec36 = entity.getDeltaMovement();
+        if (entity.horizontalCollision && entity.onClimbable()) {
+            vec36 = new Vec3(vec36.x, 0.2D, vec36.z);
+        }
+
+        entity.setDeltaMovement(vec36.multiply((double) f4, (double) 0.8F, (double) f4));
+        Vec3 vec32 = entity.getFluidFallingAdjustedMovement(gravity, flag, entity.getDeltaMovement());
+        entity.setDeltaMovement(vec32);
+        if (entity.horizontalCollision && entity.isFree(vec32.x, vec32.y + (double) 0.6F - entity.getY() + d9, vec32.z)) {
+            entity.setDeltaMovement(vec32.x, (double) 0.3F, vec32.z);
+        }
+        return true;
+    }
+
+    @Override
     public boolean isVaporizedOnPlacement(Level level, BlockPos pos, FluidStack stack) {
         return level.dimensionType().ultraWarm();
     }

@@ -10,6 +10,9 @@ public class AlexsCavesFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ACNetworkingFabric.registerCommon();
+        ACMultipartFabric.registerCommon();
+        ACFabricEventBridge.registerCommon();
         FabricRegistryBootstrap.bootstrapCommon();
         AlexsCaves.setProxy(new com.github.alexmodguy.alexscaves.server.CommonProxy());
         AlexsCaves.init();
