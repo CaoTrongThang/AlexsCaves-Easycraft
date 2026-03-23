@@ -13,6 +13,12 @@ Alex’s Caves is a very large mod with a great deal of effort put into the look
 > If you experience bugs, crashes, found something that has not been properly ported, just open an issue on the dedicated GitHub repository: [q4diffuse/AlexsCavesFabric](https://github.com/q4diffuse/AlexsCavesFabric).
 
 ---
+ 
+### Contributing
+ 
+All contributions to this fork are welcome — seriously. Whether you wrote every line by hand or had Codex / Claude / whatever LLM fix it for you, it doesn't matter. As long as your changes don't introduce regressions and you've actually tested them before opening a PR :)
+ 
+---
 
 ### Credits
 **Creators:**
