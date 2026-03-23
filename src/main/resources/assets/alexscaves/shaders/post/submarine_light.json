@@ -2,7 +2,7 @@
   "targets": ["minecraft:main", "swap"],
   "passes": [
     {
-      "name": "alexscaves:submarine_light",
+      "name": "submarine_light",
       "intarget": "minecraft:main",
       "outtarget": "swap",
       "auxtargets": [

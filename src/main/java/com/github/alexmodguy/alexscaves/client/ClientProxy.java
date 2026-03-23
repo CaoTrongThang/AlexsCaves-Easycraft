@@ -78,6 +78,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -138,6 +139,7 @@ public class ClientProxy extends CommonProxy {
     public static float prevPossessionStrengthAmount = 0;
     public static float possessionStrengthAmount = 0;
     public static int renderNukeSkyDarkFor = 0;
+    public static int renderNukeShakeFor = 0;
     public static float masterVolumeNukeModifier = 0.0F;
     // Client-side tracking for bubbled effect visuals (entity ID -> remaining ticks)
     private static final it.unimi.dsi.fastutil.ints.Int2IntMap BUBBLED_EFFECT_TICKS = new it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap();
@@ -244,6 +246,21 @@ public class ClientProxy extends CommonProxy {
         if (shaderLoadAttemptCooldown > 0) {
             shaderLoadAttemptCooldown--;
         }
+        if (renderNukeSkyDarkFor > 0) {
+            renderNukeSkyDarkFor--;
+        }
+        if (renderNukeShakeFor > 0) {
+            renderNukeShakeFor--;
+        }
+        if (renderNukeFlashFor > 0) {
+            renderNukeFlashFor--;
+        }
+        if (muteNonNukeSoundsFor > 0) {
+            muteNonNukeSoundsFor--;
+        }
+        prevNukeFlashAmount = nukeFlashAmount;
+        nukeFlashAmount = Mth.approach(nukeFlashAmount, renderNukeFlashFor > 0 ? 1.0F : 0.0F, renderNukeFlashFor > 0 ? 0.25F : 0.08F);
+        masterVolumeNukeModifier = Mth.approach(masterVolumeNukeModifier, muteNonNukeSoundsFor > 0 ? 1.0F : 0.0F, 0.08F);
         if (cameraEntity == null || minecraft.level == null) {
             acSkyOverrideAmount = 0.0F;
             acSkyOverrideColor = Vec3.ZERO;

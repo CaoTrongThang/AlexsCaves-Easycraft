@@ -31,6 +31,9 @@
     "minecraft": "~${minecraft_version}",
     "java": ">=21"
   },
+  "suggests": {
+    "jei": "*"
+  },
   "breaks": {
     "citadel": "*"
   }

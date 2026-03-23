@@ -57,8 +57,12 @@ public class MushroomCloudParticle extends Particle {
     }
 
     public void tick() {
-        ((ClientProxy) AlexsCaves.PROXY).renderNukeSkyDarkFor = 70;
-        ((ClientProxy) AlexsCaves.PROXY).muteNonNukeSoundsFor = 50;
+        ClientProxy clientProxy = (ClientProxy) AlexsCaves.PROXY;
+        clientProxy.renderNukeSkyDarkFor = Math.max(clientProxy.renderNukeSkyDarkFor, 70);
+        clientProxy.muteNonNukeSoundsFor = Math.max(clientProxy.muteNonNukeSoundsFor, 50);
+        if (age < BALL_FOR + 10) {
+            clientProxy.renderNukeShakeFor = Math.max(clientProxy.renderNukeShakeFor, 40);
+        }
         boolean large = this.scale > 2.0F;
         if(age > BALL_FOR / 2 + 5){
             if(!playedExplosion){
@@ -71,7 +75,7 @@ public class MushroomCloudParticle extends Particle {
                 playedRinging = true;
                 playSound(ACSoundRegistry.NUCLEAR_EXPLOSION_RINGING.get(), 100, 50, 0.05F, true);
             }
-            ((ClientProxy) AlexsCaves.PROXY).renderNukeFlashFor = 16;
+            clientProxy.renderNukeFlashFor = Math.max(clientProxy.renderNukeFlashFor, 16);
         } else if (age < lifetime - FADE_SPEED) {
             float life = (float) (Math.log(1 + (age - BALL_FOR) / (float) (lifetime - BALL_FOR))) * 2F;
             float explosionSpread = (12 * life + 4F) * scale;

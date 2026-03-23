@@ -5,6 +5,8 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -14,22 +16,23 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.function.Supplier;
 
 public class ACEffectRegistry {
 
     public static final DeferredRegister<MobEffect> DEF_REG = DeferredRegister.create(Registries.MOB_EFFECT, AlexsCaves.MODID);
     public static final DeferredRegister<Potion> POTION_DEF_REG = DeferredRegister.create(Registries.POTION, AlexsCaves.MODID);
-    public static final Holder<MobEffect> MAGNETIZING = DEF_REG.register("magnetizing", () -> new MagnetizedEffect());
-    public static final Holder<MobEffect> STUNNED = DEF_REG.register("stunned", () -> new StunnedEffect());
-    public static final Holder<MobEffect> RAGE = DEF_REG.register("rage", () -> new RageEffect());
-    public static final Holder<MobEffect> IRRADIATED = DEF_REG.register("irradiated", () -> new IrradiatedEffect());
-    public static final Holder<MobEffect> BUBBLED = DEF_REG.register("bubbled", () -> new BubbledEffect());
-    public static final Holder<MobEffect> DEEPSIGHT = DEF_REG.register("deepsight", () -> new DeepsightEffect());
-    public static final Holder<MobEffect> DARKNESS_INCARNATE = DEF_REG.register("darkness_incarnate", () -> new DarknessIncarnateEffect());
-    public static final Holder<MobEffect> SUGAR_RUSH = DEF_REG.register("sugar_rush", () -> new SugarRushEffect());
+    public static final Holder<MobEffect> MAGNETIZING = registerEffect("magnetizing", MagnetizedEffect::new);
+    public static final Holder<MobEffect> STUNNED = registerEffect("stunned", StunnedEffect::new);
+    public static final Holder<MobEffect> RAGE = registerEffect("rage", RageEffect::new);
+    public static final Holder<MobEffect> IRRADIATED = registerEffect("irradiated", IrradiatedEffect::new);
+    public static final Holder<MobEffect> BUBBLED = registerEffect("bubbled", BubbledEffect::new);
+    public static final Holder<MobEffect> DEEPSIGHT = registerEffect("deepsight", DeepsightEffect::new);
+    public static final Holder<MobEffect> DARKNESS_INCARNATE = registerEffect("darkness_incarnate", DarknessIncarnateEffect::new);
+    public static final Holder<MobEffect> SUGAR_RUSH = registerEffect("sugar_rush", SugarRushEffect::new);
     public static final DeferredHolder<Potion, Potion> MAGNETIZING_POTION = POTION_DEF_REG.register("magnetizing", () -> new Potion(new MobEffectInstance(MAGNETIZING, 3600)));
     public static final DeferredHolder<Potion, Potion> LONG_MAGNETIZING_POTION = POTION_DEF_REG.register("long_magnetizing", () -> new Potion(new MobEffectInstance(MAGNETIZING, 9600)));
     public static final DeferredHolder<Potion, Potion> DEEPSIGHT_POTION = POTION_DEF_REG.register("deepsight", () -> new Potion(new MobEffectInstance(DEEPSIGHT, 3600)));
@@ -63,38 +66,104 @@ public class ACEffectRegistry {
         // Brewing recipes are now registered via RegisterBrewingRecipesEvent
     }
 
+    private static Holder<MobEffect> registerEffect(String name, Supplier<? extends MobEffect> supplier) {
+        DeferredHolder<MobEffect, ? extends MobEffect> deferredHolder = DEF_REG.register(name, supplier);
+        return resolveDeferredEffectHolder(deferredHolder);
+    }
+
+    public static Holder<MobEffect> holder(Holder<MobEffect> mobEffect) {
+        return resolveEffectHolder(mobEffect);
+    }
+
+    public static MobEffectInstance effect(Holder<MobEffect> mobEffect, int duration) {
+        return new MobEffectInstance(holder(mobEffect), duration);
+    }
+
+    public static MobEffectInstance effect(Holder<MobEffect> mobEffect, int duration, int amplifier) {
+        return new MobEffectInstance(holder(mobEffect), duration, amplifier);
+    }
+
+    public static MobEffectInstance effect(Holder<MobEffect> mobEffect, int duration, int amplifier, boolean ambient, boolean visible) {
+        return new MobEffectInstance(holder(mobEffect), duration, amplifier, ambient, visible);
+    }
+
+    public static MobEffectInstance effect(Holder<MobEffect> mobEffect, int duration, int amplifier, boolean ambient, boolean visible, boolean showIcon) {
+        return new MobEffectInstance(holder(mobEffect), duration, amplifier, ambient, visible, showIcon);
+    }
+
     public static ItemStack createPotion(Holder<Potion> potion) {
         ItemStack stack = new ItemStack(Items.POTION);
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(potion));
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(resolvePotionHolder(potion)));
         return stack;
     }
 
     public static ItemStack createPotion(DeferredHolder<Potion, Potion> potion) {
-        return createPotion((Holder<Potion>) potion);
+        return createPotion(resolveDeferredPotionHolder(potion));
     }
 
     public static ItemStack createPotion(Potion potion) {
-        // For Potion instances, we need to create a direct holder
         ItemStack stack = new ItemStack(Items.POTION);
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Holder.direct(potion)));
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(resolvePotionHolder(potion)));
         return stack;
     }
 
     public static ItemStack createSplashPotion(Potion potion) {
         ItemStack stack = new ItemStack(Items.SPLASH_POTION);
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Holder.direct(potion)));
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(resolvePotionHolder(potion)));
         return stack;
     }
 
     public static ItemStack createLingeringPotion(Potion potion) {
         ItemStack stack = new ItemStack(Items.LINGERING_POTION);
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Holder.direct(potion)));
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(resolvePotionHolder(potion)));
         return stack;
     }
 
     public static ItemStack createJellybean(Potion potion) {
         ItemStack stack = new ItemStack(ACItemRegistry.JELLY_BEAN.get());
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Holder.direct(potion)));
+        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(resolvePotionHolder(potion)));
         return stack;
+    }
+
+    private static Holder<MobEffect> resolveEffectHolder(Holder<MobEffect> mobEffect) {
+        var key = mobEffect.unwrapKey();
+        if (key.isPresent()) {
+            Holder.Reference<MobEffect> registeredHolder = BuiltInRegistries.MOB_EFFECT.getHolder(key.get().location()).orElse(null);
+            if (registeredHolder != null) {
+                return registeredHolder;
+            }
+        }
+        return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect.value());
+    }
+
+    private static Holder<MobEffect> resolveDeferredEffectHolder(DeferredHolder<MobEffect, ? extends MobEffect> mobEffect) {
+        Holder.Reference<MobEffect> registeredHolder = BuiltInRegistries.MOB_EFFECT.getHolder(mobEffect.getId().location()).orElse(null);
+        if (registeredHolder != null) {
+            return registeredHolder;
+        }
+        return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect.get());
+    }
+
+    private static Holder<Potion> resolvePotionHolder(Holder<Potion> potion) {
+        var key = potion.unwrapKey();
+        if (key.isPresent()) {
+            Holder.Reference<Potion> registeredHolder = BuiltInRegistries.POTION.getHolder(key.get().location()).orElse(null);
+            if (registeredHolder != null) {
+                return registeredHolder;
+            }
+        }
+        return BuiltInRegistries.POTION.wrapAsHolder(potion.value());
+    }
+
+    private static Holder<Potion> resolveDeferredPotionHolder(DeferredHolder<Potion, ? extends Potion> potion) {
+        Holder.Reference<Potion> registeredHolder = BuiltInRegistries.POTION.getHolder(potion.getId().location()).orElse(null);
+        if (registeredHolder != null) {
+            return registeredHolder;
+        }
+        return BuiltInRegistries.POTION.wrapAsHolder(potion.get());
+    }
+
+    private static Holder<Potion> resolvePotionHolder(Potion potion) {
+        return BuiltInRegistries.POTION.wrapAsHolder(potion);
     }
 }

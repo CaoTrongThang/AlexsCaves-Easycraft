@@ -2,7 +2,7 @@
   "targets": ["swap", "final"],
   "passes": [
     {
-      "name": "minecraft:blur",
+      "name": "box_blur",
       "intarget": "final",
       "outtarget": "swap",
       "uniforms": [
@@ -17,7 +17,7 @@
       ]
     },
     {
-      "name": "minecraft:blur",
+      "name": "box_blur",
       "intarget": "swap",
       "outtarget": "final",
       "uniforms": [
@@ -32,7 +32,7 @@
       ]
     },
     {
-      "name": "alexscaves:bumpy",
+      "name": "bumpy",
       "intarget": "final",
       "outtarget": "swap"
     },

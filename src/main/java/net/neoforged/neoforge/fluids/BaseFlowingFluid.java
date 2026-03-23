@@ -42,6 +42,11 @@ public abstract class BaseFlowingFluid extends FlowingFluid {
     }
 
     @Override
+    public boolean isSame(Fluid fluid) {
+        return fluid == getSource() || fluid == getFlowing();
+    }
+
+    @Override
     protected boolean canConvertToSource(Level level) {
         return false;
     }

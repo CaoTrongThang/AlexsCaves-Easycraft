@@ -152,6 +152,10 @@ public class DeferredHolder<R, T extends R> implements Supplier<T>, Holder<T> {
     @Override
     public boolean canSerializeIn(HolderOwner<T> owner) {
         Holder<T> registeredHolder = getRegisteredHolder();
-        return registeredHolder != null && registeredHolder.canSerializeIn(owner);
+        if (registeredHolder != null && registeredHolder.canSerializeIn(owner)) {
+            return true;
+        }
+        Registry<T> registry = getRegistry();
+        return registry != null && registry.containsKey(getId());
     }
 }

@@ -74,7 +74,7 @@ public abstract class CameraMixin {
         // In ComputeCameraAngles event, move() effects are overwritten by subsequent setPosition()
         Entity player = Minecraft.getInstance().getCameraEntity();
         if (player != null && AlexsCaves.CLIENT_CONFIG.screenShaking.get()) {
-            float tremorAmount = ClientProxy.renderNukeSkyDarkFor > 0 ? 1.5F : 0F;
+            float tremorAmount = ClientProxy.renderNukeShakeFor > 0 ? 1.5F : 0F;
             if (player instanceof PossessesCamera watcherEntity) {
                 tremorAmount = watcherEntity.isPossessionBreakable()
                         ? AlexsCaves.PROXY.getPossessionStrengthAmount(partialTicks)
