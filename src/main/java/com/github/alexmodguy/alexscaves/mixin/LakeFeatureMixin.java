@@ -7,8 +7,12 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.LakeFeature;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,5 +41,40 @@ public class LakeFeatureMixin {
             return level.getUncachedNoiseBiome(pos.getX() >> 2, pos.getY() >> 2, pos.getZ() >> 2);
         }
         return original.call(level, pos);
+    }
+
+    /**
+     * Serene Seasons redirects Biome.shouldFreeze() through a hook that calls level.getBiome(pos),
+     * which is not safe during lake placement in a WorldGenRegion. Recreate the vanilla freeze
+     * check locally so worldgen never needs to query neighboring chunks here.
+     */
+    @WrapOperation(method = "place", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/biome/Biome;shouldFreeze(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Z)Z"))
+    private boolean ac_wrapShouldFreeze(Biome biome, net.minecraft.world.level.LevelReader level, BlockPos pos, boolean mustBeAtEdge, Operation<Boolean> original) {
+        if (level instanceof WorldGenRegion) {
+            return ac_shouldFreezeWithoutChunkAccess(biome, level, pos, mustBeAtEdge);
+        }
+        return original.call(biome, level, pos, mustBeAtEdge);
+    }
+
+    private static boolean ac_shouldFreezeWithoutChunkAccess(Biome biome, net.minecraft.world.level.LevelReader level, BlockPos pos, boolean mustBeAtEdge) {
+        if (biome.warmEnoughToRain(pos)) {
+            return false;
+        }
+        if (pos.getY() < level.getMinBuildHeight() || pos.getY() >= level.getMaxBuildHeight()) {
+            return false;
+        }
+        if (level.getBrightness(LightLayer.BLOCK, pos) >= 10) {
+            return false;
+        }
+
+        BlockState state = level.getBlockState(pos);
+        if (level.getFluidState(pos).getType() != Fluids.WATER || !(state.getBlock() instanceof LiquidBlock)) {
+            return false;
+        }
+        if (!mustBeAtEdge) {
+            return true;
+        }
+
+        return !(level.isWaterAt(pos.west()) && level.isWaterAt(pos.east()) && level.isWaterAt(pos.north()) && level.isWaterAt(pos.south()));
     }
 }
