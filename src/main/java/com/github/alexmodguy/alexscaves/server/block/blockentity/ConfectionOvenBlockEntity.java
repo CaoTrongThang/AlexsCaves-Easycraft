@@ -232,7 +232,6 @@ public class ConfectionOvenBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             this.cooldown = packet.getTag().getInt("Cooldown");

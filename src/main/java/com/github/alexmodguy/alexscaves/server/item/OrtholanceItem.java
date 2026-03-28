@@ -57,8 +57,8 @@ public class OrtholanceItem extends Item implements Vanishable {
 
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int useTime) {
         int i = Mth.clamp(this.getUseDuration(stack) - useTime, 0, 60);
-        int flinging = stack.getEnchantmentLevel(ACEnchantmentRegistry.FLINGING.get());
-        boolean tsunami = stack.getEnchantmentLevel(ACEnchantmentRegistry.TSUNAMI.get()) > 0;
+        int flinging = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.FLINGING.get());
+        boolean tsunami = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TSUNAMI.get()) > 0;
         if (i > 0) {
             float f = 0.1F * i + flinging * 0.1F;
             Vec3 vec3 = livingEntity.getDeltaMovement().add(livingEntity.getViewVector(1.0F).normalize().multiply(f, f * 0.15F, f));
@@ -94,7 +94,7 @@ public class OrtholanceItem extends Item implements Vanishable {
                         rightWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)) - 60 + 15 * wave);
                         level.addFreshEntity(rightWaveEntity);
                     }
-                    if(stack.getEnchantmentLevel(ACEnchantmentRegistry.SECOND_WAVE.get()) > 0){
+                    if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SECOND_WAVE.get()) > 0) {
                         int maxSecondWaves = Math.max(1, maxWaves - 1);
                         for (int wave = 0; wave < maxSecondWaves; wave++) {
                             float f1 = (float) wave / maxSecondWaves;
@@ -147,7 +147,7 @@ public class OrtholanceItem extends Item implements Vanishable {
             entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
         });
         Vec3 vec3 = player.getViewVector(1.0F);
-        if(stack.getEnchantmentLevel(ACEnchantmentRegistry.SEA_SWING.get()) > 0){
+        if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SEA_SWING.get()) > 0) {
             WaveEntity waveEntity = new WaveEntity(hurt.level(), player);
             waveEntity.setPos(player.getX(), hurt.getY(), player.getZ());
             waveEntity.setLifespan(5);
@@ -168,7 +168,6 @@ public class OrtholanceItem extends Item implements Vanishable {
     }
 
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }

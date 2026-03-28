@@ -21,13 +21,11 @@ public class HazmatArmorItem extends ArmorItem {
         super(armorMaterial, slot, new Properties());
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
 
     @SuppressWarnings("removal")
-    @Override
     public void onArmorTick(ItemStack stack, Level level, Player player) {
         if (stack.is(ACItemRegistry.HAZMAT_MASK.get()) && Math.cos(player.tickCount * 0.05F) >= 0.9F) {
             Vec3 eyes = player.getEyePosition();

@@ -24,8 +24,8 @@ import org.joml.Matrix4f;
 
 public class RaygunRenderHelper {
 
-    private static final ResourceLocation RAYGUN_RAY = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/raygun/raygun_ray.png");
-    private static final ResourceLocation RAYGUN_BLUE_RAY = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/raygun/raygun_blue_ray.png");
+    private static final ResourceLocation RAYGUN_RAY = new ResourceLocation(AlexsCaves.MODID, "textures/entity/raygun/raygun_ray.png");
+    private static final ResourceLocation RAYGUN_BLUE_RAY = new ResourceLocation(AlexsCaves.MODID, "textures/entity/raygun/raygun_blue_ray.png");
     private static void renderRay(PoseStack poseStack, MultiBufferSource bufferSource, Vec3 vec3, float useAmount, float offset, boolean irradiated, boolean blue) {
         float f2 = -1.0F * (offset * 0.25F % 1.0F);
         poseStack.pushPose();
@@ -74,7 +74,7 @@ public class RaygunRenderHelper {
             float useRaygunAmount = RaygunItem.getUseTime(stack) / 5F;
             float ageInTicks = entity.tickCount + partialTick;
             Vec3 rayPosition = RaygunItem.getLerpedRayPosition(stack, partialTick);
-            boolean blue = stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0;
+            boolean blue = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.GAMMA_RAY.get()) > 0;
             if (rayPosition != null && RaygunItem.getUseTime(stack) >= 5F) {
                 Vec3 gunPos = getGunOffset(entity, partialTick, firstPerson, entity.getMainArm() == HumanoidArm.LEFT);
                 Vec3 vec3 = rayPosition.subtract(rayFrom.add(gunPos));
@@ -94,7 +94,7 @@ public class RaygunRenderHelper {
             float useRaygunAmount = RaygunItem.getUseTime(stack) / 5F;
             float ageInTicks = entity.tickCount + partialTick;
             Vec3 rayPosition = RaygunItem.getLerpedRayPosition(stack, partialTick);
-            boolean blue = stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0;
+            boolean blue = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.GAMMA_RAY.get()) > 0;
             if (rayPosition != null && RaygunItem.getUseTime(stack) >= 5F) {
                 Vec3 gunPos = getGunOffset(entity, partialTick, firstPerson, entity.getMainArm() == HumanoidArm.RIGHT);
                 Vec3 vec3 = rayPosition.subtract(rayFrom.add(gunPos));

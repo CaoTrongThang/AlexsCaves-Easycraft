@@ -31,7 +31,7 @@ import java.util.Optional;
 public class CaveBookScreen extends Screen {
 
     private static final CaveBookModel BOOK_MODEL = new CaveBookModel();
-    private static final ResourceLocation BOOK_TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/gui/book/cave_book_model.png");
+    private static final ResourceLocation BOOK_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/gui/book/cave_book_model.png");
     public static final float MOUSE_LEAN_THRESHOLD = 0.75F;
     public static final int PAGE_SIZE_IN_LINES = 15;
 
@@ -72,12 +72,16 @@ public class CaveBookScreen extends Screen {
     public CaveBookScreen(String openTo) {
         super(Component.translatable("item.alexscaves.cave_book"));
         caveBookProgress = CaveBookProgress.getCaveBookProgress(Minecraft.getInstance().player);
-        currentEntryJSON = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, openTo);
+        currentEntryJSON = new ResourceLocation(AlexsCaves.MODID, openTo);
         resetEntry();
     }
 
     public CaveBookScreen(){
         this("books/root.json");
+    }
+
+    public Minecraft getMinecraft() {
+        return minecraft;
     }
 
     @Override
@@ -156,7 +160,7 @@ public class CaveBookScreen extends Screen {
             }
         }
         if(this.currentEntry != null && this.currentEntry.getParent() != null && !this.currentEntry.getParent().isEmpty()){
-            this.prevEntryJSON = ResourceLocation.parse(getBookFileDirectory() + this.currentEntry.getParent());
+            this.prevEntryJSON = new ResourceLocation(getBookFileDirectory() + this.currentEntry.getParent());
         }else{
             this.prevEntryJSON = null;
         }
@@ -217,7 +221,7 @@ public class CaveBookScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float fakePartialTickThatsZeroForSomeReason) {
-        float partialTick = Minecraft.getInstance().getPartialTick();
+        float partialTick = Minecraft.getInstance().getFrameTime();
         PoseStack poseStack = guiGraphics.pose();
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         float ageInTicks = tickCount + partialTick;
@@ -418,7 +422,7 @@ public class CaveBookScreen extends Screen {
     }
 
     public int getEntryVisiblity(String linkTo) {
-        ResourceLocation resourceLocation = ResourceLocation.parse(CaveBookScreen.getBookFileDirectory() + linkTo);
+        ResourceLocation resourceLocation = new ResourceLocation(CaveBookScreen.getBookFileDirectory() + linkTo);
         BookEntry dummyEntry = readBookEntry(resourceLocation);
         int visiblity = 0;
         if(dummyEntry != null){

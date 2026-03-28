@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.living.TeletorEntity;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACAdvancementTriggerRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.ACBlockCompat;
 import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -156,8 +157,8 @@ public class MagneticWeaponEntity extends Entity {
                 float maxDist = 30F;
                 if(getController() instanceof LivingEntity living && living.getUseItem().is(ACItemRegistry.GALENA_GAUNTLET.get())){
                     ItemStack useItem = living.getUseItem();
-                    haste = useItem.getEnchantmentLevel(ACEnchantmentRegistry.FERROUS_HASTE.get()) > 0;
-                    int fieldExtension = useItem.getEnchantmentLevel(ACEnchantmentRegistry.FIELD_EXTENSION.get());
+                    haste = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(useItem, ACEnchantmentRegistry.FERROUS_HASTE.get()) > 0;
+                    int fieldExtension = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(useItem, ACEnchantmentRegistry.FIELD_EXTENSION.get());
                     maxDist += fieldExtension * 5F;
                 }
                 BlockPos miningBlock = null;
@@ -213,9 +214,7 @@ public class MagneticWeaponEntity extends Entity {
                             damageItem(1);
                             ItemStack itemStack = getItemStack();
                             itemStack.mineBlock(this.level(), miningState, miningBlock, player);
-                            int fortuneLevel = itemStack.getEnchantmentLevel(Enchantments.BLOCK_FORTUNE);
-                            int silkTouchLevel = itemStack.getEnchantmentLevel(Enchantments.SILK_TOUCH);
-                            int exp = miningState.getExpDrop(level(), level().random, miningBlock, fortuneLevel, silkTouchLevel);
+                            int exp = ACBlockCompat.getExpDrop(miningState, level(), miningBlock, player, itemStack);
                             net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemStack, InteractionHand.MAIN_HAND);
                             boolean flag;
                             if (miningState.getBlock() instanceof ShulkerBoxBlock) {
@@ -228,7 +227,7 @@ public class MagneticWeaponEntity extends Entity {
                                 miningState.getBlock().playerDestroy(level(), player, miningBlock, miningState, level().getBlockEntity(miningBlock), itemStack);
                             }
                             if (flag && exp > 0 && level() instanceof ServerLevel serverLevel) {
-                                miningState.getBlock().popExperience(serverLevel, miningBlock, exp);
+                                ACBlockCompat.awardExperience(serverLevel, miningBlock, exp);
                             }
                             destroyBlockProgress = 0.0F;
                         }
@@ -342,7 +341,7 @@ public class MagneticWeaponEntity extends Entity {
         float f1 = (float)holder.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
         if (target instanceof LivingEntity) {
             f += EnchantmentHelper.getDamageBonus(itemStack, ((LivingEntity)target).getMobType());
-            f1 += (float)EnchantmentHelper.getEnchantmentLevel(Enchantments.KNOCKBACK, holder);
+            f1 += EnchantmentHelper.getKnockbackBonus(holder);
         }
         int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, itemStack);
         if (i > 0) {

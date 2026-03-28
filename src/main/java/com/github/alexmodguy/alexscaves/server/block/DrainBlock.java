@@ -94,7 +94,7 @@ public class DrainBlock extends AbstractGlassBlock {
                 boolean flag = false;
                 for (int i = 0; i < count; i++) {
                     List<BlockPos> ignoredPoses = Lists.newArrayList();
-                    BlockPos setPos = getFirstEmptyNeighborPosition(worldIn, lowest, copyState.getFluidType(), 0, ignoredPoses);
+                    BlockPos setPos = getFirstEmptyNeighborPosition(worldIn, lowest, com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(copyState), 0, ignoredPoses);
                     if (setPos == null) {
                         lowest = lowest.above();
                         if (lowest.getY() >= pos.getY()) {
@@ -164,7 +164,7 @@ public class DrainBlock extends AbstractGlassBlock {
                 BlockPos pos1 = pos.relative(direction);
                 if (canMergeWith(level, pos1)) {
                     return pos1;
-                } else if (level.getFluidState(pos1).getFluidType() == ourType) {
+                } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(pos1)) == ourType) {
                     BlockPos pos2 = getFirstEmptyNeighborPosition(level, pos1, ourType, tries + 1, ignoredPoses);
                     if (pos2 != null) {
                         return pos2;
@@ -203,7 +203,7 @@ public class DrainBlock extends AbstractGlassBlock {
                 BlockPos blockpos1 = blockpos.relative(direction);
                 BlockState blockstate = level.getBlockState(blockpos1);
                 FluidState fluidstate = level.getFluidState(blockpos1);
-                if (lastFluidState != null && !fluidstate.isEmpty() && lastFluidState.getFluidType() != fluidstate.getFluidType()) {
+                if (lastFluidState != null && !fluidstate.isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(lastFluidState) != com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidstate)) {
                     continue;
                 }
                 if (blockstate.getBlock() instanceof SimpleWaterloggedBlock) {

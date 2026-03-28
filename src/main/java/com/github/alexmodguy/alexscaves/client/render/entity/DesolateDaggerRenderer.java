@@ -48,23 +48,20 @@ public class DesolateDaggerRenderer extends EntityRenderer<DesolateDaggerEntity>
         int redOverlay = OverlayTexture.pack(OverlayTexture.u(0), OverlayTexture.v(true));
         poseStack.translate(stab, stab + Math.cos(ageInTicks * 0.1F) * 0.2F, 0);
         BakedModel bakedmodel = Minecraft.getInstance().getItemRenderer().getModel(entity.daggerRenderStack, entity.level(), null, 0);
-        for (net.minecraft.client.renderer.RenderType rt : bakedmodel.getRenderTypes(entity.daggerRenderStack, false)) {
-            renderModel(poseStack.last(), source.getBuffer(Sheets.translucentItemSheet()), alpha, null, bakedmodel, f, f1, f2, 240, redOverlay, ModelData.EMPTY, rt);
-        }
+        renderModel(poseStack.last(), source.getBuffer(Sheets.translucentItemSheet()), alpha, null, bakedmodel, f, f1, f2, 240, redOverlay);
         poseStack.popPose();
     }
 
-    public static void renderModel(PoseStack.Pose p_111068_, VertexConsumer p_111069_, float alpha, @Nullable BlockState p_111070_, BakedModel p_111071_, float p_111072_, float p_111073_, float p_111074_, int p_111075_, int p_111076_, ModelData modelData, net.minecraft.client.renderer.RenderType renderType) {
+    public static void renderModel(PoseStack.Pose p_111068_, VertexConsumer p_111069_, float alpha, @Nullable BlockState p_111070_, BakedModel p_111071_, float p_111072_, float p_111073_, float p_111074_, int p_111075_, int p_111076_) {
         RandomSource randomsource = RandomSource.create();
-        long i = 42L;
 
         for (Direction direction : Direction.values()) {
             randomsource.setSeed(42L);
-            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, alpha, p_111071_.getQuads(p_111070_, direction, randomsource, modelData, renderType), p_111075_, p_111076_);
+            renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, alpha, p_111071_.getQuads(p_111070_, direction, randomsource), p_111075_, p_111076_);
         }
 
         randomsource.setSeed(42L);
-        renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, alpha, p_111071_.getQuads(p_111070_, (Direction) null, randomsource, modelData, renderType), p_111075_, p_111076_);
+        renderQuadList(p_111068_, p_111069_, p_111072_, p_111073_, p_111074_, alpha, p_111071_.getQuads(p_111070_, null, randomsource), p_111075_, p_111076_);
     }
 
     private static void renderQuadList(PoseStack.Pose p_111059_, VertexConsumer p_111060_, float p_111061_, float p_111062_, float p_111063_, float alpha, List<BakedQuad> p_111064_, int p_111065_, int p_111066_) {
@@ -75,7 +72,7 @@ public class DesolateDaggerRenderer extends EntityRenderer<DesolateDaggerEntity>
             f = Mth.clamp(p_111061_, 0.0F, 1.0F);
             f1 = Mth.clamp(p_111062_, 0.0F, 1.0F);
             f2 = Mth.clamp(p_111063_, 0.0F, 1.0F);
-            p_111060_.putBulkData(p_111059_, bakedquad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, f, f1, f2, alpha, new int[]{p_111065_, p_111065_, p_111065_, p_111065_}, p_111066_, false);
+            p_111060_.putBulkData(p_111059_, bakedquad, new float[]{alpha, alpha, alpha, alpha}, f, f1, f2, new int[]{p_111065_, p_111065_, p_111065_, p_111065_}, p_111066_, false);
         }
 
     }
@@ -84,4 +81,3 @@ public class DesolateDaggerRenderer extends EntityRenderer<DesolateDaggerEntity>
         return TextureAtlas.LOCATION_BLOCKS;
     }
 }
-

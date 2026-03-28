@@ -21,7 +21,7 @@ public class ACMusics {
 
         @Override
         public Holder<SoundEvent> getEvent() {
-            return this.registryObject.getHolder().get();
+            return Holder.direct(this.registryObject.get());
         }
     }
 }

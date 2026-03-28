@@ -54,9 +54,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -370,7 +367,7 @@ public class NuclearFurnaceBlockEntity extends BaseContainerBlockEntity implemen
         barrelTime = compoundTag.getInt("BarrelTime");
         CompoundTag compoundtag = compoundTag.getCompound("RecipesUsed");
         for(String s : compoundtag.getAllKeys()) {
-            this.recipesUsed.put(ResourceLocation.parse(s), compoundtag.getInt(s));
+            this.recipesUsed.put(new ResourceLocation(s), compoundtag.getInt(s));
         }
     }
 
@@ -397,7 +394,6 @@ public class NuclearFurnaceBlockEntity extends BaseContainerBlockEntity implemen
         return this.saveWithoutMetadata();
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             this.loadAdditional(packet.getTag());
@@ -491,17 +487,6 @@ public class NuclearFurnaceBlockEntity extends BaseContainerBlockEntity implemen
     public WorldlyContainer getContainerFor(BlockPos offsetPos) {
         return this;
     }
-
-    private LazyOptional<? extends IItemHandler>[] handlers = SidedInvWrapper.create(this, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-
-    @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @javax.annotation.Nullable Direction facing) {
-        if (!this.remove && facing != null && capability == net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER) {
-            return handlers[facing.ordinal()].cast();
-        }
-        return super.getCapability(capability, facing);
-    }
-
 
     public void setRecipeUsed(@javax.annotation.Nullable Recipe<?> recipe) {
         if (recipe != null) {

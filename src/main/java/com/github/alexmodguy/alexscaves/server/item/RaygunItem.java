@@ -51,7 +51,6 @@ public class RaygunItem extends Item implements UpdatesStackTags, AlwaysCombinab
         super(new Item.Properties().stacksTo(1));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
@@ -119,7 +118,7 @@ public class RaygunItem extends Item implements UpdatesStackTags, AlwaysCombinab
         boolean using = entity instanceof LivingEntity living && living.getUseItem().equals(stack);
         int useTime = getUseTime(stack);
         if(!level.isClientSide){
-            if (stack.getEnchantmentLevel(ACEnchantmentRegistry.SOLAR.get()) > 0 && !using) {
+            if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SOLAR.get()) > 0 && !using) {
                 int charge = getCharge(stack);
                 if (charge > 0 && level.random.nextFloat() < 0.02F) {
                     BlockPos playerPos = entity.blockPosition().above();
@@ -149,7 +148,7 @@ public class RaygunItem extends Item implements UpdatesStackTags, AlwaysCombinab
         int realStart = 15;
         float time = i < realStart ? i / (float) realStart : 1F;
         float maxDist = 25.0F * time;
-        boolean xRay = stack.getEnchantmentLevel(ACEnchantmentRegistry.X_RAY.get()) > 0;
+        boolean xRay = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.X_RAY.get()) > 0;
         HitResult realHitResult = ProjectileUtil.getHitResultOnViewVector(living, Entity::canBeHitByProjectile, maxDist);
         HitResult blockOnlyHitResult = living.pick(maxDist, 0.0F, false);
         Vec3 xRayVec = living.getViewVector(0.0F).scale(maxDist).add(living.getEyePosition());
@@ -166,7 +165,7 @@ public class RaygunItem extends Item implements UpdatesStackTags, AlwaysCombinab
         if (level.isClientSide) {
             setRayPosition(stack, vec3.x, vec3.y, vec3.z);
             AlexsCaves.PROXY.playWorldSound(living, (byte) 8);
-            int efficency = stack.getEnchantmentLevel(ACEnchantmentRegistry.ENERGY_EFFICIENCY.get());
+            int efficency = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.ENERGY_EFFICIENCY.get());
             int divis = 2 + (int) Math.floor(efficency * 1.5F);
             if (time >= 1F && i % divis == 0 && (!(living instanceof Player) || !((Player) living).isCreative())) {
                 int charge = getCharge(stack);
@@ -177,7 +176,7 @@ public class RaygunItem extends Item implements UpdatesStackTags, AlwaysCombinab
         float deltaX = 0;
         float deltaY = 0;
         float deltaZ = 0;
-        boolean gamma = stack.getEnchantmentLevel(ACEnchantmentRegistry.GAMMA_RAY.get()) > 0;
+        boolean gamma = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.GAMMA_RAY.get()) > 0;
         ParticleOptions particleOptions;
         if (level.random.nextBoolean() && time >= 1F) {
             particleOptions = gamma ? ACParticleRegistry.BLUE_RAYGUN_EXPLOSION.get() : ACParticleRegistry.RAYGUN_EXPLOSION.get();

@@ -435,7 +435,7 @@ public class ConversionCrucibleBlockEntity extends BlockEntity {
             this.displayStack = ItemStack.of(compound.getCompound("DisplayStack"));
         }
         if (compound.contains("ConvertingToBiome")) {
-            convertingToBiome = ResourceKey.create(Registries.BIOME, ResourceLocation.parse(compound.getString("ConvertingToBiome")));
+            convertingToBiome = ResourceKey.create(Registries.BIOME, new ResourceLocation(compound.getString("ConvertingToBiome")));
         }
         filledLevel = compound.getInt("FilledLevel");
         biomeColor = compound.getInt("BiomeColor");
@@ -482,7 +482,6 @@ public class ConversionCrucibleBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             CompoundTag compound = packet.getTag();
@@ -622,12 +621,12 @@ public class ConversionCrucibleBlockEntity extends BlockEntity {
         if (BIOME_COLORS.containsKey(holder)) {
             return BIOME_COLORS.get(holder);
         } else {
-            int fogColor = holder.get().get().getFogColor();
+            int fogColor = holder.get().value().getFogColor();
             int color;
             if (ACBiomeRegistry.getBiomeTabletColor(holder.get().key()) != -1) {
                 color = ACBiomeRegistry.getBiomeTabletColor(holder.get().key());
             } else if (fogColor == PLAINS_FOG_COLOR) {
-                color = holder.get().get().getGrassColor(0.0D, 0.0D);
+                color = holder.get().value().getGrassColor(0.0D, 0.0D);
             } else {
                 fogColor = 0xff000000 | fogColor;
                 float[] hsb = Color.RGBtoHSB(fogColor >> 16 & 0xFF, fogColor >> 8 & 0xFF, fogColor & 0xFF, null);

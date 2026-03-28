@@ -114,7 +114,7 @@ public class SweetishFishEntity extends WaterAnimal implements Bucketable, HasGu
     }
 
     public static boolean checkSweetishFishSpawnRules(EntityType<? extends LivingEntity> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
-        return spawnType == MobSpawnType.SPAWNER || !level.getFluidState(pos).isEmpty() && level.getFluidState(pos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
+        return spawnType == MobSpawnType.SPAWNER || !level.getFluidState(pos).isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(pos)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class SweetishFishEntity extends WaterAnimal implements Bucketable, HasGu
     }
 
     private boolean isInSoda() {
-        return this.getFluidTypeHeight(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) > 0;
+        return com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) > 0;
     }
 
     protected void handleAirSupply(int prevAir) {
@@ -321,7 +321,7 @@ public class SweetishFishEntity extends WaterAnimal implements Bucketable, HasGu
 
         private boolean isLiquidAt(BlockPos pos) {
             FluidState state = SweetishFishEntity.this.level().getFluidState(pos);
-            return state.is(FluidTags.WATER) || state.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
+            return state.is(FluidTags.WATER) || com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(state) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
         }
 
         private BlockPos findMoveToPos() {

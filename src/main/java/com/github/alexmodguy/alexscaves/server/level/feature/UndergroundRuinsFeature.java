@@ -110,7 +110,7 @@ public class UndergroundRuinsFeature extends Feature<UndergroundRuinsFeatureConf
     }
 
     protected boolean canReplace(BlockState state, int already) {
-        return (state.isAir() || state.canBeReplaced()) && (state.getFluidState().getFluidType() != ACFluidRegistry.ACID_FLUID_TYPE.get() || already < 3);
+        return (state.isAir() || state.canBeReplaced()) && (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(state.getFluidState()) != ACFluidRegistry.ACID_FLUID_TYPE.get() || already < 3);
     }
 
     protected boolean skipsOver(BlockState state, int already) {

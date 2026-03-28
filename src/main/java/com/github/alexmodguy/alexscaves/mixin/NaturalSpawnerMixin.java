@@ -111,7 +111,7 @@ public class NaturalSpawnerMixin {
             int height = level.getMinBuildHeight() + Math.round(heightRange * random.nextFloat());
             mutableBlockPos.setY(height);
             Holder<Biome> holder = level.getBiome(mutableBlockPos);
-            if (!holder.get().getMobSettings().getMobs(ACEntityRegistry.CAVE_CREATURE).isEmpty() && !cavesWithCreatures.contains(holder)) {
+            if (!holder.value().getMobSettings().getMobs(ACEntityRegistry.CAVE_CREATURE).isEmpty() && !cavesWithCreatures.contains(holder)) {
                 cavesWithCreatures.add(holder);
             }
         }

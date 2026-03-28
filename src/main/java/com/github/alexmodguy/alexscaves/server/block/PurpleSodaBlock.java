@@ -25,7 +25,7 @@ import net.minecraftforge.registries.RegistryObject;
 public class PurpleSodaBlock extends LiquidBlock {
 
     public PurpleSodaBlock(RegistryObject<FlowingFluid> flowingFluid, BlockBehaviour.Properties properties) {
-        super(flowingFluid, properties);
+        super(flowingFluid.get(), properties);
     }
 
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource randomSource) {

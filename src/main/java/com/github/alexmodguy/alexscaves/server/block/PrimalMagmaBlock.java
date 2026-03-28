@@ -127,12 +127,10 @@ public class PrimalMagmaBlock extends Block {
         return false;
     }
 
-    @Override
     public boolean isBurning(BlockState state, BlockGetter level, BlockPos pos) {
         return true;
     }
 
-    @Override
     public BlockPathTypes getAdjacentBlockPathType(BlockState state, BlockGetter level, BlockPos pos, @Nullable Mob mob, BlockPathTypes originalType) {
         return BlockPathTypes.DANGER_FIRE;
     }

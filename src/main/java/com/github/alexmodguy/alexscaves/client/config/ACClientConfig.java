@@ -1,26 +1,26 @@
 package com.github.alexmodguy.alexscaves.client.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import com.github.alexmodguy.alexscaves.config.ACModConfigSpec;
 
 public class ACClientConfig {
 
-    public final ForgeConfigSpec.BooleanValue caveMapsVisibleInThirdPerson;
-    public final ForgeConfigSpec.BooleanValue screenShaking;
-    public final ForgeConfigSpec.BooleanValue emissiveBlockModels;
-    public final ForgeConfigSpec.BooleanValue nuclearBombFlash;
-    public final ForgeConfigSpec.BooleanValue biomeAmbientLight;
-    public final ForgeConfigSpec.BooleanValue biomeAmbientLightColoring;
-    public final ForgeConfigSpec.BooleanValue biomeSkyOverrides;
-    public final ForgeConfigSpec.BooleanValue biomeSkyFogOverrides;
-    public final ForgeConfigSpec.BooleanValue biomeWaterFogOverrides;
-    public final ForgeConfigSpec.BooleanValue ambersolShines;
-    public final ForgeConfigSpec.BooleanValue radiationGlowEffect;
-    public final ForgeConfigSpec.BooleanValue sugarRushSaturationEffect;
-    public final ForgeConfigSpec.IntValue subterranodonIndicatorX;
-    public final ForgeConfigSpec.IntValue subterranodonIndicatorY;
-    public final ForgeConfigSpec.BooleanValue nuclearBombMufflesSounds;
+    public final ACModConfigSpec.BooleanValue caveMapsVisibleInThirdPerson;
+    public final ACModConfigSpec.BooleanValue screenShaking;
+    public final ACModConfigSpec.BooleanValue emissiveBlockModels;
+    public final ACModConfigSpec.BooleanValue nuclearBombFlash;
+    public final ACModConfigSpec.BooleanValue biomeAmbientLight;
+    public final ACModConfigSpec.BooleanValue biomeAmbientLightColoring;
+    public final ACModConfigSpec.BooleanValue biomeSkyOverrides;
+    public final ACModConfigSpec.BooleanValue biomeSkyFogOverrides;
+    public final ACModConfigSpec.BooleanValue biomeWaterFogOverrides;
+    public final ACModConfigSpec.BooleanValue ambersolShines;
+    public final ACModConfigSpec.BooleanValue radiationGlowEffect;
+    public final ACModConfigSpec.BooleanValue sugarRushSaturationEffect;
+    public final ACModConfigSpec.IntValue subterranodonIndicatorX;
+    public final ACModConfigSpec.IntValue subterranodonIndicatorY;
+    public final ACModConfigSpec.BooleanValue nuclearBombMufflesSounds;
 
-    public ACClientConfig(final ForgeConfigSpec.Builder builder) {
+    public ACClientConfig(final ACModConfigSpec.Builder builder) {
         builder.push("visuals");
         caveMapsVisibleInThirdPerson = builder.comment("whether to cave maps are visible when held by players from the third-person perspective.").translation("cave_maps_visible_in_third_person").define("cave_maps_visible_in_third_person", true);
         screenShaking = builder.comment("whether to shake the screen from tremorsaurus stomping, nuclear explosions, etc.").translation("screen_shaking").define("screen_shaking", true);

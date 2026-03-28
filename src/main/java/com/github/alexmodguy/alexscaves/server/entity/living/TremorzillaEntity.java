@@ -65,6 +65,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.entity.PartEntity;
 import net.minecraftforge.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
@@ -236,7 +237,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         prevBeamProgress = beamProgress;
         prevClientBeamEndPosition = clientBeamEndPosition;
         prevClientSpikesDownAmount = clientSpikesDownAmount;
-        boolean water = this.isInFluidType();
+        boolean water = com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this);
         if (water && this.isLandNavigator) {
             switchNavigator(false);
         }
@@ -302,7 +303,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.15F);
         }
-        if (this.onGround() && !this.isInFluidType() && this.walkAnimation.speed() > 0.1F && !this.isBaby() && !this.isNoAi() && this.isAlive()) {
+        if (this.onGround() && !com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this) && this.walkAnimation.speed() > 0.1F && !this.isBaby() && !this.isNoAi() && this.isAlive()) {
             float f = (float) Math.cos(this.walkAnimation.position() * 0.25F - 1.5F);
             float f1 = (float) Math.cos(this.walkAnimation.position() * 0.25F - 1.0F);
             float f2 = (float) Math.sin(this.walkAnimation.position() * 0.25F - 1.0F);
@@ -556,7 +557,10 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     private double getMaxFluidHeight() {
-        return getFluidTypeHeight(getMaxHeightFluidType());
+        return Math.max(
+                com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.WATER_TYPE.get()),
+                com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.LAVA_TYPE.get())
+        );
     }
 
     private void healEveryTick(int i, float health) {
@@ -606,7 +610,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (this.getAnimation() == ANIMATION_LEFT_STOMP || this.getAnimation() == ANIMATION_RIGHT_STOMP || this.getAnimation() == ANIMATION_LEFT_TAIL || this.getAnimation() == ANIMATION_RIGHT_TAIL || this.isFiring() && !this.isVehicle()) {
             vec3d = Vec3.ZERO;
             super.travel(vec3d);
-        } else if (this.isInFluidType() && (this.isEffectiveAi() || this.isVehicle())) {
+        } else if (com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this) && (this.isEffectiveAi() || this.isVehicle())) {
             this.moveRelative(this.getSpeed(), vec3d);
             Vec3 delta = this.getDeltaMovement();
             this.move(MoverType.SELF, delta);
@@ -896,7 +900,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 if (random.nextFloat() <= dropChance && !nuke) {
                     level().destroyBlock(blockpos, true);
                 } else {
-                    blockstate.onBlockExploded(level(), blockpos, dummyExplosion);
+                    level().destroyBlock(blockpos, false);
                 }
                 if (triggerExplosions) {
                     if (nuke) {
@@ -1065,12 +1069,10 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         return ACBlockRegistry.TREMORZILLA_EGG.get().defaultBlockState();
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }
@@ -1199,7 +1201,6 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         return this.entityData.get(TAME_ATTEMPTS);
     }
 
-    @Override
     public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
         return true;
     }
@@ -1214,7 +1215,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     protected Vec3 getRiddenInput(Player player, Vec3 deltaIn) {
         float f = player.zza < 0.0F ? 0.5F : 1.0F;
-        if (this.isInFluidType()) {
+        if (com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this)) {
             Vec3 lookVec = player.getLookAngle();
             float y = (float) lookVec.y;
             return new Vec3(player.xxa * 0.25F, y, player.zza * 0.8F * f);
@@ -1407,7 +1408,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         return this.entityData.get(MAX_BEAM_BREAK_LENGTH);
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.6F;
     }
 

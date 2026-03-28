@@ -68,7 +68,7 @@ public class TotemOfPossessionItem extends Item implements Vanishable, UpdatesSt
         if (isBound(itemstack) && (controlledEntity == null || !controlledEntity.isAlive()) && !level.isClientSide) {
             resetBound(itemstack);
         }
-        if (isBound(itemstack) && controlledEntity != null && (isEntityLookingAt(player, controlledEntity, 5F) || itemstack.getEnchantmentLevel(ACEnchantmentRegistry.SIGHTLESS.get()) > 0)) {
+        if (isBound(itemstack) && controlledEntity != null && (isEntityLookingAt(player, controlledEntity, 5F) || com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.SIGHTLESS.get()) > 0)) {
             player.playSound(ACSoundRegistry.TOTEM_OF_POSSESSION_USE.get());
             player.startUsingItem(interactionHand);
             return InteractionResultHolder.consume(itemstack);
@@ -95,7 +95,7 @@ public class TotemOfPossessionItem extends Item implements Vanishable, UpdatesSt
         Entity controlledEntity = getControlledEntity(level, stack);
 
         if (isBound(stack) && (controlledEntity == null || !controlledEntity.isAlive()) || stack.getDamageValue() >= stack.getMaxDamage()) {
-            if (controlledEntity != null && stack.getEnchantmentLevel(ACEnchantmentRegistry.DETONATING_DEATH.get()) > 0) {
+            if (controlledEntity != null && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.DETONATING_DEATH.get()) > 0) {
                 TotemExplosion explosion = new TotemExplosion(level, user, controlledEntity.getX(), controlledEntity.getY(), controlledEntity.getZ(), 2F + (float) Math.floor(controlledEntity.getBbWidth()), Explosion.BlockInteraction.KEEP);
                 explosion.explode();
                 explosion.finalizeExplosion(true);
@@ -107,7 +107,7 @@ public class TotemOfPossessionItem extends Item implements Vanishable, UpdatesSt
             }
             return;
         }
-        if (!isBound(stack) || controlledEntity == null || !isEntityLookingAt(user, controlledEntity, 5F) && stack.getEnchantmentLevel(ACEnchantmentRegistry.SIGHTLESS.get()) == 0 || controlledEntity instanceof Player && !AlexsCaves.COMMON_CONFIG.totemOfPossessionPlayers.get()) {
+        if (!isBound(stack) || controlledEntity == null || !isEntityLookingAt(user, controlledEntity, 5F) && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SIGHTLESS.get()) == 0 || controlledEntity instanceof Player && !AlexsCaves.COMMON_CONFIG.totemOfPossessionPlayers.get()) {
 
             user.stopUsingItem();
             if (level.isClientSide) {
@@ -124,13 +124,13 @@ public class TotemOfPossessionItem extends Item implements Vanishable, UpdatesSt
         int realStart = 15;
         float time = i < realStart ? i / (float) realStart : 1F;
         float maxDist = 32.0F * time;
-        float speed = 1.25F + 0.35F * stack.getEnchantmentLevel(ACEnchantmentRegistry.RAPID_POSSESSION.get());
+        float speed = 1.25F + 0.35F * com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.RAPID_POSSESSION.get());
         HitResult hitResult = ProjectileUtil.getHitResultOnViewVector(user, entity -> entity.canBeHitByProjectile() && !entity.equals(controlledEntity), maxDist);
         Vec3 vec3 = hitResult.getLocation();
         if (controlledEntity instanceof Mob mob) {
             PathNavigation pathNavigation = mob.getNavigation();
             pathNavigation.moveTo(vec3.x, vec3.y, vec3.z, time * speed);
-            if (stack.getEnchantmentLevel(ACEnchantmentRegistry.SIGHTLESS.get()) > 0) {
+            if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SIGHTLESS.get()) > 0) {
                 controlledEntity.setGlowingTag(true);
             }
         } else {
@@ -169,10 +169,10 @@ public class TotemOfPossessionItem extends Item implements Vanishable, UpdatesSt
                             if (controlledEntity instanceof Mob mob) {
                                 mob.setTarget(target);
                                 mob.setLastHurtByMob(target);
-                                if (i % 4 == 0 && target.getHealth() > mob.getHealth() && !target.getType().is(ACTagRegistry.RESISTS_TOTEM_OF_POSSESSION) && stack.getEnchantmentLevel(ACEnchantmentRegistry.ASTRAL_TRANSFERRING.get()) > 0) {
+                                if (i % 4 == 0 && target.getHealth() > mob.getHealth() && !target.getType().is(ACTagRegistry.RESISTS_TOTEM_OF_POSSESSION) && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.ASTRAL_TRANSFERRING.get()) > 0) {
                                     CompoundTag tag = stack.getOrCreateTag();
                                     tag.putUUID("BoundEntityUUID", target.getUUID());
-                                    CompoundTag entityTag = target.serializeNBT();
+                                    CompoundTag entityTag = target.saveWithoutId(new CompoundTag());
                                     entityTag.putString("id", ForgeRegistries.ENTITY_TYPES.getKey(target.getType()).toString());
                                     tag.put("BoundEntityTag", entityTag);
                                     user.playSound(ACSoundRegistry.TOTEM_OF_POSSESSION_USE.get());
@@ -285,7 +285,7 @@ public class TotemOfPossessionItem extends Item implements Vanishable, UpdatesSt
         } else {
             CompoundTag tag = stack.getOrCreateTag();
             tag.putUUID("BoundEntityUUID", hurtMob.getUUID());
-            CompoundTag entityTag = hurtMob.serializeNBT();
+            CompoundTag entityTag = hurtMob.saveWithoutId(new CompoundTag());
             entityTag.putString("id", ForgeRegistries.ENTITY_TYPES.getKey(hurtMob.getType()).toString());
             tag.put("BoundEntityTag", entityTag);
             livingEntity1.playSound(ACSoundRegistry.TOTEM_OF_POSSESSION_USE.get());

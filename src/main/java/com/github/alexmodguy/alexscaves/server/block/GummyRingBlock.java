@@ -108,7 +108,7 @@ public class GummyRingBlock extends DirectionalBlock implements BucketPickup, Li
     private int getLiquidType(FluidState fluidState) {
         if (fluidState.getType() == Fluids.WATER) {
             return 1;
-        } else if (fluidState.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get() && fluidState.isSource()) {
+        } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidState) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get() && fluidState.isSource()) {
             return 2;
         }
         return 0;
@@ -129,7 +129,7 @@ public class GummyRingBlock extends DirectionalBlock implements BucketPickup, Li
     }
 
     public boolean canPlaceLiquid(BlockGetter getter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return fluid == Fluids.WATER || fluid.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
+        return fluid == Fluids.WATER || com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluid) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
     }
 
     public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState) {
@@ -138,7 +138,7 @@ public class GummyRingBlock extends DirectionalBlock implements BucketPickup, Li
             if (!levelAccessor.isClientSide()) {
                 if (fluidState.getType() == Fluids.WATER) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 1), 3);
-                } else if (fluidState.getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
+                } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidState) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 2), 3);
                 }
                 levelAccessor.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(levelAccessor));

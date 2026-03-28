@@ -62,7 +62,7 @@ public class GeothermalVentBlock extends BaseEntityBlock {
         if (state.getBlock() instanceof GeothermalVentBlock) {
             return state.getValue(SMOKE_TYPE);
         }
-        if (state.getFluidState().getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+        if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(state.getFluidState()) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
             return 3;
         } else if (state.getFluidState().is(FluidTags.WATER)) {
             return 1;

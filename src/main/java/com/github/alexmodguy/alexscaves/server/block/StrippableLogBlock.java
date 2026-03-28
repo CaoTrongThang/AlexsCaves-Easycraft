@@ -15,7 +15,7 @@ public class StrippableLogBlock extends RotatedPillarBlock {
 
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!ToolActions.canPerformAction(itemStack, toolAction))
             return null;
 
         if (ToolActions.AXE_STRIP == toolAction) {
@@ -32,7 +32,6 @@ public class StrippableLogBlock extends RotatedPillarBlock {
                 return ACBlockRegistry.STRIPPED_THORNWOOD_WOOD.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS));
             }
         }
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+        return null;
     }
 }
-

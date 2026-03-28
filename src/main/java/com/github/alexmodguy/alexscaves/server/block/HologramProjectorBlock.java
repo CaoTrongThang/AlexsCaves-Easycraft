@@ -75,7 +75,7 @@ public class HologramProjectorBlock extends BaseEntityBlock implements SimpleWat
                 entityType = EntityType.PLAYER;
                 CompoundTag playerTag = new CompoundTag();
                 playerTag.putUUID("UUID", player.getUUID());
-                String s = player.getEncodeId();
+                String s = EntityType.getKey(EntityType.PLAYER).toString();
                 if (s != null) {
                     playerTag.putString("id", s);
                 }

@@ -55,7 +55,7 @@ public class WaveEntity extends Entity {
         super(entityType, level);
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 2F;
     }
 

@@ -95,10 +95,10 @@ public class DesolateDaggerEntity extends Entity {
                 if (this.getStab() >= 1F) {
                     Entity player = getPlayer();
                     Entity damageFrom = player == null ? this : player;
-                    float damage = 2 + this.getItemStack().getEnchantmentLevel(ACEnchantmentRegistry.IMPENDING_STAB.get()) * 2F;
+                    float damage = 2 + com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(this.getItemStack(), ACEnchantmentRegistry.IMPENDING_STAB.get()) * 2F;
                     if (entity.hurt(ACDamageTypes.causeDesolateDaggerDamage(this.level().registryAccess(), damageFrom), damage)) {
                         this.playSound(ACSoundRegistry.DESOLATE_DAGGER_HIT.get());
-                        int healBy = this.getItemStack().getEnchantmentLevel(ACEnchantmentRegistry.SATED_BLADE.get());
+                        int healBy = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(this.getItemStack(), ACEnchantmentRegistry.SATED_BLADE.get());
                         if(healBy > 0 && damageFrom instanceof Player healPlayer && healPlayer.getFoodData().getSaturationLevel() < 5F){
                             healPlayer.getFoodData().setSaturation(healPlayer.getFoodData().getSaturationLevel() + healBy * 0.1F);
                         }

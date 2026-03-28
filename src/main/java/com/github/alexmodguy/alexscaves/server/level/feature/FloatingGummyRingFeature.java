@@ -26,7 +26,7 @@ public class FloatingGummyRingFeature extends Feature<NoneFeatureConfiguration> 
         boolean aboveSoda = false;
         BlockPos.MutableBlockPos scanPos = new BlockPos.MutableBlockPos();
         for (scanPos.set(context.origin()); scanPos.getY() > worldgenlevel.getMinBuildHeight(); scanPos.move(0, -1, 0)) {
-            if (worldgenlevel.getFluidState(scanPos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
+            if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(worldgenlevel.getFluidState(scanPos)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
                 aboveSoda = true;
                 break;
             }
@@ -34,7 +34,7 @@ public class FloatingGummyRingFeature extends Feature<NoneFeatureConfiguration> 
         if (aboveSoda) {
             boolean sunk = randomsource.nextBoolean();
             if(sunk){
-                while(scanPos.getY() > worldgenlevel.getMinBuildHeight() && worldgenlevel.getFluidState(scanPos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+                while(scanPos.getY() > worldgenlevel.getMinBuildHeight() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(worldgenlevel.getFluidState(scanPos)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
                     scanPos.move(0, -1, 0);
                 }
             }

@@ -17,12 +17,12 @@ import net.minecraft.resources.ResourceLocation;
 import javax.annotation.Nullable;
 
 public class CaramelCubeRenderer extends MobRenderer<CaramelCubeEntity, CaramelCubeModel> implements CustomBookEntityRenderer {
-    private static final ResourceLocation TEXTURE_SMALL = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_small.png");
-    private static final ResourceLocation TEXTURE_SMALL_OUTSIDE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_small_outside.png");
-    private static final ResourceLocation TEXTURE_MEDIUM = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_medium.png");
-    private static final ResourceLocation TEXTURE_MEDIUM_OUTSIDE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_medium_outside.png");
-    private static final ResourceLocation TEXTURE_LARGE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_large.png");
-    private static final ResourceLocation TEXTURE_LARGE_OUTSIDE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_large_outside.png");
+    private static final ResourceLocation TEXTURE_SMALL = new ResourceLocation(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_small.png");
+    private static final ResourceLocation TEXTURE_SMALL_OUTSIDE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_small_outside.png");
+    private static final ResourceLocation TEXTURE_MEDIUM = new ResourceLocation(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_medium.png");
+    private static final ResourceLocation TEXTURE_MEDIUM_OUTSIDE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_medium_outside.png");
+    private static final ResourceLocation TEXTURE_LARGE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_large.png");
+    private static final ResourceLocation TEXTURE_LARGE_OUTSIDE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/caramel_cube/caramel_cube_large_outside.png");
     private boolean sepia = false;
 
     public CaramelCubeRenderer(EntityRendererProvider.Context renderManagerIn) {

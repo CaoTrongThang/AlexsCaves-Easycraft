@@ -86,7 +86,7 @@ public class HologramProjectorBlockEntity extends BlockEntity {
         super.load(tag);
         if (tag.contains("EntityType")) {
             String str = tag.getString("EntityType");
-            this.entityType = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(str));
+            this.entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(str));
         }
         if (tag.contains("EntityTag")) {
             this.entityTag = tag.getCompound("EntityTag");
@@ -123,12 +123,11 @@ public class HologramProjectorBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             if (packet.getTag().contains("EntityType")) {
                 String str = packet.getTag().getString("EntityType");
-                this.entityType = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(str));
+                this.entityType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(str));
             }
             this.entityTag = packet.getTag().getCompound("EntityTag");
             this.rotation = packet.getTag().getFloat("Rotation");

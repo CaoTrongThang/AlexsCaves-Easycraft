@@ -55,7 +55,7 @@ public class PewenBranchBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, @Nullable Entity entity) {
-        return state.getValue(PINES) ? SoundType.GRASS : super.getSoundType(state, level, pos, entity);
+        return state.getValue(PINES) ? SoundType.GRASS : super.getSoundType(state);
     }
 
     public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {

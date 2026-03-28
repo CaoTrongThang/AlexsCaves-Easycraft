@@ -5,7 +5,9 @@ import com.github.alexmodguy.alexscaves.server.entity.item.ThrownWasteDrumEntity
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -13,9 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
 
 public class ThrownWasteDrumEntityRenderer extends EntityRenderer<ThrownWasteDrumEntity> {
 
@@ -49,9 +49,8 @@ public class ThrownWasteDrumEntityRenderer extends EntityRenderer<ThrownWasteDru
         float f = 1.0F - progress * 0.5F;
         float f1 = 1.0F + progress;
         float f2 = 1.0F - progress;
-        for (net.minecraft.client.renderer.RenderType rt : bakedmodel.getRenderTypes(state, RandomSource.create(42), ModelData.EMPTY)) {
-            NuclearBombRenderer.renderModel(poseStack.last(), source.getBuffer(net.minecraftforge.client.RenderTypeHelper.getEntityRenderType(rt, false)), state, bakedmodel, f, f1, f2, lightIn, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, rt);
-        }
+        RenderType renderType = ItemBlockRenderTypes.getMovingBlockRenderType(state);
+        NuclearBombRenderer.renderModel(poseStack.last(), source.getBuffer(net.minecraftforge.client.RenderTypeHelper.getEntityRenderType(renderType, false)), state, bakedmodel, f, f1, f2, lightIn, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
         poseStack.popPose();
     }
@@ -60,4 +59,3 @@ public class ThrownWasteDrumEntityRenderer extends EntityRenderer<ThrownWasteDru
         return TextureAtlas.LOCATION_BLOCKS;
     }
 }
-

@@ -1,7 +1,9 @@
 package com.github.alexmodguy.alexscaves.client.render.entity.layer;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
+import com.github.alexmodguy.alexscaves.client.render.entity.LivingEntityRendererAccessor;
 import com.google.common.collect.ImmutableList;
+import net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,6 +19,14 @@ import java.util.stream.Collectors;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientLayerRegistry {
+
+    public static void registerFabric() {
+        LivingEntityFeatureRendererRegistrationCallback.EVENT.register((entityType, entityRenderer, registrationHelper, context) -> {
+            if (entityType != EntityType.ENDER_DRAGON) {
+                registerFabricLayer(entityRenderer, registrationHelper);
+            }
+        });
+    }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
@@ -43,8 +53,13 @@ public class ClientLayerRegistry {
                 AlexsCaves.LOGGER.warn("Could not apply radiation glow layer to " + ForgeRegistries.ENTITY_TYPES.getKey(entityType) + ", has custom renderer that is not LivingEntityRenderer.");
             }
             if (renderer != null) {
-                renderer.addLayer(new ACPotionEffectLayer(renderer));
+                ((LivingEntityRendererAccessor) renderer).addACLayer(new ACPotionEffectLayer(renderer));
             }
         }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static void registerFabricLayer(LivingEntityRenderer<?, ?> livingRenderer, LivingEntityFeatureRendererRegistrationCallback.RegistrationHelper registrationHelper) {
+        registrationHelper.register(new ACPotionEffectLayer(livingRenderer));
     }
 }

@@ -63,7 +63,7 @@ public class PrimitiveClubItem extends Item {
                 if (hurtEntity.addEffect(instance)) {
                     AlexsCaves.sendMSGToAll(new UpdateEffectVisualityEntityMessage(hurtEntity.getId(), player.getId(), 3, instance.getDuration()));
                     soundEvent = ACSoundRegistry.PRIMITIVE_CLUB_HIT.get();
-                    int dazingEdgeLevel = stack.getEnchantmentLevel(ACEnchantmentRegistry.DAZING_SWEEP.get());
+                    int dazingEdgeLevel = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.DAZING_SWEEP.get());
                     if (dazingEdgeLevel > 0) {
                         float f = dazingEdgeLevel + 1.2F;
                         AABB aabb = AABB.ofSize(hurtEntity.position(), f, f, f);
@@ -105,23 +105,19 @@ public class PrimitiveClubItem extends Item {
         return repairItem.is(ACItemRegistry.HEAVY_BONE.get()) || super.isValidRepairItem(item, repairItem);
     }
 
-    @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        int swift = stack.getEnchantmentLevel(ACEnchantmentRegistry.SWIFTWOOD.get());
-        return slot == EquipmentSlot.MAINHAND ? defaultModifiers[Mth.clamp(swift, 0, 3)] : super.getAttributeModifiers(slot, stack);
+        int swift = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SWIFTWOOD.get());
+        return slot == EquipmentSlot.MAINHAND ? defaultModifiers[Mth.clamp(swift, 0, 3)] : this.getDefaultAttributeModifiers(slot);
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
 
-    @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         return player.getAttackStrengthScale(0) < 0.95 || player.attackAnim != 0;
     }
 
-    @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (entity instanceof Player player) {
             if (player.getAttackStrengthScale(0) < 1 && player.attackAnim > 0) {

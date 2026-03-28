@@ -256,7 +256,7 @@ public class NucleeperEntity extends Monster implements ActivatesSirens, Powerab
         this.walkAnimation.update(f2, 0.4F);
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.1F;
     }
 

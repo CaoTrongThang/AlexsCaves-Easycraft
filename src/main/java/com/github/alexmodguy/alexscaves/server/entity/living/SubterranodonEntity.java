@@ -548,7 +548,6 @@ public class SubterranodonEntity extends DinosaurEntity implements PackAnimal, F
         }
     }
 
-    @Override
     public boolean shouldRiderSit() {
         return false;
     }
@@ -600,10 +599,10 @@ public class SubterranodonEntity extends DinosaurEntity implements PackAnimal, F
             boolean flag1 = movement.y != vec3.y;
             boolean flag2 = movement.z != vec3.z;
             boolean flag3 = this.onGround() || flag1 && movement.y < 0.0D;
-            if (this.getStepHeight() > 0.0F && flag3 && (flag || flag2)) {
-                Vec3 vec31 = collideBoundingBox(this, new Vec3(movement.x, this.getStepHeight(), movement.z), aabb, this.level(), list);
-                Vec3 vec32 = collideBoundingBox(this, new Vec3(0.0D, this.getStepHeight(), 0.0D), aabb.expandTowards(movement.x, 0.0D, movement.z), this.level(), list);
-                if (vec32.y < (double) this.getStepHeight()) {
+            if (com.github.alexmodguy.alexscaves.fabric.EntityCompat.getStepHeight(this) > 0.0F && flag3 && (flag || flag2)) {
+                Vec3 vec31 = collideBoundingBox(this, new Vec3(movement.x, com.github.alexmodguy.alexscaves.fabric.EntityCompat.getStepHeight(this), movement.z), aabb, this.level(), list);
+                Vec3 vec32 = collideBoundingBox(this, new Vec3(0.0D, com.github.alexmodguy.alexscaves.fabric.EntityCompat.getStepHeight(this), 0.0D), aabb.expandTowards(movement.x, 0.0D, movement.z), this.level(), list);
+                if (vec32.y < (double) com.github.alexmodguy.alexscaves.fabric.EntityCompat.getStepHeight(this)) {
                     Vec3 vec33 = collideBoundingBox(this, new Vec3(movement.x, 0.0D, movement.z), aabb.move(vec32), this.level(), list).add(vec32);
                     if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
                         vec31 = vec33;
@@ -617,7 +616,7 @@ public class SubterranodonEntity extends DinosaurEntity implements PackAnimal, F
 
             return vec3;
         } else {
-            return super.collide(movement);
+            return Entity.collideBoundingBox(this, movement, this.getBoundingBox(), this.level(), this.level().getEntityCollisions(this, this.getBoundingBox().expandTowards(movement)));
         }
     }
 

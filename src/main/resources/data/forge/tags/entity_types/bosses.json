@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "alexscaves:luxtructosaurus"
+    "minecraft:wither",
+    "minecraft:ender_dragon"
   ]
 }

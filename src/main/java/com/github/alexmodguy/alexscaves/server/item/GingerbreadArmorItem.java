@@ -51,7 +51,6 @@ public class GingerbreadArmorItem extends ArmorItem {
         }
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
@@ -61,9 +60,8 @@ public class GingerbreadArmorItem extends ArmorItem {
         return equipmentSlot == this.type.getSlot() ? defaultAttributes : ImmutableMultimap.of();
     }
 
-    @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        return slot == this.type.getSlot() ? getOrCreateDurabilityAttributes(stack.getDamageValue(), stack.getMaxDamage()) : super.getAttributeModifiers(slot, stack);
+        return slot == this.type.getSlot() ? getOrCreateDurabilityAttributes(stack.getDamageValue(), stack.getMaxDamage()) : this.getDefaultAttributeModifiers(slot);
     }
 
     @Nullable

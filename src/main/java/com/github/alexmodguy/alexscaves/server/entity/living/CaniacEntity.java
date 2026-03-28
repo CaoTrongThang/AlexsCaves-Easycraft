@@ -290,7 +290,7 @@ public class CaniacEntity extends Monster implements IAnimatedEntity, PossessedB
         return (prevRunProgress + (runProgress - prevRunProgress) * partialTick) * 0.2F;
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return hasRunningAttributes ? 1.1F : 0.6F;
     }
 

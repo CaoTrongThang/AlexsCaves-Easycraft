@@ -54,7 +54,6 @@ public class DarkArrowEntity extends AbstractArrow {
         return ItemStack.EMPTY;
     }
 
-    @Override
     public void startFalling() {
         this.inGround = false;
     }

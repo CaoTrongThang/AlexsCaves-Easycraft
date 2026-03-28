@@ -93,10 +93,10 @@ public class CommonEvents {
     @SuppressWarnings("removal")
     @SubscribeEvent
     public void resizeEntity(EntityEvent.Size event) {
-        if (event.getEntity().isAddedToWorld() && event.getEntity() instanceof MagneticEntityAccessor magnet && event.getEntity().getEntityData().isDirty()) {
+        if (event.getEntity().isAlive() && event.getEntity() instanceof MagneticEntityAccessor magnet && event.getEntity().getEntityData().isDirty()) {
             Direction dir = magnet.getMagneticAttachmentFace();
             float defaultHeight = event.getOldSize().height;
-            float defaultEyeHeight = event.getEntity().getEyeHeightAccess(event.getPose(), event.getOldSize());
+            float defaultEyeHeight = event.getEntity().getEyeHeight();
             if (dir == Direction.DOWN && event.getEntity() instanceof Player && event.getEntity().getPose() == Pose.STANDING) {
                 event.setNewSize(event.getNewSize(), true); // resets eye height
             } else if (dir == Direction.UP) {
@@ -115,7 +115,7 @@ public class CommonEvents {
             }
         }
         if (!event.getEntity().level().isClientSide && event.getEntity() instanceof Mob mob && event.getSource() != null && event.getSource().getDirectEntity() instanceof LivingEntity directSource && directSource.getItemInHand(InteractionHand.MAIN_HAND).is(ACItemRegistry.PRIMITIVE_CLUB.get())) {
-            if (directSource.getItemInHand(InteractionHand.MAIN_HAND).getEnchantmentLevel(ACEnchantmentRegistry.BONKING.get()) > 0 && event.getEntity().level().random.nextFloat() < 0.33F) {
+            if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(directSource.getItemInHand(InteractionHand.MAIN_HAND), ACEnchantmentRegistry.BONKING.get()) > 0 && event.getEntity().level().random.nextFloat() < 0.33F) {
                 Creeper fakeCreeperForSkullDrop = EntityType.CREEPER.create(mob.level());
                 if (fakeCreeperForSkullDrop != null) {
                     if (event.getEntity().level() instanceof ServerLevel serverLevel) {
@@ -164,7 +164,7 @@ public class CommonEvents {
         if (stack.is(ACItemRegistry.HOLOCODER.get()) && event.getTarget() instanceof LivingEntity && !(event.getTarget() instanceof ArmorStand) && event.getTarget().isAlive()) {
             CompoundTag tag = stack.getOrCreateTag();
             tag.putUUID("BoundEntityUUID", event.getTarget().getUUID());
-            CompoundTag entityTag = event.getTarget() instanceof Player ? new CompoundTag() : event.getTarget().serializeNBT();
+            CompoundTag entityTag = event.getTarget() instanceof Player ? new CompoundTag() : event.getTarget().saveWithoutId(new CompoundTag());
             entityTag.putString("id", ForgeRegistries.ENTITY_TYPES.getKey(event.getTarget().getType()).toString());
             if (event.getTarget() instanceof Player) {
                 entityTag.putUUID("UUID", event.getTarget().getUUID());
@@ -217,7 +217,7 @@ public class CommonEvents {
     public void livingAttack(LivingAttackEvent event) {
         if (event.getSource().getDirectEntity() instanceof AbstractArrow arrow && event.getEntity().isBlocking() && event.getEntity().getUseItem().is(ACItemRegistry.RESISTOR_SHIELD.get())) {
             ItemStack shield = event.getEntity().getUseItem();
-            if (shield.getEnchantmentLevel(ACEnchantmentRegistry.ARROW_INDUCTING.get()) > 0 && arrow.getType() != ACEntityRegistry.SEEKING_ARROW.get()) {
+            if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(shield, ACEnchantmentRegistry.ARROW_INDUCTING.get()) > 0 && arrow.getType() != ACEntityRegistry.SEEKING_ARROW.get()) {
                 SeekingArrowEntity seekingArrowEntity = new SeekingArrowEntity(event.getEntity().level(), event.getEntity());
                 seekingArrowEntity.copyPosition(arrow);
                 seekingArrowEntity.setDeltaMovement(arrow.getDeltaMovement().scale(-0.4D));
@@ -240,7 +240,7 @@ public class CommonEvents {
 
     @SubscribeEvent
     public void livingTick(LivingEvent.LivingTickEvent event) {
-        if (event.getEntity().hasEffect(ACEffectRegistry.BUBBLED.get()) && event.getEntity().isInFluidType()) {
+        if (event.getEntity().hasEffect(ACEffectRegistry.BUBBLED.get()) && com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(event.getEntity())) {
             event.getEntity().removeEffect(ACEffectRegistry.BUBBLED.get());
         }
         if (event.getEntity().hasEffect(ACEffectRegistry.DARKNESS_INCARNATE.get()) && event.getEntity().tickCount % 5 == 0 && DarknessIncarnateEffect.isInLight(event.getEntity(), 11)) {
@@ -255,7 +255,7 @@ public class CommonEvents {
     }
 
     @SubscribeEvent
-    public void onEntityJoinWorld(MobSpawnEvent.FinalizeSpawn event) {
+    public void onEntityJoinWorld(FinalizeSpawnEvent event) {
         try {
             if (event.getEntity() instanceof Creeper creeper) {
                 creeper.targetSelector.addGoal(3, new AvoidEntityGoal<>(creeper, RaycatEntity.class, 10.0F, 1.0D, 1.2D));
@@ -308,7 +308,7 @@ public class CommonEvents {
         if (event.getEffectInstance().getEffect() instanceof SugarRushEffect) {
             event.getEntity().level().playSound(null, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), ACSoundRegistry.SUGAR_RUSH_ENTER.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
-        if (event.getEntity() instanceof Player player && player.isAddedToWorld() && event.getEffectInstance().getEffect() instanceof SugarRushEffect && AlexsCaves.COMMON_CONFIG.sugarRushSlowsTime.get()) {
+        if (event.getEntity() instanceof Player player && player.isAlive() && event.getEffectInstance().getEffect() instanceof SugarRushEffect && AlexsCaves.COMMON_CONFIG.sugarRushSlowsTime.get()) {
             float timeBetweenTicksIncrease = 2F;
             SugarRushEffect.enterSlowMotion(player, player.level(), Mth.ceil(event.getEffectInstance().getDuration() * timeBetweenTicksIncrease), timeBetweenTicksIncrease);
         }
@@ -432,7 +432,7 @@ public class CommonEvents {
             if (raytraceresult.getType() == HitResult.Type.BLOCK) {
                 BlockPos blockpos = ((BlockHitResult) raytraceresult).getBlockPos();
                 if (event.getLevel().mayInteract(player, blockpos)) {
-                    if (event.getLevel().getFluidState(blockpos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
+                    if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(event.getLevel().getFluidState(blockpos)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
                         player.gameEvent(GameEvent.ITEM_INTERACT_START);
                         event.getLevel().playSound(player, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.NEUTRAL, 1.0F, 1.0F);
                         player.awardStat(Stats.ITEM_USED.get(Items.GLASS_BOTTLE));
@@ -459,14 +459,14 @@ public class CommonEvents {
         float f5 = Mth.sin(-f * ((float) Math.PI / 180F));
         float f6 = f3 * f4;
         float f7 = f2 * f4;
-        double d0 = player.getBlockReach();
+        double d0 = 5.0D;
         Vec3 vec31 = vec3.add((double) f6 * d0, (double) f5 * d0, (double) f7 * d0);
         return level.clip(new ClipContext(vec3, vec31, ClipContext.Block.OUTLINE, fluid, player));
     }
 
     @SubscribeEvent
     public void onUpdateAnvil(AnvilUpdateEvent event) {
-        if (event.getLeft().getItem() instanceof AlwaysCombinableOnAnvil && event.getLeft().getItem() == event.getRight().getItem() && !event.getLeft().getAllEnchantments().isEmpty() && !event.getRight().getAllEnchantments().isEmpty()) {
+        if (event.getLeft().getItem() instanceof AlwaysCombinableOnAnvil && event.getLeft().getItem() == event.getRight().getItem() && !EnchantmentHelper.getEnchantments(event.getLeft()).isEmpty() && !EnchantmentHelper.getEnchantments(event.getRight()).isEmpty()) {
             Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(event.getLeft());
             Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(event.getRight());
             boolean canCombine = true;

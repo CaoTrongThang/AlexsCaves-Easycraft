@@ -173,7 +173,7 @@ public class ExtinctionSpearEntity extends AbstractArrow {
                 dinosaurSpirit.setPlayerUUID(entity1.getUUID());
                 dinosaurSpirit.setAttackingEntityId(entity.getId());
                 dinosaurSpirit.lookAt(EntityAnchorArgument.Anchor.EYES, entity1.getEyePosition());
-                dinosaurSpirit.setEnchantmentLevel(spearItem.getEnchantmentLevel(ACEnchantmentRegistry.PLUMMETING_FLIGHT.get()));
+                dinosaurSpirit.setEnchantmentLevel(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(spearItem, ACEnchantmentRegistry.PLUMMETING_FLIGHT.get()));
                 this.playSound(ACSoundRegistry.EXTINCTION_SPEAR_SUMMON.get(), 1.0F, 1.0F);
                 level().addFreshEntity(dinosaurSpirit);
             }
@@ -200,4 +200,3 @@ public class ExtinctionSpearEntity extends AbstractArrow {
     }
 
 }
-

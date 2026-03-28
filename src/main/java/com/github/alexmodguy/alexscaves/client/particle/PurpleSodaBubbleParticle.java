@@ -29,10 +29,10 @@ public class PurpleSodaBubbleParticle extends TextureSheetParticle {
         BlockPos slightlyBelow = BlockPos.containing(this.x, this.y, this.z);
         float fluidHeight = 0.0F;
         BlockPos lastSodaBlock = null;
-        if(level.getFluidState(slightlyAbove).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+        if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(slightlyAbove)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
             fluidHeight = level.getFluidState(slightlyAbove).getHeight(level, slightlyAbove);
             lastSodaBlock = slightlyAbove;
-        }else if(level.getFluidState(slightlyBelow).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+        } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(slightlyBelow)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
             fluidHeight = level.getFluidState(slightlyBelow).getHeight(level, slightlyBelow);
             lastSodaBlock = slightlyBelow;
         }

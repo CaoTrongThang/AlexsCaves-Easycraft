@@ -117,7 +117,7 @@ public class SulfurBudBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     public boolean canPlaceLiquid(BlockGetter getter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return fluid == Fluids.WATER || fluid.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        return fluid == Fluids.WATER || com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluid) == ACFluidRegistry.ACID_FLUID_TYPE.get();
     }
 
     public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState) {
@@ -126,7 +126,7 @@ public class SulfurBudBlock extends Block implements SimpleWaterloggedBlock {
             if (!levelAccessor.isClientSide()) {
                 if (fluidState.getType() == Fluids.WATER) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 1), 3);
-                } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+                } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidState) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 2), 3);
                 }
                 levelAccessor.scheduleTick(pos, fluidState.getType(), fluidState.getType().getTickDelay(levelAccessor));
@@ -169,7 +169,7 @@ public class SulfurBudBlock extends Block implements SimpleWaterloggedBlock {
     public static int getLiquidType(FluidState fluidState) {
         if (fluidState.getType() == Fluids.WATER) {
             return 1;
-        } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get() && fluidState.isSource()) {
+        } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidState) == ACFluidRegistry.ACID_FLUID_TYPE.get() && fluidState.isSource()) {
             return 2;
         }
         return 0;

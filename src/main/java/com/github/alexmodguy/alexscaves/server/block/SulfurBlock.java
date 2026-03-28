@@ -30,7 +30,7 @@ public class SulfurBlock extends Block {
     }
 
     private boolean isDrippingAcidAbove(Level level, BlockPos pos) {
-        if (level.getFluidState(pos).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+        if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(pos)) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
             return true;
         }
         while (level.getBlockState(pos).isAir() && pos.getY() < level.getMaxBuildHeight()) {

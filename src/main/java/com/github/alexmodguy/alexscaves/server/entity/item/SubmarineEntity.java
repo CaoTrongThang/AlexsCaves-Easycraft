@@ -339,7 +339,6 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         this.entityData.set(DANGER_ALERT_TICKS, ticks);
     }
 
-    @Override
     public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
         return type.supportsBoating(null);
     }
@@ -434,7 +433,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
             return InteractionResult.PASS;
         } else {
             ItemStack itemStack = player.getItemInHand(hand);
-            if (itemStack.canPerformAction(ToolActions.AXE_SCRAPE) && (this.getOxidizationLevel() > 0 || this.isWaxed())) {
+            if (ToolActions.canPerformAction(itemStack, ToolActions.AXE_SCRAPE) && (this.getOxidizationLevel() > 0 || this.isWaxed())) {
                 player.swing(hand);
                 if (!player.isCreative()) {
                     itemStack.hurtAndBreak(1, player, (player1) -> {
@@ -569,7 +568,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
     }
 
     public float getWaterHeight() {
-        return (float) getFluidTypeHeight(ForgeMod.WATER_TYPE.get());
+        return (float) com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.WATER_TYPE.get());
     }
 
     @Override

@@ -31,7 +31,6 @@ public class ShotGumItem extends Item implements UpdatesStackTags, AlwaysCombina
         super(new Item.Properties().stacksTo(1));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
@@ -152,10 +151,10 @@ public class ShotGumItem extends Item implements UpdatesStackTags, AlwaysCombina
             level.playSound((Player) null, entity.getX(), entity.getY(), entity.getZ(), ACSoundRegistry.SHOTGUM_SHOOT.get(), entity.getSoundSource(), 1.0F, 1.0F);
             setShooting(stack, false);
             boolean leftHand = false;
-            boolean ricochetEnchant = stack.getEnchantmentLevel(ACEnchantmentRegistry.TARGETED_RICOCHET.get()) > 0;
-            boolean splitEnchant = stack.getEnchantmentLevel(ACEnchantmentRegistry.TRIPLE_SPLIT.get()) > 0;
-            boolean explosiveEnchant = stack.getEnchantmentLevel(ACEnchantmentRegistry.EXPLOSIVE_FLAVOR.get()) > 0;
-            int maximumBounces = 4 + stack.getEnchantmentLevel(ACEnchantmentRegistry.BOUNCY_BALL.get()) * 2;
+            boolean ricochetEnchant = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TARGETED_RICOCHET.get()) > 0;
+            boolean splitEnchant = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TRIPLE_SPLIT.get()) > 0;
+            boolean explosiveEnchant = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.EXPLOSIVE_FLAVOR.get()) > 0;
+            int maximumBounces = 4 + com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.BOUNCY_BALL.get()) * 2;
             if(entity instanceof LivingEntity living){
                 boolean mainHand = living.getItemInHand(InteractionHand.MAIN_HAND) == stack;
                 boolean offHand = living.getItemInHand(InteractionHand.OFF_HAND) == stack;

@@ -1,6 +1,7 @@
 package com.github.alexmodguy.alexscaves.server.item;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
+import com.github.alexmodguy.alexscaves.server.block.NuclearBombBlock;
 import com.github.alexmodguy.alexscaves.server.misc.ACAdvancementTriggerRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.minecraft.ChatFormatting;
@@ -76,14 +77,16 @@ public class RemoteDetonatorItem extends Item {
                     loadChunksAround(dimensionLevel, player.getUUID(), globalPos.pos(), true);
                     BlockState blockState = dimensionLevel.getBlockState(globalPos.pos());
                     if(blockState.is(ACTagRegistry.REMOTE_DETONATOR_ACTIVATES)){
-                        blockState.onCaughtFire(dimensionLevel, globalPos.pos(), Direction.UP, player);
+                        if (blockState.getBlock() instanceof NuclearBombBlock nuclearBombBlock) {
+                            nuclearBombBlock.onCaughtFire(blockState, dimensionLevel, globalPos.pos(), Direction.UP, player);
+                        }
                         if(player.distanceToSqr(globalPos.pos().getCenter()) > 1000){
                             ACAdvancementTriggerRegistry.REMOTE_DETONATION.triggerForEntity(player);
                         }
                         tag.remove("BombDimension");
                         tag.remove("BombPos");
                         itemstack.setTag(tag);
-                        level.setBlockAndUpdate(globalPos.pos(), Blocks.AIR.defaultBlockState());
+                        dimensionLevel.setBlockAndUpdate(globalPos.pos(), Blocks.AIR.defaultBlockState());
                     }
                 }
             }

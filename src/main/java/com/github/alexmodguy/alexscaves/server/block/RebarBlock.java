@@ -115,7 +115,7 @@ public class RebarBlock extends Block implements BucketPickup, LiquidBlockContai
     }
 
     public boolean canPlaceLiquid(BlockGetter getter, BlockPos blockPos, BlockState blockState, Fluid fluid) {
-        return fluid == Fluids.WATER || fluid.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        return fluid == Fluids.WATER || com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluid) == ACFluidRegistry.ACID_FLUID_TYPE.get();
     }
 
     public boolean placeLiquid(LevelAccessor levelAccessor, BlockPos pos, BlockState blockState, FluidState fluidState) {
@@ -124,7 +124,7 @@ public class RebarBlock extends Block implements BucketPickup, LiquidBlockContai
             if (!levelAccessor.isClientSide()) {
                 if (fluidState.getType() == Fluids.WATER) {
                     levelAccessor.setBlock(pos, blockState.setValue(LIQUID_LOGGED, 1), 3);
-                } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+                } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidState) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
                     BlockState state = blockState;
                     if (blockState.getBlock() == ACBlockRegistry.METAL_REBAR.get()) {
                         levelAccessor.levelEvent(1501, pos, 0);
@@ -159,7 +159,7 @@ public class RebarBlock extends Block implements BucketPickup, LiquidBlockContai
     private int getLiquidType(FluidState fluidState) {
         if (fluidState.getType() == Fluids.WATER) {
             return 1;
-        } else if (fluidState.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get() && fluidState.isSource()) {
+        } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidState) == ACFluidRegistry.ACID_FLUID_TYPE.get() && fluidState.isSource()) {
             return 2;
         }
         return 0;

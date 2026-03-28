@@ -6,15 +6,13 @@ import com.github.alexthe666.citadel.animation.Animation;
 import com.github.alexthe666.citadel.animation.IAnimatedEntity;
 import net.minecraft.Util;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
-import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -111,11 +109,15 @@ public class GingerbreadManStealGoal extends Goal {
         if(!canStealFromEntityType(entity)){
             return false;
         }
-        LazyOptional<IItemHandler> lazyOptional = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.DOWN);
-        if (lazyOptional.isPresent()) {
-            IItemHandler handler = lazyOptional.orElse(null);
-            for (int i = 0; i < handler.getSlots(); i++) {
-                if (handler.getStackInSlot(i).is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
+        if (entity instanceof Player player) {
+            for (ItemStack stack : player.getInventory().items) {
+                if (stack.is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
+                    return true;
+                }
+            }
+        } else if (entity instanceof LivingEntity living) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (living.getItemBySlot(slot).is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
                     return true;
                 }
             }
@@ -131,23 +133,34 @@ public class GingerbreadManStealGoal extends Goal {
     }
 
     public ItemStack stealOneFrom(Entity entity) {
-        LazyOptional<IItemHandler> lazyOptional = entity.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.DOWN);
-        if (lazyOptional.isPresent()) {
-            IItemHandler handler = lazyOptional.orElse(null);
+        if (entity instanceof Player player) {
             List<Integer> validSlots = new ArrayList<>();
-            for (int i = 0; i < handler.getSlots(); i++) {
-                if (handler.getStackInSlot(i).is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
+            for (int i = 0; i < player.getInventory().items.size(); i++) {
+                if (player.getInventory().items.get(i).is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
                     validSlots.add(i);
                 }
             }
             if (!validSlots.isEmpty()) {
                 int slotId = Util.getRandom(validSlots, gingerbreadMan.getRandom());
-                ItemStack stack = handler.getStackInSlot(slotId);
+                ItemStack stack = player.getInventory().items.get(slotId);
                 ItemStack copy = stack.copy();
                 copy.setCount(1);
-                if (stack.is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
-                    stack.shrink(1);
+                stack.shrink(1);
+                return copy;
+            }
+        } else if (entity instanceof LivingEntity living) {
+            List<EquipmentSlot> validSlots = new ArrayList<>();
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (living.getItemBySlot(slot).is(ACTagRegistry.GINGERBREAD_MAN_STEALS)) {
+                    validSlots.add(slot);
                 }
+            }
+            if (!validSlots.isEmpty()) {
+                EquipmentSlot slot = Util.getRandom(validSlots, gingerbreadMan.getRandom());
+                ItemStack stack = living.getItemBySlot(slot);
+                ItemStack copy = stack.copy();
+                copy.setCount(1);
+                stack.shrink(1);
                 return copy;
             }
         }

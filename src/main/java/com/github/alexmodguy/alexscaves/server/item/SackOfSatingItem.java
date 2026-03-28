@@ -18,8 +18,6 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import org.checkerframework.checker.units.qual.C;
-
 import java.util.Optional;
 
 public class SackOfSatingItem extends Item {
@@ -136,7 +134,7 @@ public class SackOfSatingItem extends Item {
     }
 
      public static int calculateWholeStackHungerValue(ItemStack foodStack, LivingEntity eater){
-        FoodProperties foodProperties = foodStack.getFoodProperties(eater);
+        FoodProperties foodProperties = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getFoodProperties(foodStack, eater);
         if(foodProperties != null && !foodStack.is(ACTagRegistry.RESTRICTED_FROM_SACK_OF_SATING)){
             return foodProperties.getNutrition() * foodStack.getCount();
         }

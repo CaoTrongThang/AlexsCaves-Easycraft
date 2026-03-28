@@ -2,7 +2,6 @@ package com.github.alexmodguy.alexscaves.server.item;
 
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -16,10 +15,9 @@ public class RadioactiveOnDestroyedBlockItem extends RadioactiveBlockItem {
         super(blockSupplier, props, randomChanceOfRadiation);
     }
 
-    @Override
-    public void onDestroyed(ItemEntity itemEntity, DamageSource damageSource){
-        super.onDestroyed(itemEntity, damageSource);
-        if(!damageSource.isCreativePlayer() && !itemEntity.isRemoved()){
+    public void onDestroyed(ItemEntity itemEntity){
+        super.onDestroyed(itemEntity);
+        if(!itemEntity.isRemoved()){
             itemEntity.discard();
             AreaEffectCloud cloud = new AreaEffectCloud(itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ());
             cloud.setParticle(ACParticleRegistry.GAMMAROACH.get());

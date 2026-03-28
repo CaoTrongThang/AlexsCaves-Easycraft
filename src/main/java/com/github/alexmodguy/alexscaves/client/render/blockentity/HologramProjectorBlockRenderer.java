@@ -160,7 +160,7 @@ public class HologramProjectorBlockRenderer<T extends HologramProjectorBlockEnti
         PlayerInfo playerInfo = getPlayerInfo(lastPlayerUUID);
         String modelName = getPlayerModelName(playerInfo, lastPlayerUUID);
         EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
-        EntityRenderer<? extends Player> renderer = manager.getSkinMap().get(modelName);
+        EntityRenderer<? extends Player> renderer = manager.playerRenderers.get(modelName);
         if(playerModel == null || slimPlayerModel == null){
             playerModel = new PlayerModel(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER), false);
             slimPlayerModel = new PlayerModel(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.PLAYER_SLIM), true);

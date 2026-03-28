@@ -57,7 +57,7 @@ public class ThrownIceCreamScoopEntity extends ThrowableItemProjectile {
         super.onHitEntity(hitResult);
         hitResult.getEntity().hurt(damageSources().thrown(this, this.getOwner()), 0.0F);
         if(hitResult.getEntity() instanceof LivingEntity living){
-            living.curePotionEffects(new ItemStack(Items.MILK_BUCKET));
+            living.removeAllEffects();
         }
     }
 

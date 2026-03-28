@@ -49,7 +49,7 @@ public class ExtinctionSpearItem extends SpearItem {
     public void onUseTick(Level level, LivingEntity living, ItemStack stack, int timeUsing) {
         if(timeUsing == getUseDuration(stack)){
             level.playSound((Player) null, living, ACSoundRegistry.EXTINCTION_SPEAR_SUMMON.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-            int grottoHeads = 3 + stack.getEnchantmentLevel(ACEnchantmentRegistry.HERD_PHALANX.get());
+            int grottoHeads = 3 + com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.HERD_PHALANX.get());
             float grottoRotateBy = 360F / grottoHeads;
             for(int i = 0; i < grottoHeads; i++){
                 DinosaurSpiritEntity dinosaurSpirit = ACEntityRegistry.DINOSAUR_SPIRIT.get().create(level);
@@ -87,7 +87,7 @@ public class ExtinctionSpearItem extends SpearItem {
         dinosaurSpirit.setPos(between.x, player.getY() + 1.0F, between.z);
         dinosaurSpirit.setDinosaurType(DinosaurSpiritEntity.DinosaurType.TREMORSAURUS);
         dinosaurSpirit.setPlayerUUID(player.getUUID());
-        dinosaurSpirit.setEnchantmentLevel(stack.getEnchantmentLevel(ACEnchantmentRegistry.CHOMPING_SPIRIT.get()));
+        dinosaurSpirit.setEnchantmentLevel(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.CHOMPING_SPIRIT.get()));
         dinosaurSpirit.setAttackingEntityId(hurtEntity.getId());
         dinosaurSpirit.lookAt(EntityAnchorArgument.Anchor.EYES, hurtEntity.getEyePosition());
         dinosaurSpirit.setDelaySpawn(5);

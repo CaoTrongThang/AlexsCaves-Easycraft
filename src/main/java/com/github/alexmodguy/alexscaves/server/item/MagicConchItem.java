@@ -37,18 +37,18 @@ public class MagicConchItem extends Item {
         int i = this.getUseDuration(stack) - useTimeLeft;
         boolean hurtRelations = false;
         if (i > 25) {
-            if(stack.getEnchantmentLevel(ACEnchantmentRegistry.TAXING_BELLOW.get()) > 0){
+            if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TAXING_BELLOW.get()) > 0) {
                 stack.setDamageValue(Math.min(0, stack.getDamageValue() - 1));
                 hurtRelations = true;
-            }else{
+            } else {
                 stack.hurtAndBreak(1, player, (player1) -> {
                     player1.broadcastBreakEvent(player1.getUsedItemHand());
                 });
             }
             RandomSource randomSource = player.getRandom();
-            int time = 1200 + stack.getEnchantmentLevel(ACEnchantmentRegistry.LASTING_MORALE.get()) * 400;
+            int time = 1200 + com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.LASTING_MORALE.get()) * 400;
             if (!level.isClientSide) {
-                int chartingLevel = stack.getEnchantmentLevel(ACEnchantmentRegistry.CHARTING_CALL.get());
+                int chartingLevel = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.CHARTING_CALL.get());
                 DeepOneBaseEntity lastSummonedDeepOne = null;
                 int maxNormal = 3 + randomSource.nextInt(1);
                 int maxKnights = 2 + randomSource.nextInt(1);

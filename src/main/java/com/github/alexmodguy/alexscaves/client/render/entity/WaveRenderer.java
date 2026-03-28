@@ -16,14 +16,14 @@ import net.minecraft.util.Mth;
 
 public class WaveRenderer extends EntityRenderer<WaveEntity> {
 
-    private static final ResourceLocation TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_0.png");
-    private static final ResourceLocation TEXTURE_1 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_1.png");
-    private static final ResourceLocation TEXTURE_2 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_2.png");
-    private static final ResourceLocation TEXTURE_3 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_3.png");
-    private static final ResourceLocation OVERLAY_TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_0.png");
-    private static final ResourceLocation OVERLAY_TEXTURE_1 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_1.png");
-    private static final ResourceLocation OVERLAY_TEXTURE_2 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_2.png");
-    private static final ResourceLocation OVERLAY_TEXTURE_3 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_3.png");
+    private static final ResourceLocation TEXTURE_0 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_0.png");
+    private static final ResourceLocation TEXTURE_1 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_1.png");
+    private static final ResourceLocation TEXTURE_2 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_2.png");
+    private static final ResourceLocation TEXTURE_3 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_3.png");
+    private static final ResourceLocation OVERLAY_TEXTURE_0 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_0.png");
+    private static final ResourceLocation OVERLAY_TEXTURE_1 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_1.png");
+    private static final ResourceLocation OVERLAY_TEXTURE_2 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_2.png");
+    private static final ResourceLocation OVERLAY_TEXTURE_3 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/wave_overlay_3.png");
     private static final WaveModel MODEL = new WaveModel();
 
     public WaveRenderer(EntityRendererProvider.Context renderManagerIn) {
@@ -43,7 +43,7 @@ public class WaveRenderer extends EntityRenderer<WaveEntity> {
         matrixStackIn.scale(1F, -(0.2F + f * 0.9F), 1F);
         MODEL.setupAnim(entityIn, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
         VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityTranslucent(getWaveTexture(entityIn.activeWaveTicks)));
-        int waterColorAt = entityIn.level().getBiome(entityIn.blockPosition()).get().getWaterColor();
+        int waterColorAt = entityIn.level().getBiome(entityIn.blockPosition()).value().getWaterColor();
         float colorR = (waterColorAt >> 16 & 255) / 255F;
         float colorG = (waterColorAt >> 8 & 255) / 255F;
         float colorB = (waterColorAt & 255) / 255F;

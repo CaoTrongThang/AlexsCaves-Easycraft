@@ -136,7 +136,7 @@ public class RadgillEntity extends WaterAnimal implements Bucketable {
     }
 
     public static boolean checkRadgillSpawnRules(EntityType<? extends LivingEntity> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
-        return spawnType == MobSpawnType.SPAWNER || !level.getFluidState(pos).isEmpty() && level.getFluidState(pos).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        return spawnType == MobSpawnType.SPAWNER || !level.getFluidState(pos).isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(pos)) == ACFluidRegistry.ACID_FLUID_TYPE.get();
     }
 
     @Override
@@ -189,7 +189,7 @@ public class RadgillEntity extends WaterAnimal implements Bucketable {
     }
 
     private boolean isInAcid() {
-        return this.getFluidTypeHeight(ACFluidRegistry.ACID_FLUID_TYPE.get()) > 0;
+        return com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ACFluidRegistry.ACID_FLUID_TYPE.get()) > 0;
     }
 
     public void calculateEntityAnimation(boolean flying) {
@@ -278,7 +278,7 @@ public class RadgillEntity extends WaterAnimal implements Bucketable {
 
         private boolean isLiquidAt(BlockPos pos) {
             FluidState state = RadgillEntity.this.level().getFluidState(pos);
-            return state.is(FluidTags.WATER) || state.getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get();
+            return state.is(FluidTags.WATER) || com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(state) == ACFluidRegistry.ACID_FLUID_TYPE.get();
         }
 
         private BlockPos findMoveToPos(boolean jump) {

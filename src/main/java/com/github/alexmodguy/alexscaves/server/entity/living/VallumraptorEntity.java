@@ -562,14 +562,13 @@ public class VallumraptorEntity extends DinosaurEntity implements IAnimatedEntit
         return !(blockState.getBlock() instanceof DoorBlock && blockState.getValue(DoorBlock.OPEN)) && super.isColliding(pos, blockState);
     }
 
-    @Override
     public Vec3 collide(Vec3 vec3) {
         return ICustomCollisions.getAllowedMovementForEntity(this, vec3);
     }
 
     @Override
     public boolean canTargetItem(ItemStack stack) {
-        return (stack.is(ACTagRegistry.VALLUMRAPTOR_STEALS) || stack.getItem().isEdible() && stack.getItem().getFoodProperties(stack, this).isMeat()) && !stack.is(ACBlockRegistry.VALLUMRAPTOR_EGG.get().asItem());
+        return (stack.is(ACTagRegistry.VALLUMRAPTOR_STEALS) || stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat()) && !stack.is(ACBlockRegistry.VALLUMRAPTOR_EGG.get().asItem());
     }
 
     public double getMaxDistToItem() {
@@ -599,7 +598,7 @@ public class VallumraptorEntity extends DinosaurEntity implements IAnimatedEntit
         return ACBlockRegistry.VALLUMRAPTOR_EGG.get().defaultBlockState().setValue(MultipleDinosaurEggsBlock.EGGS, 1 + random.nextInt(3));
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return hasRunningAttributes ? 1.1F : 0.6F;
     }
 

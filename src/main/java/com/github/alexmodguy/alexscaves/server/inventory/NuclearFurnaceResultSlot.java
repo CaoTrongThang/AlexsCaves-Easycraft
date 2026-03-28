@@ -42,7 +42,6 @@ public class NuclearFurnaceResultSlot extends FurnaceResultSlot {
         }
 
         this.removeCountNuclear = 0;
-        net.minecraftforge.event.ForgeEventFactory.firePlayerSmeltedEvent(this.player, itemStack);
     }
 
 }

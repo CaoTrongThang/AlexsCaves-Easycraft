@@ -70,7 +70,7 @@ public class ThrownWasteDrumEntity extends Entity {
         if (this.getOnGroundFor() >= MAX_TIME && !level().isClientSide) {
             if (this.getOnGroundFor() == MAX_TIME) {
                 BlockPos landed = this.blockPosition();
-                while (landed.getY() < level().getMaxBuildHeight() && (!level().getBlockState(landed).isAir() || !level().getBlockState(landed).getFluidState().isEmpty() && level().getBlockState(landed).getFluidState().getFluidType() != ACFluidRegistry.ACID_FLUID_TYPE.get())) {
+                while (landed.getY() < level().getMaxBuildHeight() && (!level().getBlockState(landed).isAir() || !level().getBlockState(landed).getFluidState().isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level().getBlockState(landed).getFluidState()) != ACFluidRegistry.ACID_FLUID_TYPE.get())) {
                     landed = landed.above();
                 }
                 removeWasteAt = landed;
@@ -81,7 +81,7 @@ public class ThrownWasteDrumEntity extends Entity {
             }
             if (this.getOnGroundFor() >= MAX_TIME + 15 && removeWasteAt != null) {
                 this.remove(RemovalReason.DISCARDED);
-                if (level().getFluidState(removeWasteAt).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+                if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level().getFluidState(removeWasteAt)) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
                     level().setBlockAndUpdate(removeWasteAt, Blocks.AIR.defaultBlockState());
                 }
             }

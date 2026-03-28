@@ -16,7 +16,7 @@ import net.minecraftforge.entity.PartEntity;
 import javax.annotation.Nullable;
 
 public class GossamerWormRenderer extends MobRenderer<GossamerWormEntity, GossamerWormModel> implements CustomBookEntityRenderer {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gossamer_worm.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gossamer_worm.png");
 
     private boolean sepia;
 

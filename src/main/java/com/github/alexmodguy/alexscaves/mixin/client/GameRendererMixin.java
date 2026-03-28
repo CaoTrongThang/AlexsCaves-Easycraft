@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.client.render.entity.SubmarineRenderer;
 import com.github.alexmodguy.alexscaves.client.render.entity.layer.ACPotionEffectLayer;
 import com.github.alexmodguy.alexscaves.server.entity.item.SubmarineEntity;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
+import com.github.alexthe666.citadel.client.shader.PostEffectRegistry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -53,7 +54,20 @@ public abstract class GameRendererMixin {
             )
     )
     public void ac_render(float partialTick, long nanos, boolean idk, CallbackInfo ci) {
+        if (idk) {
+            PostEffectRegistry.processEffects(Minecraft.getInstance().getMainRenderTarget());
+            PostEffectRegistry.blitEffects();
+        }
         ((ClientProxy) AlexsCaves.PROXY).preScreenRender(partialTick);
+    }
+
+    @Inject(
+            method = {"Lnet/minecraft/client/renderer/GameRenderer;renderLevel(FJLcom/mojang/blaze3d/vertex/PoseStack;)V"},
+            remap = true,
+            at = @At("HEAD")
+    )
+    public void ac_beginPostEffects(float partialTicks, long time, PoseStack poseStack, CallbackInfo ci) {
+        PostEffectRegistry.beginFrame(Minecraft.getInstance().getMainRenderTarget());
     }
 
 

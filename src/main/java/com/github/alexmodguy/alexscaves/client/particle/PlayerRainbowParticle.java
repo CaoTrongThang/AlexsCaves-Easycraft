@@ -43,7 +43,7 @@ public class PlayerRainbowParticle extends RainbowParticle {
             }
             return entity.getPosition(partialTicks).add(0, 0.1, 0);
         }
-        return this.getPos();
+        return new Vec3(this.x, this.y, this.z);
     }
 
     @Override

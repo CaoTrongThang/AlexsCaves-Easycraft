@@ -26,9 +26,9 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 
@@ -165,7 +165,7 @@ public class NuclearBombEntity extends Entity {
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-        if (itemStack.is(Tags.Items.SHEARS)) {
+        if (itemStack.is(Items.SHEARS)) {
             player.swing(hand);
             this.playSound(ACSoundRegistry.NUCLEAR_BOMB_DEFUSE.get());
             this.remove(RemovalReason.KILLED);

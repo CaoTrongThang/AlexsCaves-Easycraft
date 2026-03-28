@@ -76,7 +76,7 @@ public class MineGuardianAnchorEntity extends Entity {
                 double distance = this.distanceTo(mineGuardian);
                 int i = mineGuardian.getMaxChainLength();
                 double distanceGoal = (mineGuardian.isInWaterOrBubble() ? i + Math.sin(tickCount * 0.1F + i * 0.5F) * 0.25F : 5) + (hasTarget ? 5 : 0);
-                double waterHeight = mineGuardian.getFluidTypeHeight(ForgeMod.WATER_TYPE.get());
+                double waterHeight = com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(mineGuardian, ForgeMod.WATER_TYPE.get());
                 double waterUp = Math.min(waterHeight, 1F) * 0.005F;
                 if (mineGuardian.isInWaterOrBubble() && !hasTarget) {
                     double f = this.getX() + (float) -Math.sin(tickCount * 0.025F + i) * 0.5F;

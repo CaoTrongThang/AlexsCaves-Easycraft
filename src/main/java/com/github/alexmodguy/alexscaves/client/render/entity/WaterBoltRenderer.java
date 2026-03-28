@@ -21,17 +21,17 @@ import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class WaterBoltRenderer extends EntityRenderer<WaterBoltEntity> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/water_bolt.png");
-    private static final ResourceLocation OVERLAY_TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/deep_one/water_bolt_overlay.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/water_bolt.png");
+    private static final ResourceLocation OVERLAY_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/deep_one/water_bolt_overlay.png");
     private static final WaterBoltModel MODEL = new WaterBoltModel();
-    private static final ResourceLocation TRAIL_TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/particle/trail.png");
+    private static final ResourceLocation TRAIL_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/particle/trail.png");
 
     public WaterBoltRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn);
     }
 
     public void render(WaterBoltEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
-        int waterColorAt = entityIn.level().getBiome(entityIn.blockPosition()).get().getWaterColor();
+        int waterColorAt = entityIn.level().getBiome(entityIn.blockPosition()).value().getWaterColor();
         float colorR = (waterColorAt >> 16 & 255) / 255F;
         float colorG = (waterColorAt >> 8 & 255) / 255F;
         float colorB = (waterColorAt & 255) / 255F;

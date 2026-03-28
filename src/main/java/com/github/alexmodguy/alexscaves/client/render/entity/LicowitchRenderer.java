@@ -41,7 +41,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.*;
 
 public class LicowitchRenderer extends MobRenderer<LicowitchEntity, LicowitchModel> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/licowitch.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/licowitch.png");
 
     private static final Set<LicowitchEntity> allTeleportingLicowitchOnScreen = new HashSet<>();
 
@@ -118,7 +118,7 @@ public class LicowitchRenderer extends MobRenderer<LicowitchEntity, LicowitchMod
         @Override
         protected void renderArmWithItem(LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext displayContext, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
             if (!itemStack.isEmpty() && livingEntity instanceof LicowitchEntity licowitch) {
-                float partialTicks = Minecraft.getInstance().getPartialTick();
+                float partialTicks = Minecraft.getInstance().getFrameTime();
                 boolean crossedArms = licowitch.areArmsVisuallyCrossed(partialTicks);
 
                 boolean staff = itemStack.is(ACItemRegistry.SUGAR_STAFF.get());

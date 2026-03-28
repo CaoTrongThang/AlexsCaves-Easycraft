@@ -111,7 +111,7 @@ public class VesperAttackGoal extends Goal {
     }
 
     protected void damageShieldFor(Player holder, float damage) {
-        if (holder.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
+        if (ToolActions.canPerformAction(holder.getUseItem(), ToolActions.SHIELD_BLOCK)) {
             if (!entity.level().isClientSide) {
                 holder.awardStat(Stats.ITEM_USED.get(holder.getUseItem().getItem()));
             }

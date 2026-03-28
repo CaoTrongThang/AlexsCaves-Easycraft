@@ -36,9 +36,9 @@ import java.util.List;
 
 
 public class NotorRenderer extends MobRenderer<NotorEntity, NotorModel> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/notor.png");
-    private static final ResourceLocation TEXTURE_GLOW = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/notor_glow.png");
-    private static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/notor_eyes.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/notor.png");
+    private static final ResourceLocation TEXTURE_GLOW = new ResourceLocation(AlexsCaves.MODID, "textures/entity/notor_glow.png");
+    private static final ResourceLocation TEXTURE_EYES = new ResourceLocation(AlexsCaves.MODID, "textures/entity/notor_eyes.png");
     private static final List<NotorEntity> allOnScreen = new ArrayList<>();
 
     public NotorRenderer(EntityRendererProvider.Context renderManagerIn) {
@@ -152,7 +152,7 @@ public class NotorRenderer extends MobRenderer<NotorEntity, NotorModel> {
                     }
                     VertexConsumer ivertexbuilder = bufferIn.getBuffer(ACRenderTypes.getHologram(texture));
                     matrixStack.pushPose();
-                    boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+                    boolean shouldSit = entityIn.isPassenger() && entityIn.getVehicle() != null && com.github.alexmodguy.alexscaves.fabric.EntityCompat.shouldRiderSit(entityIn.getVehicle());
                     model.young = living.isBaby();
                     model.riding = shouldSit;
                     model.attackTime = living.getAttackAnim(partialTicks);
@@ -274,5 +274,4 @@ public class NotorRenderer extends MobRenderer<NotorEntity, NotorModel> {
         }
     }
 }
-
 

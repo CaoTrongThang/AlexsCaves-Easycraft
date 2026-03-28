@@ -30,7 +30,7 @@ public class ACAdvancementTabs {
     }
 
     public static void renderTabBackground(GuiGraphics guiGraphics, int topX, int topY, DisplayInfo displayInfo, double scrollX, double scrollY) {
-        float partialTick = Minecraft.getInstance().getPartialTick();
+        float partialTick = Minecraft.getInstance().getFrameTime();
         float hoverProgress = getHoverChangeAmount(partialTick);
         float priorHoverProgress = 1F - hoverProgress;
         int fastColor = FastColor.ARGB32.lerp(hoverProgress, previousHoverType.backgroundColor, hoverType.backgroundColor);
@@ -111,13 +111,13 @@ public class ACAdvancementTabs {
     }
 
     public enum Type {
-        DEFAULT(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/root"), 0, ResourceLocation.withDefaultNamespace("textures/block/stone.png")),
-        MAGNETIC(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/discover_magnetic_caves"), 0X060607, ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/block/galena.png")),
-        PRIMORDIAL(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/discover_primordial_caves"), 0XF2D860, ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/block/limestone.png")),
-        TOXIC(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/discover_toxic_caves"), 0X7EFF00, ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/block/radrock.png")),
-        ABYSSAL(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/discover_abyssal_chasm"), 0X011437, ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/block/abyssmarine.png")),
-        FORLORN(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/discover_forlorn_hollows"), 0X15110E, ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/block/guanostone.png")),
-        CANDY(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID,"alexscaves/discover_candy_cavity"), 0XF795CA, ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/block/block_of_chocolate.png"));
+        DEFAULT(new ResourceLocation(AlexsCaves.MODID,"alexscaves/root"), 0, new ResourceLocation("textures/block/stone.png")),
+        MAGNETIC(new ResourceLocation(AlexsCaves.MODID,"alexscaves/discover_magnetic_caves"), 0X060607, new ResourceLocation(AlexsCaves.MODID, "textures/block/galena.png")),
+        PRIMORDIAL(new ResourceLocation(AlexsCaves.MODID,"alexscaves/discover_primordial_caves"), 0XF2D860, new ResourceLocation(AlexsCaves.MODID, "textures/block/limestone.png")),
+        TOXIC(new ResourceLocation(AlexsCaves.MODID,"alexscaves/discover_toxic_caves"), 0X7EFF00, new ResourceLocation(AlexsCaves.MODID, "textures/block/radrock.png")),
+        ABYSSAL(new ResourceLocation(AlexsCaves.MODID,"alexscaves/discover_abyssal_chasm"), 0X011437, new ResourceLocation(AlexsCaves.MODID, "textures/block/abyssmarine.png")),
+        FORLORN(new ResourceLocation(AlexsCaves.MODID,"alexscaves/discover_forlorn_hollows"), 0X15110E, new ResourceLocation(AlexsCaves.MODID, "textures/block/guanostone.png")),
+        CANDY(new ResourceLocation(AlexsCaves.MODID,"alexscaves/discover_candy_cavity"), 0XF795CA, new ResourceLocation(AlexsCaves.MODID, "textures/block/block_of_chocolate.png"));
 
         ResourceLocation root;
 
@@ -136,7 +136,7 @@ public class ACAdvancementTabs {
         }
 
         private ResourceLocation generateTexture(String type) {
-            return this == DEFAULT ? null : ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/advancement/" + this.name().toLowerCase(Locale.ROOT) + "_" + type + ".png");
+            return this == DEFAULT ? null : new ResourceLocation(AlexsCaves.MODID, "textures/misc/advancement/" + this.name().toLowerCase(Locale.ROOT) + "_" + type + ".png");
         }
 
         private static Type getDirectType(Advancement advancement) {
@@ -159,16 +159,25 @@ public class ACAdvancementTabs {
         }
 
         public static boolean isTreeNodeUnlocked(AdvancementWidget advancementWidget) {
-            if (advancementWidget.progress.isDone()) {
+            var progress = com.github.alexmodguy.alexscaves.fabric.ClientAccess.getProgress(advancementWidget);
+            if (progress != null && progress.isDone()) {
                 return true;
             }
-            Type direct = getDirectType(advancementWidget.advancement);
+            Type direct = getDirectType(com.github.alexmodguy.alexscaves.fabric.ClientAccess.getAdvancement(advancementWidget));
             AdvancementWidget next = advancementWidget;
-            while (direct == DEFAULT && next.advancement.getParent() != null) {
-                next = next.parent;
-                direct = getDirectType(next.advancement);
+            while (direct == DEFAULT) {
+                Advancement nextAdvancement = com.github.alexmodguy.alexscaves.fabric.ClientAccess.getAdvancement(next);
+                if (nextAdvancement == null || nextAdvancement.getParent() == null) {
+                    break;
+                }
+                next = com.github.alexmodguy.alexscaves.fabric.ClientAccess.getParent(next);
+                if (next == null) {
+                    break;
+                }
+                direct = getDirectType(com.github.alexmodguy.alexscaves.fabric.ClientAccess.getAdvancement(next));
             }
-            return direct == DEFAULT || next.progress != null && next.progress.isDone();
+            var nextProgress = next == null ? null : com.github.alexmodguy.alexscaves.fabric.ClientAccess.getProgress(next);
+            return direct == DEFAULT || nextProgress != null && nextProgress.isDone();
         }
     }
 }

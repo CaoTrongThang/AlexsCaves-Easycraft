@@ -37,7 +37,6 @@ public class DivingArmorItem extends ArmorItem {
         divingArmorAttributes = builder.build();
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }

@@ -223,7 +223,7 @@ public class GammaroachEntity extends PathfinderMob implements IAnimatedEntity {
         this.walkAnimation.update(f2, 0.4F);
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.1F;
     }
 

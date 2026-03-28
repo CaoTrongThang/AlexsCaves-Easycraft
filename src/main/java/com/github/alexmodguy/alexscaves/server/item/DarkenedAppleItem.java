@@ -17,7 +17,7 @@ public class DarkenedAppleItem extends Item {
 
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
         MobEffectInstance mobEffectInstance = livingEntity.getEffect(ACEffectRegistry.DARKNESS_INCARNATE.get());
-        FoodProperties foodProperties = this.getFoodProperties(stack, livingEntity);
+        FoodProperties foodProperties = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getFoodProperties(stack, livingEntity);
         if (mobEffectInstance != null && foodProperties != null) {
             int newDuration = mobEffectInstance.getDuration() + 600;
             MobEffectInstance newEffect = new MobEffectInstance(ACEffectRegistry.DARKNESS_INCARNATE.get(), newDuration, mobEffectInstance.getAmplifier());

@@ -37,7 +37,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,10 +44,10 @@ import java.util.Map;
 
 public class ACItemRegistry {
     private static Map<RegistryObject<Item>, ResourceKey<Biome>> creativeTabSpawnEggMap = new LinkedHashMap<>();
-    public static final Rarity RARITY_DEMONIC = Rarity.create("alexscaves:demonic", ChatFormatting.DARK_RED);
-    public static final Rarity RARITY_NUCLEAR = Rarity.create("alexscaves:nuclear", ChatFormatting.GREEN);
-    public static final Rarity RARITY_SWEET = Rarity.create("alexscaves:sweet", style -> style.withColor(0XFF8ACD));
-    public static final Rarity RARITY_RAINBOW = Rarity.create("alexscaves:rainbow", style -> style.withColor(Color.HSBtoRGB((System.currentTimeMillis() % 5000) / 5000F, 1f, 1F)));
+    public static final Rarity RARITY_DEMONIC = Rarity.EPIC;
+    public static final Rarity RARITY_NUCLEAR = Rarity.RARE;
+    public static final Rarity RARITY_SWEET = Rarity.UNCOMMON;
+    public static final Rarity RARITY_RAINBOW = Rarity.EPIC;
     public static final ACArmorMaterial PRIMORDIAL_ARMOR_MATERIAL = new ACArmorMaterial("primordial", 20, new int[]{3, 4, 3, 2}, 25, SoundEvents.ARMOR_EQUIP_LEATHER, 0F);
     public static final ACArmorMaterial HAZMAT_SUIT_ARMOR_MATERIAL = new ACArmorMaterial("hazmat_suit", 20, new int[]{2, 4, 5, 2}, 25, SoundEvents.ARMOR_EQUIP_IRON, 0.5F);
     public static final ACArmorMaterial DIVING_SUIT_ARMOR_MATERIAL = new ACArmorMaterial("diving_suit", 20, new int[]{2, 6, 5, 2}, 25, SoundEvents.ARMOR_EQUIP_IRON, 0.0F);
@@ -77,7 +76,7 @@ public class ACItemRegistry {
     public static final RegistryObject<Item> SEEKING_ARROW = DEF_REG.register("seeking_arrow", () -> new SeekingArrowItem());
     public static final RegistryObject<Item> GALENA_GAUNTLET = DEF_REG.register("galena_gauntlet", () -> new GalenaGauntletItem());
     public static final RegistryObject<Item> RESISTOR_SHIELD = DEF_REG.register("resistor_shield", () -> new ResistorShieldItem());
-    public static final RegistryObject<Item> POLARITY_ARMOR_TRIM_SMITHING_TEMPLATE = DEF_REG.register("polarity_armor_trim_smithing_template", () -> SmithingTemplateItem.createArmorTrimTemplate(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "polarity")));
+    public static final RegistryObject<Item> POLARITY_ARMOR_TRIM_SMITHING_TEMPLATE = DEF_REG.register("polarity_armor_trim_smithing_template", () -> SmithingTemplateItem.createArmorTrimTemplate(new ResourceLocation(AlexsCaves.MODID, "polarity")));
     public static final RegistryObject<Item> PEWEN_DOOR = DEF_REG.register("pewen_door", () -> new DoubleHighBlockItem(ACBlockRegistry.PEWEN_DOOR.get(), (new Item.Properties())));
     public static final RegistryObject<Item> PEWEN_SIGN = DEF_REG.register("pewen_sign", () -> new SignItem((new Item.Properties()).stacksTo(16), ACBlockRegistry.PEWEN_SIGN.get(), ACBlockRegistry.PEWEN_WALL_SIGN.get()));
     public static final RegistryObject<Item> PEWEN_HANGING_SIGN = DEF_REG.register("pewen_hanging_sign", () -> new HangingSignItem(ACBlockRegistry.PEWEN_HANGING_SIGN.get(), ACBlockRegistry.PEWEN_WALL_HANGING_SIGN.get(), (new Item.Properties()).stacksTo(16)));
@@ -109,7 +108,7 @@ public class ACItemRegistry {
     public static final RegistryObject<Item> DINOSAUR_POTTERY_SHERD = DEF_REG.register("dinosaur_pottery_sherd", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> FOOTPRINT_POTTERY_SHERD = DEF_REG.register("footprint_pottery_sherd", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> DINOSAUR_TRAIN = DEF_REG.register("dinosaur_train", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> ACID_BUCKET = DEF_REG.register("acid_bucket", () -> new BucketItem(ACFluidRegistry.ACID_FLUID_SOURCE, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static final RegistryObject<Item> ACID_BUCKET = DEF_REG.register("acid_bucket", () -> new BucketItem(ACFluidRegistry.ACID_FLUID_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final RegistryObject<Item> RADGILL_BUCKET = DEF_REG.register("radgill_bucket", () -> new ModFishBucketItem(ACEntityRegistry.RADGILL, ACFluidRegistry.ACID_FLUID_SOURCE, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final RegistryObject<Item> RADGILL = DEF_REG.register("radgill", () -> new Item(new Item.Properties().food(ACFoods.RADGILL)));
     public static final RegistryObject<Item> COOKED_RADGILL = DEF_REG.register("cooked_radgill", () -> new Item(new Item.Properties().food(ACFoods.RADGILL_COOKED)));
@@ -132,7 +131,7 @@ public class ACItemRegistry {
     public static final RegistryObject<Item> REMOTE_DETONATOR = DEF_REG.register("remote_detonator", () -> new RemoteDetonatorItem());
     public static final RegistryObject<Item> RAYGUN = DEF_REG.register("raygun", () -> new RaygunItem());
     public static final RegistryObject<Item> MUSIC_DISC_FUSION_FRAGMENT = DEF_REG.register("disc_fragment_fusion", () -> new DiscFragmentItem(new Item.Properties()));
-    public static final RegistryObject<Item> MUSIC_DISC_FUSION = DEF_REG.register("music_disc_fusion", () -> new RecordItem(14, ACSoundRegistry.FUSIONC_MUSIC_DISC, new Item.Properties().stacksTo(1).rarity(RARITY_NUCLEAR), 237 * 20));
+    public static final RegistryObject<Item> MUSIC_DISC_FUSION = DEF_REG.register("music_disc_fusion", () -> new RecordItem(14, ACSoundRegistry.FUSIONC_MUSIC_DISC.get(), new Item.Properties().stacksTo(1).rarity(RARITY_NUCLEAR), 237 * 20));
     public static final RegistryObject<Item> LANTERNFISH_BUCKET = DEF_REG.register("lanternfish_bucket", () -> new ModFishBucketItem(ACEntityRegistry.LANTERNFISH, () -> Fluids.WATER, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final RegistryObject<Item> LANTERNFISH = DEF_REG.register("lanternfish", () -> new Item(new Item.Properties().food(ACFoods.LANTERNFISH)));
     public static final RegistryObject<Item> COOKED_LANTERNFISH = DEF_REG.register("cooked_lanternfish", () -> new Item(new Item.Properties().food(ACFoods.LANTERNFISH_COOKED)));
@@ -195,7 +194,7 @@ public class ACItemRegistry {
     public static final RegistryObject<Item> THORNWOOD_HANGING_SIGN = DEF_REG.register("thornwood_hanging_sign", () -> new HangingSignItem(ACBlockRegistry.THORNWOOD_HANGING_SIGN.get(), ACBlockRegistry.THORNWOOD_WALL_HANGING_SIGN.get(), (new Item.Properties()).stacksTo(16)));
     public static final RegistryObject<Item> THORNWOOD_BOAT = DEF_REG.register("thornwood_boat", () -> new CaveBoatItem(false, AlexsCavesBoat.Type.THORNWOOD, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> THORNWOOD_CHEST_BOAT = DEF_REG.register("thornwood_chest_boat", () -> new CaveBoatItem(true, AlexsCavesBoat.Type.THORNWOOD, new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> PURPLE_SODA_BUCKET = DEF_REG.register("purple_soda_bucket", () -> new BucketItem(ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
+    public static final RegistryObject<Item> PURPLE_SODA_BUCKET = DEF_REG.register("purple_soda_bucket", () -> new BucketItem(ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1)));
     public static final RegistryObject<Item> PURPLE_SODA_BOTTLE = DEF_REG.register("purple_soda_bottle", () -> new DrinkableBottledItem(new Item.Properties().stacksTo(16).food(ACFoods.PURPLE_SODA_BOTTLE)));
     public static final RegistryObject<Item> SWEETISH_FISH_RED_BUCKET = DEF_REG.register("sweetish_fish_red_bucket", () -> new SweetishFishBucketItem(GummyColors.RED));
     public static final RegistryObject<Item> SWEETISH_FISH_GREEN_BUCKET = DEF_REG.register("sweetish_fish_green_bucket", () -> new SweetishFishBucketItem(GummyColors.GREEN));
@@ -240,7 +239,7 @@ public class ACItemRegistry {
     public static final RegistryObject<Item> FROSTMINT_SPEAR = DEF_REG.register("frostmint_spear", () -> new FrostmintSpearItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> FROSTMINT_SPEAR_SPRITE = DEF_REG.register("frostmint_spear_inventory", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> MUSIC_DISC_TASTY_FRAGMENT = DEF_REG.register("disc_fragment_tasty", () -> new DiscFragmentItem(new Item.Properties()));
-    public static final RegistryObject<Item> MUSIC_DISC_TASTY = DEF_REG.register("music_disc_tasty", () -> new RecordItem(14, ACSoundRegistry.TASTY_MUSIC_DISC, new Item.Properties().stacksTo(1).rarity(RARITY_SWEET), 183 * 20));
+    public static final RegistryObject<Item> MUSIC_DISC_TASTY = DEF_REG.register("music_disc_tasty", () -> new RecordItem(14, ACSoundRegistry.TASTY_MUSIC_DISC.get(), new Item.Properties().stacksTo(1).rarity(RARITY_SWEET), 183 * 20));
     public static final RegistryObject<Item> ALEX_MEAL = DEF_REG.register("alex_meal", () -> new AlexMealItem());
     public static final RegistryObject<Item> BIOME_TREAT = DEF_REG.register("biome_treat", () -> new BiomeTreatItem());
     public static final RegistryObject<Item> JELLY_BEAN = DEF_REG.register("jelly_bean", () -> new JellyBeanItem());
@@ -398,7 +397,7 @@ public class ACItemRegistry {
 
     public static Item getSpawnEggFor(EntityType type) {
         for (Map.Entry<RegistryObject<Item>, ResourceKey<Biome>> entry : creativeTabSpawnEggMap.entrySet()) {
-            if (entry.getKey().get() instanceof ForgeSpawnEggItem forgeSpawnEggItem && forgeSpawnEggItem.getType(null) == type) {
+            if (entry.getKey().get() instanceof ForgeSpawnEggItem forgeSpawnEggItem && forgeSpawnEggItem.getType((net.minecraft.nbt.CompoundTag) null) == type) {
                 return forgeSpawnEggItem;
             }
         }

@@ -19,7 +19,7 @@ public class FluidContainerDispenseItemBehavior extends DefaultDispenseItemBehav
         DispensibleContainerItem dispensiblecontaineritem = (DispensibleContainerItem)itemStack.getItem();
         BlockPos blockpos = blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
         Level level = blockSource.getLevel();
-        if (dispensiblecontaineritem.emptyContents((Player)null, level, blockpos, (BlockHitResult)null, itemStack)) {
+        if (dispensiblecontaineritem.emptyContents((Player)null, level, blockpos, (BlockHitResult)null)) {
             dispensiblecontaineritem.checkExtraContent((Player)null, level, itemStack, blockpos);
             return new ItemStack(Items.BUCKET);
         } else {

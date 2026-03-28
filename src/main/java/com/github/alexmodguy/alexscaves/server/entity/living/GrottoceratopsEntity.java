@@ -232,7 +232,7 @@ public class GrottoceratopsEntity extends DinosaurEntity implements IAnimatedEnt
         return ACSoundRegistry.GROTTOCERATOPS_DEATH.get();
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.1F;
     }
 }

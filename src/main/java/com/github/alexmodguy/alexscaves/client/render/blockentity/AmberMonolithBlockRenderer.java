@@ -86,7 +86,7 @@ public class AmberMonolithBlockRenderer<T extends AmberMonolithBlockEntity> impl
                     EntityModel model = renderer.getModel();
                     VertexConsumer ivertexbuilder = bufferIn.getBuffer(ForgeRenderTypes.getUnlitTranslucent(render.getTextureLocation(entityIn)));
                     matrixStack.pushPose();
-                    boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+                    boolean shouldSit = entityIn.isPassenger() && entityIn.getVehicle() != null && com.github.alexmodguy.alexscaves.fabric.EntityCompat.shouldRiderSit(entityIn.getVehicle());
                     model.young = living.isBaby();
                     model.riding = shouldSit;
                     model.attackTime = living.getAttackAnim(partialTicks);

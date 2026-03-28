@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class ModFishBucketItem extends MobBucketItem {
+    private final Supplier<? extends EntityType<?>> fishType;
 
     public ModFishBucketItem(Supplier<? extends EntityType<?>> fishTypeIn, Supplier<? extends Fluid> fluid, Item.Properties builder) {
-        super(fishTypeIn, fluid, () -> SoundEvents.BUCKET_EMPTY_FISH, builder.stacksTo(1));
+        super(fishTypeIn.get(), fluid.get(), SoundEvents.BUCKET_EMPTY_FISH, builder.stacksTo(1));
+        this.fishType = fishTypeIn;
     }
 
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
@@ -53,5 +55,8 @@ public class ModFishBucketItem extends MobBucketItem {
 
     }
 
+    protected EntityType<?> getFishType() {
+        return fishType.get();
+    }
 
 }

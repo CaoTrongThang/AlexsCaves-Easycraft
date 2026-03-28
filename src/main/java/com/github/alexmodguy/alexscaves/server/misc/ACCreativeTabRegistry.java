@@ -23,10 +23,9 @@ public class ACCreativeTabRegistry {
 
     public static final DeferredRegister<CreativeModeTab> DEF_REG = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, AlexsCaves.MODID);
 
-    public static final RegistryObject<CreativeModeTab> MAGNETIC_CAVES = DEF_REG.register("magnetic_caves", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> MAGNETIC_CAVES = DEF_REG.register("magnetic_caves", () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 0)
             .title(Component.translatable("itemGroup.alexscaves.magnetic_caves"))
             .icon(() -> new ItemStack(ACBlockRegistry.SCARLET_MAGNET.get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
             .displayItems((enabledFeatures, output) -> {
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_TABLET.get(), ACBiomeRegistry.MAGNETIC_CAVES));
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_CODEX.get(), ACBiomeRegistry.MAGNETIC_CAVES));
@@ -53,7 +52,6 @@ public class ACCreativeTabRegistry {
                 add(output, ACBlockRegistry.GALENA_SLAB.get());
                 add(output, ACBlockRegistry.GALENA_BRICKS.get());
                 add(output, ACBlockRegistry.GALENA_WALL.get());
-                add(output, ACBlockRegistry.GALENA_BRICKS.get());
                 add(output, ACBlockRegistry.GALENA_BRICK_STAIRS.get());
                 add(output, ACBlockRegistry.GALENA_BRICK_SLAB.get());
                 add(output, ACBlockRegistry.GALENA_BRICK_WALL.get());
@@ -96,11 +94,9 @@ public class ACCreativeTabRegistry {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> PRIMORDIAL_CAVES = DEF_REG.register("primordial_caves", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> PRIMORDIAL_CAVES = DEF_REG.register("primordial_caves", () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 1)
             .title(Component.translatable("itemGroup.alexscaves.primordial_caves"))
             .icon(() -> new ItemStack(ACBlockRegistry.FLYTRAP.get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .withTabsBefore(MAGNETIC_CAVES.getKey())
             .displayItems((enabledFeatures, output) -> {
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_TABLET.get(), ACBiomeRegistry.PRIMORDIAL_CAVES));
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_CODEX.get(), ACBiomeRegistry.PRIMORDIAL_CAVES));
@@ -218,11 +214,9 @@ public class ACCreativeTabRegistry {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> TOXIC_CAVES = DEF_REG.register("toxic_caves", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> TOXIC_CAVES = DEF_REG.register("toxic_caves", () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 2)
             .title(Component.translatable("itemGroup.alexscaves.toxic_caves"))
             .icon(() -> new ItemStack(ACBlockRegistry.WASTE_DRUM.get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .withTabsBefore(PRIMORDIAL_CAVES.getKey())
             .displayItems((enabledFeatures, output) -> {
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_TABLET.get(), ACBiomeRegistry.TOXIC_CAVES));
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_CODEX.get(), ACBiomeRegistry.TOXIC_CAVES));
@@ -321,11 +315,9 @@ public class ACCreativeTabRegistry {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> ABYSSAL_CHASM = DEF_REG.register("abyssal_chasm", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> ABYSSAL_CHASM = DEF_REG.register("abyssal_chasm", () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 3)
             .title(Component.translatable("itemGroup.alexscaves.abyssal_chasm"))
             .icon(() -> new ItemStack(ACItemRegistry.SUBMARINE.get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .withTabsBefore(TOXIC_CAVES.getKey())
             .displayItems((enabledFeatures, output) -> {
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_TABLET.get(), ACBiomeRegistry.ABYSSAL_CHASM));
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_CODEX.get(), ACBiomeRegistry.ABYSSAL_CHASM));
@@ -419,11 +411,9 @@ public class ACCreativeTabRegistry {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> FORLORN_HOLLOWS = DEF_REG.register("forlorn_hollows", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> FORLORN_HOLLOWS = DEF_REG.register("forlorn_hollows", () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 4)
             .title(Component.translatable("itemGroup.alexscaves.forlorn_hollows"))
             .icon(() -> new ItemStack(ACBlockRegistry.PEERING_COPROLITH.get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .withTabsBefore(ABYSSAL_CHASM.getKey())
             .displayItems((enabledFeatures, output) -> {
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_TABLET.get(), ACBiomeRegistry.FORLORN_HOLLOWS));
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_CODEX.get(), ACBiomeRegistry.FORLORN_HOLLOWS));
@@ -510,11 +500,9 @@ public class ACCreativeTabRegistry {
             })
             .build());
 
-    public static final RegistryObject<CreativeModeTab> CANDY_CAVITY = DEF_REG.register("candy_cavity", () -> CreativeModeTab.builder()
+    public static final RegistryObject<CreativeModeTab> CANDY_CAVITY = DEF_REG.register("candy_cavity", () -> CreativeModeTab.builder(CreativeModeTab.Row.TOP, 5)
             .title(Component.translatable("itemGroup.alexscaves.candy_cavity"))
             .icon(() -> new ItemStack(ACBlockRegistry.LARGE_PEPPERMINT.get()))
-            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
-            .withTabsBefore(FORLORN_HOLLOWS.getKey())
             .displayItems((enabledFeatures, output) -> {
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_TABLET.get(), ACBiomeRegistry.CANDY_CAVITY));
                 output.accept(CaveInfoItem.create(ACItemRegistry.CAVE_CODEX.get(), ACBiomeRegistry.CANDY_CAVITY));

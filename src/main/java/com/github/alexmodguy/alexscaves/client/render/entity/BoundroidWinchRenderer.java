@@ -23,9 +23,9 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class BoundroidWinchRenderer extends MobRenderer<BoundroidWinchEntity, BoundroidWinchModel> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/boundroid_winch.png");
-    private static final ResourceLocation TEXTURE_GLOW = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/boundroid_winch_glow.png");
-    private static final ResourceLocation TEXTURE_CHAIN = ResourceLocation.parse("minecraft:textures/block/chain.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/boundroid_winch.png");
+    private static final ResourceLocation TEXTURE_GLOW = new ResourceLocation(AlexsCaves.MODID, "textures/entity/boundroid_winch_glow.png");
+    private static final ResourceLocation TEXTURE_CHAIN = new ResourceLocation("minecraft:textures/block/chain.png");
     public static final int MAX_CHAIN_SEGMENTS = 256;
 
     public BoundroidWinchRenderer(EntityRendererProvider.Context renderManagerIn) {

@@ -28,14 +28,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class AbyssalAltarBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
-
-    net.minecraftforge.common.util.LazyOptional<? extends net.minecraftforge.items.IItemHandler>[] handlers = net.minecraftforge.items.wrapper.SidedInvWrapper.create(this, Direction.UP, Direction.DOWN);
     private NonNullList<ItemStack> stacks = NonNullList.withSize(1, ItemStack.EMPTY);
 
     private ItemStack displayCopyStack = ItemStack.EMPTY;
@@ -57,7 +54,7 @@ public class AbyssalAltarBlockEntity extends BaseContainerBlockEntity implements
     public static void tick(Level level, BlockPos pos, BlockState state, AbyssalAltarBlockEntity entity) {
         if (level.isClientSide) {
             ItemStack itemStack = entity.getItem(0);
-            if (!itemStack.equals(entity.displayCopyStack, false) || entity.slideImpulse) {
+            if (!ItemStack.isSameItemSameTags(itemStack, entity.displayCopyStack) || entity.slideImpulse) {
                 if (entity.slideProgress > 0.0F) {
                     entity.prevSlideProgress = entity.slideProgress;
                     entity.slideProgress--;
@@ -303,7 +300,6 @@ public class AbyssalAltarBlockEntity extends BaseContainerBlockEntity implements
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
@@ -353,17 +349,6 @@ public class AbyssalAltarBlockEntity extends BaseContainerBlockEntity implements
             }
         }
         return true;
-    }
-
-    @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable Direction facing) {
-        if (!this.remove && facing != null && capability == ForgeCapabilities.ITEM_HANDLER) {
-            if (facing == Direction.DOWN)
-                return handlers[0].cast();
-            else
-                return handlers[1].cast();
-        }
-        return super.getCapability(capability, facing);
     }
 
     private void markUpdated() {

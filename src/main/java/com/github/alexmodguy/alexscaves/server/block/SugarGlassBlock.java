@@ -19,7 +19,7 @@ public class SugarGlassBlock extends GlassBlock {
     }
 
     public void fallOn(Level level, BlockState state, BlockPos pos, Entity entityIn, float fallDistance) {
-        if (!(entityIn.getType().is(ACTagRegistry.CANDY_MOBS)) && !entityIn.isInFluidType() && !level.isClientSide) {
+        if (!(entityIn.getType().is(ACTagRegistry.CANDY_MOBS)) && !com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(entityIn) && !level.isClientSide) {
             level.destroyBlock(pos, true);
         }
         super.fallOn(level, state, pos, entityIn, fallDistance);

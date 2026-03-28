@@ -26,7 +26,6 @@ public class SugarStaffItem extends Item {
         super(properties);
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
@@ -42,29 +41,29 @@ public class SugarStaffItem extends Item {
                 SugarStaffHexEntity sugarStaffHexEntity = ACEntityRegistry.SUGAR_STAFF_HEX.get().create(player.level());
                 sugarStaffHexEntity.setOwner(player);
                 sugarStaffHexEntity.setPos(ground.x, ground.y, ground.z);
-                sugarStaffHexEntity.setHexScale(1.0F + 0.25F * itemstack.getEnchantmentLevel(ACEnchantmentRegistry.HUMUNGOUS_HEX.get()));
+                sugarStaffHexEntity.setHexScale(1.0F + 0.25F * com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.HUMUNGOUS_HEX.get()));
                 level.addFreshEntity(sugarStaffHexEntity);
                 level.playSound((Player)null, player.blockPosition(), ACSoundRegistry.SUGAR_STAFF_CAST_HEX.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-                sugarStaffHexEntity.setLifespan(100 + 60 * itemstack.getEnchantmentLevel(ACEnchantmentRegistry.SPELL_LASTING.get()));
+                sugarStaffHexEntity.setLifespan(100 + 60 * com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.SPELL_LASTING.get()));
                 player.getCooldowns().addCooldown(this, 100);
             }else{
-                int spawnIn = 3 + itemstack.getEnchantmentLevel(ACEnchantmentRegistry.MULTIPLE_MINT.get());
+                int spawnIn = 3 + com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.MULTIPLE_MINT.get());
                 boolean flag = false;
                 int despawnTime = 80;
                 for (int i = 0; i < spawnIn; i++) {
                     SpinningPeppermintEntity spinningPeppermintEntity = ACEntityRegistry.SPINNING_PEPPERMINT.get().create(player.level());
                     spinningPeppermintEntity.setPos(player.position().add(0, player.getBbHeight() * 0.45F, 0));
-                    if(itemstack.getEnchantmentLevel(ACEnchantmentRegistry.PEPPERMINT_PUNTING.get()) > 0){
+                    if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.PEPPERMINT_PUNTING.get()) > 0) {
                         spinningPeppermintEntity.setStraight(true);
                         spinningPeppermintEntity.setYRot(180 + player.getYHeadRot() + (i - 1) * 15);
                         spinningPeppermintEntity.setSpinSpeed(8F);
                         despawnTime = 20;
-                    }else{
+                    } else {
                         spinningPeppermintEntity.setStraight(false);
                         spinningPeppermintEntity.setYRot(180 + (i - 1) * 30);
                         spinningPeppermintEntity.setSpinSpeed(12F);
                     }
-                    if(lookingAtEntity != null && itemstack.getEnchantmentLevel(ACEnchantmentRegistry.SEEKCANDY.get()) > 0){
+                    if(lookingAtEntity != null && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.SEEKCANDY.get()) > 0){
                         spinningPeppermintEntity.setSeekingEntityId(lookingAtEntity.getId());
                         spinningPeppermintEntity.setSpinSpeed(50F);
                         despawnTime = 50;

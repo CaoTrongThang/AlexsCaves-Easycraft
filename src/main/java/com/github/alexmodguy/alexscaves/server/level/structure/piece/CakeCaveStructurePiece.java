@@ -103,12 +103,12 @@ public class CakeCaveStructurePiece extends AbstractCaveGenerationStructurePiece
             offset.move(dir);
             BlockState state = checkedGetBlock(level, offset);
             if (!state.getFluidState().isEmpty()){
-                if(state.getFluidState().getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+                if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(state.getFluidState()) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
                     double riveriness = getRiveriness(offset);
                     if(riveriness > RIVER_WIDTH_SQ / 2){
                         checkedSetBlock(level, offset, ACBlockRegistry.CAKE_LAYER.get().defaultBlockState());
                     }
-                }else{
+                } else {
                     checkedSetBlock(level, offset, ACBlockRegistry.CAKE_LAYER.get().defaultBlockState());
                 }
             }

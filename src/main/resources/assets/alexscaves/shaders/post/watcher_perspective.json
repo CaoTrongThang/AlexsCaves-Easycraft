@@ -37,7 +37,7 @@
             ]
         },
         {
-            "name": "alexscaves:watcher_blur",
+            "name": "watcher_blur",
             "intarget": "minecraft:main",
             "outtarget": "temp",
             "auxtargets": [

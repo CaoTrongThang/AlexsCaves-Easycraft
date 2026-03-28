@@ -82,7 +82,7 @@ public class SulfurStackFeature extends Feature<NoneFeatureConfiguration> {
         if (crystal.getBlock() instanceof SulfurBudBlock) {
             if (level.getFluidState(placeAt).is(Fluids.WATER)) {
                 crystal = crystal.setValue(SulfurBudBlock.LIQUID_LOGGED, 1);
-            } else if (level.getFluidState(placeAt).getFluidType() == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
+            } else if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level.getFluidState(placeAt)) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
                 crystal = crystal.setValue(SulfurBudBlock.LIQUID_LOGGED, 2);
             }
         }

@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 
 public class SeaPigRenderer extends MobRenderer<SeaPigEntity, SeaPigModel> implements CustomBookEntityRenderer {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/sea_pig.png");
-    private static final ResourceLocation TEXTURE_INNARDS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/sea_pig_innards.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/sea_pig.png");
+    private static final ResourceLocation TEXTURE_INNARDS = new ResourceLocation(AlexsCaves.MODID, "textures/entity/sea_pig_innards.png");
     private boolean sepia = false;
 
     public SeaPigRenderer(EntityRendererProvider.Context renderManagerIn) {

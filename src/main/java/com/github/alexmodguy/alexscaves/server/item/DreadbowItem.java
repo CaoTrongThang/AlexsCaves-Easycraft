@@ -40,12 +40,11 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
     public static EntityType getTypeOfArrow(ItemStack itemStackIn) {
         if(itemStackIn.getTag() != null && itemStackIn.getTag().contains("LastUsedArrowType")) {
             String str = itemStackIn.getTag().getString("LastUsedArrowType");
-            return ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(str));
+            return ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(str));
         }
         return null;
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
@@ -83,8 +82,8 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
                 setPerfectShotTicks(stack, getPerfectShotTicks(stack) - 1);
                 AlexsCaves.sendMSGToServer(new UpdateItemTagMessage(entity.getId(), stack));
             }
-            boolean relentless = stack.getEnchantmentLevel(ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0;
-            int twilightPerfection = stack.getEnchantmentLevel(ACEnchantmentRegistry.TWILIGHT_PERFECTION.get());
+            boolean relentless = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0;
+            int twilightPerfection = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TWILIGHT_PERFECTION.get());
             int maxLoadTime = getMaxLoadTime(stack);
             if (using && useTime < maxLoadTime) {
                 int set = useTime + (relentless ? 3 : 1);
@@ -116,10 +115,10 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
     }
 
     private static int getMaxLoadTime(ItemStack stack) {
-        if(stack.getEnchantmentLevel(ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0){
+        if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0) {
             return 5;
-        }else{
-            return 40 - 8 * stack.getEnchantmentLevel(ACEnchantmentRegistry.DARK_NOCK.get());
+        } else {
+            return 40 - 8 * com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.DARK_NOCK.get());
         }
     }
 
@@ -180,12 +179,12 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
     }
 
     public void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i1) {
-        if (livingEntity instanceof Player player && itemStack.getEnchantmentLevel(ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) <= 0) {
+        if (livingEntity instanceof Player player && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) <= 0) {
             int i = this.getUseDuration(itemStack) - i1;
             float f = getPowerForTime(i, itemStack);
-            boolean precise = itemStack.getEnchantmentLevel(ACEnchantmentRegistry.PRECISE_VOLLEY.get()) > 0;
-            boolean respite = itemStack.getEnchantmentLevel(ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(player, 11);
-            boolean perfectShot = itemStack.getEnchantmentLevel(ACEnchantmentRegistry.TWILIGHT_PERFECTION.get()) > 0 && getPerfectShotTicks(itemStack) > 0;
+            boolean precise = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.PRECISE_VOLLEY.get()) > 0;
+            boolean respite = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(player, 11);
+            boolean perfectShot = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.TWILIGHT_PERFECTION.get()) > 0 && getPerfectShotTicks(itemStack) > 0;
             if (f > 0.1D) {
                 player.playSound(ACSoundRegistry.DREADBOW_RELEASE.get());
                 ItemStack ammoStack = player.getProjectile(itemStack);
@@ -260,8 +259,8 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
 
     public void onUseTick(Level level, LivingEntity living, ItemStack itemStack, int timeUsing) {
         super.onUseTick(level, living, itemStack, timeUsing);
-        if(living instanceof Player player && itemStack.getEnchantmentLevel(ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0 && timeUsing % 3 == 0){
-            boolean respite = itemStack.getEnchantmentLevel(ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(living, 11);
+        if(living instanceof Player player && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0 && timeUsing % 3 == 0){
+            boolean respite = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(living, 11);
             player.playSound(ACSoundRegistry.DREADBOW_RELEASE.get());
             ItemStack ammoStack = player.getProjectile(itemStack);
             if(respite && ammoStack.isEmpty()){

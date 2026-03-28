@@ -108,7 +108,6 @@ public class BeholderBlockEntity extends BlockEntity  {
         return this.saveWithoutMetadata();
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             this.currentlyUsingEntityId = packet.getTag().getInt("UsingEntityID");

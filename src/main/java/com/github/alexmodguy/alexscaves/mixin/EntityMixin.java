@@ -183,7 +183,7 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         boolean flag1 = deltaIn.y != vec3.y;
         boolean flag2 = deltaIn.z != vec3.z;
         boolean flag3 = this.onGround() || flag1 && deltaIn.y < 0.0D;
-        float stepHeight = thisEntity.getStepHeight();
+        float stepHeight = com.github.alexmodguy.alexscaves.fabric.EntityCompat.getStepHeight(thisEntity);
         if (stepHeight > 0.0F && flag3 && (flag || flag2)) {
             Vec3 vec31 = Entity.collideBoundingBox(thisEntity, new Vec3(deltaIn.x, stepHeight, deltaIn.z), aabb, this.level, list);
             Vec3 vec32 = Entity.collideBoundingBox(thisEntity, new Vec3(0.0D, stepHeight, 0.0D), aabb.expandTowards(deltaIn.x, 0.0D, deltaIn.z), this.level, list);

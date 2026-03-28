@@ -2,6 +2,7 @@ package com.github.alexmodguy.alexscaves.server.enchantment;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
@@ -30,6 +31,9 @@ public class ACWeaponEnchantment extends Enchantment {
         return levels;
     }
 
+    public boolean canEnchant(ItemStack stack) {
+        return ACEnchantmentRegistry.canApplyToItem(this.category, stack);
+    }
 
     protected boolean checkCompatibility(Enchantment enchantment) {
         return this != enchantment && ACEnchantmentRegistry.areCompatible(this, enchantment);

@@ -1,7 +1,7 @@
 package com.github.alexmodguy.alexscaves.server.misc;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
@@ -22,8 +22,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class CabinMapLootModifier implements IGlobalLootModifier {
-    public static final Supplier<Codec<CabinMapLootModifier>> CODEC = () ->
-            RecordCodecBuilder.create(inst ->
+    public static final Supplier<MapCodec<CabinMapLootModifier>> CODEC = () ->
+            RecordCodecBuilder.mapCodec(inst ->
                     inst.group(
                                     LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(lm -> lm.conditions)
                             )
@@ -67,7 +67,7 @@ public class CabinMapLootModifier implements IGlobalLootModifier {
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC.get();
     }
 }

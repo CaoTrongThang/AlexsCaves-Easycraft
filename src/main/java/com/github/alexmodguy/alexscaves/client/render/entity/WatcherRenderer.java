@@ -22,9 +22,9 @@ import net.minecraft.world.entity.Pose;
 import javax.annotation.Nullable;
 
 public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/watcher.png");
-    private static final ResourceLocation TEXTURE_MOTH = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/watcher_moth.png");
-    private static final ResourceLocation TEXTURE_EYESPOTS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/watcher_eyespots.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/watcher.png");
+    private static final ResourceLocation TEXTURE_MOTH = new ResourceLocation(AlexsCaves.MODID, "textures/entity/watcher_moth.png");
+    private static final ResourceLocation TEXTURE_EYESPOTS = new ResourceLocation(AlexsCaves.MODID, "textures/entity/watcher_eyespots.png");
 
     public WatcherRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new WatcherModel(), 0.5F);
@@ -40,7 +40,7 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
         poseStack.pushPose();
         this.model.attackTime = this.getAttackAnim(entity, partialTicks);
 
-        boolean shouldSit = entity.isPassenger() && (entity.getVehicle() != null && entity.getVehicle().shouldRiderSit());
+        boolean shouldSit = entity.isPassenger() && entity.getVehicle() != null && com.github.alexmodguy.alexscaves.fabric.EntityCompat.shouldRiderSit(entity.getVehicle());
         this.model.riding = shouldSit;
         this.model.young = entity.isBaby();
         float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
@@ -156,4 +156,3 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
         }
     }
 }
-

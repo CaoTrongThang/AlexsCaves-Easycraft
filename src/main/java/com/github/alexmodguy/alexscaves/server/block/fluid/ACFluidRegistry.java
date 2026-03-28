@@ -6,6 +6,7 @@ import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
@@ -20,15 +21,16 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ACFluidRegistry {
-    public static final DeferredRegister<FluidType> FLUID_TYPE_DEF_REG = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, AlexsCaves.MODID);
+    @SuppressWarnings("unchecked")
+    public static final DeferredRegister<FluidType> FLUID_TYPE_DEF_REG = DeferredRegister.create((net.minecraft.resources.ResourceKey) ForgeRegistries.Keys.FLUID_TYPES, AlexsCaves.MODID);
     public static final DeferredRegister<Fluid> FLUID_DEF_REG = DeferredRegister.create(ForgeRegistries.FLUIDS, AlexsCaves.MODID);
 
     private static ForgeFlowingFluid.Properties acidProperties() {
-        return new ForgeFlowingFluid.Properties(ACID_FLUID_TYPE, ACID_FLUID_SOURCE, ACID_FLUID_FLOWING).bucket(ACItemRegistry.ACID_BUCKET).block(ACBlockRegistry.ACID);
+        return new ForgeFlowingFluid.Properties(ACID_FLUID_TYPE, ACID_FLUID_SOURCE, ACID_FLUID_FLOWING).bucket(ACItemRegistry.ACID_BUCKET).block(() -> (LiquidBlock) ACBlockRegistry.ACID.get());
     }
 
     private static ForgeFlowingFluid.Properties purpleSodaProperties() {
-        return new ForgeFlowingFluid.Properties(PURPLE_SODA_FLUID_TYPE, PURPLE_SODA_FLUID_SOURCE, PURPLE_SODA_FLUID_FLOWING).bucket(ACItemRegistry.PURPLE_SODA_BUCKET).block(ACBlockRegistry.PURPLE_SODA);
+        return new ForgeFlowingFluid.Properties(PURPLE_SODA_FLUID_TYPE, PURPLE_SODA_FLUID_SOURCE, PURPLE_SODA_FLUID_FLOWING).bucket(ACItemRegistry.PURPLE_SODA_BUCKET).block(() -> (LiquidBlock) ACBlockRegistry.PURPLE_SODA.get());
     }
 
     public static final RegistryObject<FluidType> ACID_FLUID_TYPE = FLUID_TYPE_DEF_REG.register("acid", () -> new AcidFluidType(FluidType.Properties.create().lightLevel(5).density(1024).viscosity(1024).pathType(BlockPathTypes.LAVA).adjacentPathType(BlockPathTypes.DANGER_OTHER).sound(SoundActions.BUCKET_EMPTY, ACSoundRegistry.ACID_UNSUBMERGE.get()).sound(SoundActions.BUCKET_FILL, ACSoundRegistry.ACID_SUBMERGE.get())));

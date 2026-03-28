@@ -51,7 +51,6 @@ public class DarknessArmorItem extends ArmorItem implements CustomArmorPostRende
         }
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }
@@ -62,7 +61,6 @@ public class DarknessArmorItem extends ArmorItem implements CustomArmorPostRende
     }
 
     @SuppressWarnings("removal")
-    @Override
     public void onArmorTick(ItemStack stack, Level level, Player player) {
         if (stack.is(ACItemRegistry.CLOAK_OF_DARKNESS.get())) {
             if (!level.isClientSide) {

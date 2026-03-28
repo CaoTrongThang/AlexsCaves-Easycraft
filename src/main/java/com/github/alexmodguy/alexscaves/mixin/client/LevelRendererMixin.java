@@ -99,8 +99,6 @@ public abstract class LevelRendererMixin {
         }
         ci.cancel();
         // AC CODE END
-        if (level.effects().renderSky(level, ticks, partialTick, poseStack, camera, matrix4f2, foggy, runnable))
-            return;
         runnable.run();
         if (!foggy) {
             FogType fogtype = camera.getFluidInCamera();
@@ -237,7 +235,7 @@ public abstract class LevelRendererMixin {
         if (state.getBlock() instanceof EnergizedGalenaBlock) {
             int i = level.getBrightness(LightLayer.SKY, pos);
             int j = level.getBrightness(LightLayer.BLOCK, pos);
-            int k = state.getLightEmission(level, pos) - 1;
+            int k = state.getLightEmission() - 1;
             if (j < k) {
                 j = k;
             }

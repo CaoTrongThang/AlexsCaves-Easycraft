@@ -160,8 +160,7 @@ public class CandyCaneHookItem extends Item {
         return stack.getCount() == 1;
     }
 
-    @Override
     public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
-        return toolAction == ToolActions.FISHING_ROD_CAST || super.canPerformAction(stack, toolAction);
+        return toolAction == ToolActions.FISHING_ROD_CAST;
     }
 }

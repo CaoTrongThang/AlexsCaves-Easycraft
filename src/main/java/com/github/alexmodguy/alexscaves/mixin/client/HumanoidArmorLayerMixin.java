@@ -1,16 +1,27 @@
 package com.github.alexmodguy.alexscaves.mixin.client;
 
 
+import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.render.item.ACArmorRenderProperties;
+import com.github.alexmodguy.alexscaves.server.item.DarknessArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.DivingArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.GingerbreadArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.HazmatArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.PrimordialArmorItem;
+import com.github.alexmodguy.alexscaves.server.item.RainbounceBootsItem;
 import com.github.alexmodguy.alexscaves.server.item.CustomArmorPostRender;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,20 +59,26 @@ public abstract class HumanoidArmorLayerMixin extends RenderLayer {
     )
     private void ac_renderArmorPiece(PoseStack poseStack, MultiBufferSource multiBufferSource, LivingEntity livingEntity, EquipmentSlot equipmentSlot, int light, HumanoidModel humanoidModel, CallbackInfo ci) {
         ItemStack itemstack = livingEntity.getItemBySlot(equipmentSlot);
-        if (itemstack.getItem() instanceof CustomArmorPostRender) {
-            ci.cancel();
-            lastArmorItemStackRendered = livingEntity.getItemBySlot(equipmentSlot);
-            Item item = itemstack.getItem();
-            if (item instanceof ArmorItem armorItem) {
-                if (armorItem.getEquipmentSlot() == equipmentSlot) {
-                    boolean legs = equipmentSlot == EquipmentSlot.LEGS;
-                    HumanoidModel model = this.getParentModel() instanceof HumanoidModel humanoidModel1 ? humanoidModel1 : humanoidModel;
-                    Model armorModel = ForgeHooksClient.getArmorModel(livingEntity, itemstack, equipmentSlot, model);
-                    setPartVisibility((HumanoidModel) armorModel, equipmentSlot);
-                    ResourceLocation texture = getACArmorResource(livingEntity, itemstack, equipmentSlot, null);
-                    ACArmorRenderProperties.renderCustomArmor(poseStack, multiBufferSource, light, lastArmorItemStackRendered, armorItem, armorModel, legs, texture);
-                }
-            }
+        Item item = itemstack.getItem();
+        if (!(item instanceof ArmorItem armorItem) || !isAlexsCavesArmor(item) || armorItem.getEquipmentSlot() != equipmentSlot) {
+            return;
+        }
+
+        ci.cancel();
+        lastArmorItemStackRendered = itemstack;
+        boolean legs = equipmentSlot == EquipmentSlot.LEGS;
+        HumanoidModel parentModel = this.getParentModel() instanceof HumanoidModel humanoidModel1 ? humanoidModel1 : humanoidModel;
+        Model armorModel = ForgeHooksClient.getArmorModel(livingEntity, itemstack, equipmentSlot, parentModel);
+        HumanoidModel humanoidArmorModel = armorModel instanceof HumanoidModel armorHumanoidModel ? armorHumanoidModel : humanoidModel;
+        parentModel.copyPropertiesTo(humanoidArmorModel);
+        setPartVisibility(humanoidArmorModel, equipmentSlot);
+        ResourceLocation texture = getACArmorResource(livingEntity, itemstack, equipmentSlot, null);
+
+        if (item instanceof CustomArmorPostRender) {
+            ACArmorRenderProperties.renderCustomArmor(poseStack, multiBufferSource, light, lastArmorItemStackRendered, armorItem, humanoidArmorModel, legs, texture);
+        } else {
+            VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.armorCutoutNoCull(texture), false, itemstack.hasFoil());
+            humanoidArmorModel.renderToBuffer(poseStack, vertexConsumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
@@ -70,7 +87,7 @@ public abstract class HumanoidArmorLayerMixin extends RenderLayer {
     private ResourceLocation getACArmorResource(LivingEntity entity, ItemStack stack, EquipmentSlot slot, @Nullable String type) {
         ArmorItem item = (ArmorItem) stack.getItem();
         String texture = item.getMaterial().getName();
-        String domain = "minecraft";
+        String domain = isAlexsCavesArmor(item) ? AlexsCaves.MODID : "minecraft";
         int idx = texture.indexOf(':');
         if (idx != -1) {
             domain = texture.substring(0, idx);
@@ -82,10 +99,19 @@ public abstract class HumanoidArmorLayerMixin extends RenderLayer {
         ResourceLocation resourcelocation = AC_ARMOR_LOCATION_CACHE.get(s1);
 
         if (resourcelocation == null) {
-            resourcelocation = ResourceLocation.parse(s1);
+            resourcelocation = new ResourceLocation(s1);
             AC_ARMOR_LOCATION_CACHE.put(s1, resourcelocation);
         }
 
         return resourcelocation;
+    }
+
+    private static boolean isAlexsCavesArmor(Item item) {
+        return item instanceof PrimordialArmorItem
+            || item instanceof HazmatArmorItem
+            || item instanceof DivingArmorItem
+            || item instanceof DarknessArmorItem
+            || item instanceof RainbounceBootsItem
+            || item instanceof GingerbreadArmorItem;
     }
 }

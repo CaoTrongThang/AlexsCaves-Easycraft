@@ -23,7 +23,6 @@ public class RadrockUraniumOreBlock extends Block {
         }
     }
 
-    @Override
     public int getExpDrop(BlockState state, LevelReader level, net.minecraft.util.RandomSource randomSource, BlockPos pos, int fortuneLevel, int silkTouchLevel) {
         return silkTouchLevel == 0 ? randomSource.nextInt(2) : 0;
     }

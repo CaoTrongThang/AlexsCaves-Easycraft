@@ -256,7 +256,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         float pulseBy = getInterestLevel() * 0.45F;
         pulseAmount += pulseBy;
         if (!level().isClientSide) {
-            double waterHeight = getFluidTypeHeight(ForgeMod.WATER_TYPE.get());
+            double waterHeight = com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.WATER_TYPE.get());
             if (waterHeight > 0 && waterHeight < this.getBbHeight() - 1.0F) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
             }
@@ -381,12 +381,10 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         this.walkAnimation.update(f2, 0.4F);
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

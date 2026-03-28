@@ -124,7 +124,6 @@ public class BurrowingArrowEntity extends AbstractArrow {
         }
     }
 
-    @Override
     public void startFalling() {
         this.inGround = false;
     }

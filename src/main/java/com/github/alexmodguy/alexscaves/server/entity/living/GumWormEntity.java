@@ -240,7 +240,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
                 this.setDeltaMovement(random.nextFloat() - 0.5F, 0.8F, random.nextFloat() - 0.5F);
                 flag = true;
             }
-        }else if((surfaceY < this.getEyeY() || centralStateBelow.isAir() || this.isInFluidType()) && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode() && !this.isLeaping()){
+        }else if((surfaceY < this.getEyeY() || centralStateBelow.isAir() || com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this)) && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode() && !this.isLeaping()){
             if(outOfGroundTime++ > 10){
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.5, 0));
             }
@@ -349,8 +349,8 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     @Override
-    public float getStepHeight() {
-        return isRidingMode() ? 5.0F : super.getStepHeight();
+    public float maxUpStep() {
+        return isRidingMode() ? 5.0F : super.maxUpStep();
     }
 
     public void remove(Entity.RemovalReason removalReason) {
@@ -360,24 +360,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
     @Override
     protected void dropAllDeathLoot(DamageSource damageSource) {
-        Entity entity = damageSource.getEntity();
-
-        int i = net.minecraftforge.common.ForgeHooks.getLootingLevel(this, entity, damageSource);
-        this.captureDrops(new java.util.ArrayList<>());
-
-        boolean flag = this.lastHurtByPlayerTime > 0;
-        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-            this.dropFromLootTable(damageSource, flag);
-            this.dropCustomDeathLoot(damageSource, i, flag);
-        }
-
-        this.dropEquipment();
-        this.dropExperience();
-
-        Collection<ItemEntity> drops = captureDrops(null);
-        if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, damageSource, drops, i, lastHurtByPlayerTime > 0)){
-            drops.forEach(e -> dropItemAtSurface(e));
-        }
+        super.dropAllDeathLoot(damageSource);
     }
 
     private void dropItemAtSurface(ItemEntity itementity) {

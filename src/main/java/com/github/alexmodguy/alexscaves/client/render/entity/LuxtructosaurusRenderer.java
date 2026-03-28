@@ -21,9 +21,9 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class LuxtructosaurusRenderer extends MobRenderer<LuxtructosaurusEntity, LuxtructosaurusModel> implements CustomBookEntityRenderer {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/luxtructosaurus.png");
-    private static final ResourceLocation TEXTURE_ENRAGED = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/luxtructosaurus_enraged.png");
-    private static final ResourceLocation TEXTURE_ENRAGED_GLOW = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/luxtructosaurus_enraged_glow.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/luxtructosaurus.png");
+    private static final ResourceLocation TEXTURE_ENRAGED = new ResourceLocation(AlexsCaves.MODID, "textures/entity/luxtructosaurus_enraged.png");
+    private static final ResourceLocation TEXTURE_ENRAGED_GLOW = new ResourceLocation(AlexsCaves.MODID, "textures/entity/luxtructosaurus_enraged_glow.png");
 
     private static final HashMap<Integer, Vec3> mouthParticlePositions = new HashMap<>();
 

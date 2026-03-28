@@ -17,7 +17,6 @@ public class PrimordialArmorItem extends ArmorItem {
         super(armorMaterial, slot, new Properties());
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }

@@ -33,20 +33,20 @@ import net.minecraft.world.item.ItemStack;
 
 public class GingerbreadManRenderer extends MobRenderer<GingerbreadManEntity, GingerbreadManModel> {
     private static final ResourceLocation[] TEXTURES_FOR_VARIANT = new ResourceLocation[GingerbreadManEntity.MAX_VARIANTS + 1];
-    private static final ResourceLocation TEXTURE_ALEX = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_alex.png");
-    private static final ResourceLocation TEXTURE_CARRO = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_carro.png");
-    private static final ResourceLocation TEXTURE_DENO = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_deno.png");
-    private static final ResourceLocation TEXTURE_GATETOH = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_gatetoh.png");
-    private static final ResourceLocation TEXTURE_HOLIDAY = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_holiday.png");
-    private static final ResourceLocation TEXTURE_PINKY = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_pinky.png");
-    private static final ResourceLocation TEXTURE_PLUMMET = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_plummet.png");
-    private static final ResourceLocation TEXTURE_VAKY = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_vaky.png");
-    private static final ResourceLocation TEXTURE_BLANK = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_blank.png");
-    private static final ResourceLocation TEXTURE_TEAM_OVERLAY = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_team_overlay.png");
+    private static final ResourceLocation TEXTURE_ALEX = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_alex.png");
+    private static final ResourceLocation TEXTURE_CARRO = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_carro.png");
+    private static final ResourceLocation TEXTURE_DENO = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_deno.png");
+    private static final ResourceLocation TEXTURE_GATETOH = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_gatetoh.png");
+    private static final ResourceLocation TEXTURE_HOLIDAY = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_holiday.png");
+    private static final ResourceLocation TEXTURE_PINKY = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_pinky.png");
+    private static final ResourceLocation TEXTURE_PLUMMET = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_plummet.png");
+    private static final ResourceLocation TEXTURE_VAKY = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_vaky.png");
+    private static final ResourceLocation TEXTURE_BLANK = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_blank.png");
+    private static final ResourceLocation TEXTURE_TEAM_OVERLAY = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_team_overlay.png");
 
     static {
         for (int i = 0; i <= GingerbreadManEntity.MAX_VARIANTS; i++) {
-            TEXTURES_FOR_VARIANT[i] = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_" + i + ".png");
+            TEXTURES_FOR_VARIANT[i] = new ResourceLocation(AlexsCaves.MODID, "textures/entity/gingerbread_man/gingerbread_man_" + i + ".png");
         }
     }
 
@@ -157,7 +157,7 @@ public class GingerbreadManRenderer extends MobRenderer<GingerbreadManEntity, Gi
         @Override
         protected void renderArmWithItem(LivingEntity livingEntity, ItemStack itemStack, ItemDisplayContext displayContext, HumanoidArm humanoidArm, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight) {
             if (!itemStack.isEmpty() && livingEntity instanceof GingerbreadManEntity gingerbreadMan) {
-                float partialTicks = Minecraft.getInstance().getPartialTick();
+                float partialTicks = Minecraft.getInstance().getFrameTime();
                 float carryItemProgress = gingerbreadMan.getCarryItemProgress(partialTicks);
                 boolean flag = humanoidArm == HumanoidArm.LEFT;
                 poseStack.pushPose();

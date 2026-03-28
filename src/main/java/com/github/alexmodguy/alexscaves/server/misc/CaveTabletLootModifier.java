@@ -27,8 +27,8 @@ public class CaveTabletLootModifier implements IGlobalLootModifier {
 
     private static final MapCodec<ResourceKey<Biome>> ENTRY_CODEC = ResourceKey.codec(Registries.BIOME).fieldOf("biome");
 
-    public static final Supplier<Codec<CaveTabletLootModifier>> CODEC = () ->
-            RecordCodecBuilder.create(inst ->
+    public static final Supplier<MapCodec<CaveTabletLootModifier>> CODEC = () ->
+            RecordCodecBuilder.mapCodec(inst ->
                     inst.group(
                                     ENTRY_CODEC.forGetter((configuration) -> configuration.biome),
                                     Codec.BOOL.fieldOf("replace").forGetter((configuration) -> configuration.replace),
@@ -105,7 +105,7 @@ public class CaveTabletLootModifier implements IGlobalLootModifier {
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC.get();
     }
 }

@@ -4,6 +4,7 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.entity.MultiPartEntity;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -46,7 +47,7 @@ public class MultipartEntityMessage {
             }
             Entity parent = playerSided.level().getEntity(message.parentId);
             Entity interacter = playerSided.level().getEntity(message.playerId);
-            if (interacter != null && parent != null && parent.isMultipartEntity() && interacter.distanceTo(parent) < 16) {
+            if (interacter != null && parent instanceof MultiPartEntity multipartEntity && multipartEntity.isMultipartEntity() && interacter.distanceTo(parent) < 16) {
                 if (message.type == 0) {
                     if (interacter instanceof Player player) {
                         parent.interact(player, player.getUsedItemHand());

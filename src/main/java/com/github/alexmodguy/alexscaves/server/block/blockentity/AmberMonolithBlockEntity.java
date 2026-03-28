@@ -247,12 +247,11 @@ public class AmberMonolithBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         if (packet != null && packet.getTag() != null) {
             if (packet.getTag().contains("EntityType")) {
                 String str = packet.getTag().getString("EntityType");
-                this.spawnType = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(str));
+                this.spawnType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(str));
             }
             this.spawnCount = packet.getTag().getInt("SpawnCount");
             this.spawnsMobIn = packet.getTag().getInt("SpawnMobsIn");
@@ -264,7 +263,7 @@ public class AmberMonolithBlockEntity extends BlockEntity {
         super.load(tag);
         if (tag.contains("EntityType")) {
             String str = tag.getString("EntityType");
-            this.spawnType = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(str));
+            this.spawnType = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(str));
         }
         this.spawnCount = tag.getInt("SpawnCount");
         this.spawnsMobIn = tag.getInt("SpawnMobsIn");

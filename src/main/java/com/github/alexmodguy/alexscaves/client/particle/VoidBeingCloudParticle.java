@@ -62,7 +62,7 @@ public class VoidBeingCloudParticle extends Particle {
         textureSize = 32 + (int) size * 32;
         dynamicTexture = new DynamicTexture(textureSize, textureSize, true);
         id = currentlyUsedTextures;
-        ResourceLocation resourcelocation = Minecraft.getInstance().textureManager.register("alexscavesvoid_particle/void_cloud_" + id, dynamicTexture);
+        ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("alexscavesvoid_particle/void_cloud_" + id, dynamicTexture);
         currentlyUsedTextures++;
         this.renderType = ACRenderTypes.getVoidBeingCloud(resourcelocation);
         this.targetId = target;

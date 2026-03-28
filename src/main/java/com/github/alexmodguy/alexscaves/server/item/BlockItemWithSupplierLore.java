@@ -22,7 +22,7 @@ public class BlockItemWithSupplierLore extends BlockItemWithSupplier {
     }
 
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        String blockName = block.getId().getNamespace() + "." + block.getId().getPath();
+        String blockName = block.getId().location().getNamespace() + "." + block.getId().location().getPath();
         tooltip.add(Component.translatable("block." + blockName + ".desc").withStyle(ChatFormatting.GRAY));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }

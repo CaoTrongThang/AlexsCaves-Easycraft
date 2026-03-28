@@ -61,13 +61,14 @@ public class BlockColorFinder {
         int vMax = image.contents().height();
         for (float i = 0; i < uMax; i++)
             for (float j = 0; j < vMax; j++) {
-                int alpha = image.getPixelRGBA(0, (int) i, (int) j) >> 24 & 0xFF;
+                int pixel = image.contents().byMipLevel[0].getPixelRGBA((int) i, (int) j);
+                int alpha = pixel >> 24 & 0xFF;
                 if (alpha == 0) {
                     continue;
                 }
-                red += image.getPixelRGBA(0, (int) i, (int) j) >> 0 & 0xFF;
-                green += image.getPixelRGBA(0, (int) i, (int) j) >> 8 & 0xFF;
-                blue += image.getPixelRGBA(0, (int) i, (int) j) >> 16 & 0xFF;
+                red += pixel >> 0 & 0xFF;
+                green += pixel >> 8 & 0xFF;
+                blue += pixel >> 16 & 0xFF;
                 count++;
             }
         //Average color

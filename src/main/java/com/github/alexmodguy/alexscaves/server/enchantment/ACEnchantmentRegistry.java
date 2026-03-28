@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -15,20 +16,22 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ACEnchantmentRegistry {
     public static final DeferredRegister<Enchantment> DEF_REG = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, AlexsCaves.MODID);
-    public static final EnchantmentCategory GALENA_GAUNTLET = EnchantmentCategory.create("galena_gauntlet", (item -> item == ACItemRegistry.GALENA_GAUNTLET.get()));
-    public static final EnchantmentCategory RESISTOR_SHIELD = EnchantmentCategory.create("resistor_shield", (item -> item == ACItemRegistry.RESISTOR_SHIELD.get()));
-    public static final EnchantmentCategory PRIMITIVE_CLUB = EnchantmentCategory.create("primitive_club", (item -> item == ACItemRegistry.PRIMITIVE_CLUB.get()));
-    public static final EnchantmentCategory EXTINCTION_SPEAR = EnchantmentCategory.create("extinction_spear", (item -> item == ACItemRegistry.EXTINCTION_SPEAR.get()));
-    public static final EnchantmentCategory RAYGUN = EnchantmentCategory.create("raygun", (item -> item == ACItemRegistry.RAYGUN.get()));
-    public static final EnchantmentCategory ORTHOLANCE = EnchantmentCategory.create("ortholance", (item -> item == ACItemRegistry.ORTHOLANCE.get()));
-    public static final EnchantmentCategory MAGIC_CONCH = EnchantmentCategory.create("magic_conch", (item -> item == ACItemRegistry.MAGIC_CONCH.get()));
-    public static final EnchantmentCategory SEA_STAFF = EnchantmentCategory.create("sea_staff", (item -> item == ACItemRegistry.SEA_STAFF.get()));
-    public static final EnchantmentCategory TOTEM_OF_POSSESSION = EnchantmentCategory.create("totem_of_possession", (item -> item == ACItemRegistry.TOTEM_OF_POSSESSION.get()));
-    public static final EnchantmentCategory DESOLATE_DAGGER = EnchantmentCategory.create("desolate_dagger", (item -> item == ACItemRegistry.DESOLATE_DAGGER.get()));
-    public static final EnchantmentCategory DREADBOW = EnchantmentCategory.create("dreadbow", (item -> item == ACItemRegistry.DREADBOW.get()));
-    public static final EnchantmentCategory SHOT_GUM = EnchantmentCategory.create("shot_gum", (item -> item == ACItemRegistry.SHOT_GUM.get()));
-    public static final EnchantmentCategory CANDY_CANE_HOOK = EnchantmentCategory.create("candy_cane_hook", (item -> item == ACItemRegistry.CANDY_CANE_HOOK.get()));
-    public static final EnchantmentCategory SUGAR_STAFF = EnchantmentCategory.create("sugar_staff", (item -> item == ACItemRegistry.SUGAR_STAFF.get()));
+    // 1.20 vanilla cannot create custom enchantment categories, so we reuse distinct built-in
+    // categories as stable group IDs and enforce item applicability in ACWeaponEnchantment.
+    public static final EnchantmentCategory GALENA_GAUNTLET = EnchantmentCategory.BREAKABLE;
+    public static final EnchantmentCategory RESISTOR_SHIELD = EnchantmentCategory.ARMOR;
+    public static final EnchantmentCategory PRIMITIVE_CLUB = EnchantmentCategory.WEAPON;
+    public static final EnchantmentCategory EXTINCTION_SPEAR = EnchantmentCategory.TRIDENT;
+    public static final EnchantmentCategory RAYGUN = EnchantmentCategory.DIGGER;
+    public static final EnchantmentCategory ORTHOLANCE = EnchantmentCategory.CROSSBOW;
+    public static final EnchantmentCategory MAGIC_CONCH = EnchantmentCategory.FISHING_ROD;
+    public static final EnchantmentCategory SEA_STAFF = EnchantmentCategory.BOW;
+    public static final EnchantmentCategory TOTEM_OF_POSSESSION = EnchantmentCategory.VANISHABLE;
+    public static final EnchantmentCategory DESOLATE_DAGGER = EnchantmentCategory.ARMOR_HEAD;
+    public static final EnchantmentCategory DREADBOW = EnchantmentCategory.ARMOR_CHEST;
+    public static final EnchantmentCategory SHOT_GUM = EnchantmentCategory.ARMOR_LEGS;
+    public static final EnchantmentCategory CANDY_CANE_HOOK = EnchantmentCategory.ARMOR_FEET;
+    public static final EnchantmentCategory SUGAR_STAFF = EnchantmentCategory.WEARABLE;
     public static final RegistryObject<Enchantment> FIELD_EXTENSION = DEF_REG.register("field_extension", () -> new ACWeaponEnchantment("field_extension", Enchantment.Rarity.COMMON, GALENA_GAUNTLET, 4, 6, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND));
     public static final RegistryObject<Enchantment> CRYSTALLIZATION = DEF_REG.register("crystallization", () -> new ACWeaponEnchantment("crystallization", Enchantment.Rarity.RARE, GALENA_GAUNTLET, 1, 15, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND));
     public static final RegistryObject<Enchantment> FERROUS_HASTE = DEF_REG.register("ferrous_haste", () -> new ACWeaponEnchantment("ferrous_haste", Enchantment.Rarity.RARE, GALENA_GAUNTLET, 1, 15, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND));
@@ -133,8 +136,54 @@ public class ACEnchantmentRegistry {
         return true;
     }
 
+    public static boolean canApplyToItem(EnchantmentCategory enchantmentCategory, ItemStack stack) {
+        if (enchantmentCategory == GALENA_GAUNTLET) {
+            return stack.is(ACItemRegistry.GALENA_GAUNTLET.get());
+        }
+        if (enchantmentCategory == RESISTOR_SHIELD) {
+            return stack.is(ACItemRegistry.RESISTOR_SHIELD.get());
+        }
+        if (enchantmentCategory == PRIMITIVE_CLUB) {
+            return stack.is(ACItemRegistry.PRIMITIVE_CLUB.get());
+        }
+        if (enchantmentCategory == EXTINCTION_SPEAR) {
+            return stack.is(ACItemRegistry.EXTINCTION_SPEAR.get());
+        }
+        if (enchantmentCategory == RAYGUN) {
+            return stack.is(ACItemRegistry.RAYGUN.get());
+        }
+        if (enchantmentCategory == ORTHOLANCE) {
+            return stack.is(ACItemRegistry.ORTHOLANCE.get());
+        }
+        if (enchantmentCategory == MAGIC_CONCH) {
+            return stack.is(ACItemRegistry.MAGIC_CONCH.get());
+        }
+        if (enchantmentCategory == SEA_STAFF) {
+            return stack.is(ACItemRegistry.SEA_STAFF.get());
+        }
+        if (enchantmentCategory == TOTEM_OF_POSSESSION) {
+            return stack.is(ACItemRegistry.TOTEM_OF_POSSESSION.get());
+        }
+        if (enchantmentCategory == DESOLATE_DAGGER) {
+            return stack.is(ACItemRegistry.DESOLATE_DAGGER.get());
+        }
+        if (enchantmentCategory == DREADBOW) {
+            return stack.is(ACItemRegistry.DREADBOW.get());
+        }
+        if (enchantmentCategory == SHOT_GUM) {
+            return stack.is(ACItemRegistry.SHOT_GUM.get());
+        }
+        if (enchantmentCategory == CANDY_CANE_HOOK) {
+            return stack.is(ACItemRegistry.CANDY_CANE_HOOK.get());
+        }
+        if (enchantmentCategory == SUGAR_STAFF) {
+            return stack.is(ACItemRegistry.SUGAR_STAFF.get());
+        }
+        return false;
+    }
+
     public static void addAllEnchantsToCreativeTab(CreativeModeTab.Output output, EnchantmentCategory enchantmentCategory){
-        for (RegistryObject<Enchantment> enchantObject : DEF_REG.getEntries()) {
+        for (RegistryObject<? extends Enchantment> enchantObject : DEF_REG.getEntries()) {
             if (enchantObject.isPresent()) {
                 Enchantment enchant = enchantObject.get();
                 if(enchant.category == enchantmentCategory){

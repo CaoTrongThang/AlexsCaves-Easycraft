@@ -139,7 +139,7 @@ public class TremorsaurusEntity extends DinosaurEntity implements KeybindUsingMo
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.34F);
         }
-        if (this.onGround() && !this.isInFluidType() && this.walkAnimation.speed() > 0.1F && !this.isBaby()) {
+        if (this.onGround() && !com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this) && this.walkAnimation.speed() > 0.1F && !this.isBaby()) {
             float f = (float) Math.cos(this.walkAnimation.position() * 0.8F - 1.5F);
             if (Math.abs(f) < 0.2) {
                 if (screenShakeAmount <= 0.3) {
@@ -475,7 +475,7 @@ public class TremorsaurusEntity extends DinosaurEntity implements KeybindUsingMo
         return ACBlockRegistry.TREMORSAURUS_EGG.get().defaultBlockState();
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.1F;
     }
 

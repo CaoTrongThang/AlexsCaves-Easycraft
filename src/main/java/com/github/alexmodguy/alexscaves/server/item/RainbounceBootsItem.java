@@ -23,7 +23,6 @@ public class RainbounceBootsItem extends ArmorItem implements CustomArmorPostRen
         super(rainbounceArmorMaterial, Type.BOOTS, new Properties());
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getArmorProperties());
     }

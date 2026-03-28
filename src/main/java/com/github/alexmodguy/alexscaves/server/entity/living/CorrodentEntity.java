@@ -327,7 +327,10 @@ public class CorrodentEntity extends Monster implements ICustomCollisions, IAnim
     }
 
     public Vec3 collide(Vec3 vec3) {
-        return !isDigging() ? super.collide(vec3) : ICustomCollisions.getAllowedMovementForEntity(this, vec3);
+        if (isDigging()) {
+            return ICustomCollisions.getAllowedMovementForEntity(this, vec3);
+        }
+        return Entity.collideBoundingBox(this, vec3, this.getBoundingBox(), this.level(), this.level().getEntityCollisions(this, this.getBoundingBox().expandTowards(vec3)));
     }
 
     public void remove(Entity.RemovalReason removalReason) {
@@ -360,12 +363,10 @@ public class CorrodentEntity extends Monster implements ICustomCollisions, IAnim
         this.entityData.set(AFRAID, bool);
     }
 
-    @Override
     public boolean isMultipartEntity() {
         return true;
     }
 
-    @Override
     public PartEntity<?>[] getParts() {
         return allParts;
     }

@@ -111,7 +111,7 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
     }
 
     public static boolean isWithinTowerSpawnBounds(ServerLevelAccessor level, BlockPos pos) {
-        Structure structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ACStructureRegistry.LICOWITCH_TOWER.getId());
+        Structure structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ACStructureRegistry.LICOWITCH_TOWER.getId().location());
         StructureStart structureStart = level.getLevel().structureManager().getStructureAt(pos, structure);
         if (structure != null && structureStart.isValid()) {
             //stop spawning on the roof and floor

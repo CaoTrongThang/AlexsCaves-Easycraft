@@ -16,7 +16,7 @@ import net.minecraft.util.Mth;
 
 public class BurrowingArrowRenderer extends EntityRenderer<BurrowingArrowEntity> {
 
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/burrowing_arrow.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/burrowing_arrow.png");
     private static final BurrowingArrowModel MODEL = new BurrowingArrowModel();
 
     public BurrowingArrowRenderer(EntityRendererProvider.Context context) {

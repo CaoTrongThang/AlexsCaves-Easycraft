@@ -75,7 +75,7 @@ public class FallingFrostmintEntity extends FallingBlockEntity {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
             }
             BlockPos blockpos = this.blockPosition();
-            if(level().getFluidState(blockpos).getFluidType() == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()){
+            if (com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(level().getFluidState(blockpos)) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
                 if(!level().isClientSide){
                     FrostmintExplosion explosion = new FrostmintExplosion(level(), this, this.getX(), this.getY() + 0.5F, this.getZ(), 4.0F, Explosion.BlockInteraction.DESTROY_WITH_DECAY, false);
                     explosion.explode();

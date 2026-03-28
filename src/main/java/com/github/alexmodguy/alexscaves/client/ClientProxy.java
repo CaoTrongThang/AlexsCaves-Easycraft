@@ -7,6 +7,7 @@ import com.github.alexmodguy.alexscaves.client.gui.SpelunkeryTableScreen;
 import com.github.alexmodguy.alexscaves.client.gui.book.CaveBookScreen;
 import com.github.alexmodguy.alexscaves.client.model.baked.BakedModelShadeLayerFullbright;
 import com.github.alexmodguy.alexscaves.client.particle.*;
+import com.github.alexmodguy.alexscaves.client.render.ACBlockRenderLayerRegistry;
 import com.github.alexmodguy.alexscaves.client.render.ACInternalShaders;
 import com.github.alexmodguy.alexscaves.client.render.blockentity.*;
 import com.github.alexmodguy.alexscaves.client.render.entity.*;
@@ -42,6 +43,11 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
+import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -54,6 +60,7 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -67,6 +74,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
@@ -84,11 +92,11 @@ import java.util.*;
 public class ClientProxy extends CommonProxy {
 
     private static final List<String> FULLBRIGHTS = ImmutableList.of("alexscaves:ambersol#", "alexscaves:radrock_uranium_ore#", "alexscaves:acidic_radrock#", "alexscaves:uranium_rod#axis=x", "alexscaves:uranium_rod#axis=y", "alexscaves:uranium_rod#axis=z", "alexscaves:block_of_uranium#", "alexscaves:abyssal_altar#active=true", "alexscaves:abyssmarine_", "alexscaves:peering_coprolith#", "alexscaves:forsaken_idol#", "alexscaves:magnetic_light#", "alexscaves:tremorzilla_egg#");
-    public static final ResourceLocation BOMB_FLASH = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/bomb_flash.png");
-    public static final ResourceLocation WATCHER_EFFECT = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/watcher_effect.png");
-    public static final ResourceLocation IRRADIATED_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "shaders/post/irradiated.json");
-    public static final ResourceLocation HOLOGRAM_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "shaders/post/hologram.json");
-    public static final ResourceLocation PURPLE_WITCH_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "shaders/post/purple_witch.json");
+    public static final ResourceLocation BOMB_FLASH = new ResourceLocation(AlexsCaves.MODID, "textures/misc/bomb_flash.png");
+    public static final ResourceLocation WATCHER_EFFECT = new ResourceLocation(AlexsCaves.MODID, "textures/misc/watcher_effect.png");
+    public static final ResourceLocation IRRADIATED_SHADER = new ResourceLocation(AlexsCaves.MODID, "shaders/post/irradiated.json");
+    public static final ResourceLocation HOLOGRAM_SHADER = new ResourceLocation(AlexsCaves.MODID, "shaders/post/hologram.json");
+    public static final ResourceLocation PURPLE_WITCH_SHADER = new ResourceLocation(AlexsCaves.MODID, "shaders/post/purple_witch.json");
     public static final RandomSource random = RandomSource.create();
     public static int lastTremorTick = -1;
     public static float[] randomTremorOffsets = new float[3];
@@ -112,13 +120,14 @@ public class ClientProxy extends CommonProxy {
     public static final Map<BlockEntity, AbstractTickableSoundInstance> BLOCK_ENTITY_SOUND_INSTANCE_MAP = new HashMap<>();
     private final ACItemRenderProperties isterProperties = new ACItemRenderProperties();
     private final ACArmorRenderProperties armorProperties = new ACArmorRenderProperties();
+    private static final com.github.alexmodguy.alexscaves.client.render.item.ACItemstackRenderer FABRIC_ITEM_RENDERER = new com.github.alexmodguy.alexscaves.client.render.item.ACItemstackRenderer();
     public static boolean spelunkeryTutorialComplete;
     public static boolean hasACSplashText = false;
     public static CameraType lastPOV = CameraType.FIRST_PERSON;
     public static int shaderLoadAttemptCooldown = 0;
-    public static Vec3 lastBiomeLightColor = Vec3.ZERO;
+    public static Vec3 lastBiomeLightColor = new Vec3(1.0D, 1.0D, 1.0D);
     public static float lastBiomeAmbientLightAmount = 0;
-    public static Vec3 lastBiomeLightColorPrev = Vec3.ZERO;
+    public static Vec3 lastBiomeLightColorPrev = new Vec3(1.0D, 1.0D, 1.0D);
     public static float lastBiomeAmbientLightAmountPrev = 0;
     public static Map<UUID, Integer> bossBarRenderTypes = new HashMap<>();
     private static Entity lastCameraEntity;
@@ -126,15 +135,59 @@ public class ClientProxy extends CommonProxy {
     public static Vec3 acSkyOverrideColor = Vec3.ZERO;
     public static boolean disabledBiomeAmbientLightByOtherMod = false;
 
+    public static void registerFabricShaders() {
+        CoreShaderRegistrationCallback.EVENT.register(context -> registerInternalShaders(context::register));
+    }
+
+    public static void registerFabricBuiltinItemRenderers() {
+        registerBuiltinItemRenderer(ACItemRegistry.CAVE_MAP.get());
+        registerBuiltinItemRenderer(ACItemRegistry.DREADBOW.get());
+        registerBuiltinItemRenderer(ACItemRegistry.RAYGUN.get());
+        registerBuiltinItemRenderer(ACItemRegistry.PRIMITIVE_CLUB.get());
+        registerBuiltinItemRenderer(ACItemRegistry.LIMESTONE_SPEAR.get());
+        registerBuiltinItemRenderer(ACItemRegistry.EXTINCTION_SPEAR.get());
+        registerBuiltinItemRenderer(ACItemRegistry.FROSTMINT_SPEAR.get());
+        registerBuiltinItemRenderer(ACItemRegistry.SEA_STAFF.get());
+        registerBuiltinItemRenderer(ACItemRegistry.ORTHOLANCE.get());
+        registerBuiltinItemRenderer(ACItemRegistry.GALENA_GAUNTLET.get());
+        registerBuiltinItemRenderer(ACItemRegistry.RESISTOR_SHIELD.get());
+        registerBuiltinItemRenderer(ACItemRegistry.SHOT_GUM.get());
+        registerBuiltinItemRenderer(ACItemRegistry.SUGAR_STAFF.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.SIREN_LIGHT.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.COPPER_VALVE.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.BEHOLDER.get());
+        registerBuiltinItemRenderer(ACBlockRegistry.GOBTHUMPER.get());
+    }
+
+    public static void registerFabricFluidRendering() {
+        FluidRenderHandlerRegistry.INSTANCE.register(
+            ACFluidRegistry.ACID_FLUID_SOURCE.get(),
+            ACFluidRegistry.ACID_FLUID_FLOWING.get(),
+            new SimpleFluidRenderHandler(
+                com.github.alexmodguy.alexscaves.server.block.fluid.AcidFluidType.FLUID_STILL,
+                com.github.alexmodguy.alexscaves.server.block.fluid.AcidFluidType.FLUID_FLOWING
+            )
+        );
+        FluidRenderHandlerRegistry.INSTANCE.register(
+            ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(),
+            ACFluidRegistry.PURPLE_SODA_FLUID_FLOWING.get(),
+            new SimpleFluidRenderHandler(
+                com.github.alexmodguy.alexscaves.server.block.fluid.PurpleSodaFluidType.FLUID_STILL,
+                com.github.alexmodguy.alexscaves.server.block.fluid.PurpleSodaFluidType.FLUID_FLOWING
+            )
+        );
+    }
+
+    private static void registerBuiltinItemRenderer(ItemLike itemLike) {
+        BuiltinItemRendererRegistry.INSTANCE.register(itemLike.asItem(), (stack, mode, matrices, vertexConsumers, light, overlay) ->
+            FABRIC_ITEM_RENDERER.renderByItem(stack, mode, matrices, vertexConsumers, light, overlay)
+        );
+    }
+
     @SuppressWarnings("removal")
     @Override
     public void commonInit() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.addListener(this::setupParticles);
-        bus.addListener(this::registerKeybinds);
-        bus.addListener(this::onItemColors);
-        bus.addListener(this::onBlockColors);
-        bus.addListener(this::onRegisterTooltips);
+        this.bootstrapFabricClientRegistrations();
     }
 
     @SuppressWarnings("removal")
@@ -257,52 +310,49 @@ public class ClientProxy extends CommonProxy {
         EntityRenderers.register(ACEntityRegistry.THROWN_ICE_CREAM_SCOOP.get(), (context) -> {
             return new ThrownItemRenderer<>(context, 1.25F, false);
         });
-        Sheets.addWoodType(ACBlockRegistry.PEWEN_WOOD_TYPE);
-        Sheets.addWoodType(ACBlockRegistry.THORNWOOD_WOOD_TYPE);
-        ItemProperties.register(ACItemRegistry.HOLOCODER.get(), ResourceLocation.withDefaultNamespace("bound"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.HOLOCODER.get(), new ResourceLocation("bound"), (stack, level, living, j) -> {
             return HolocoderItem.isBound(stack) ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.DINOSAUR_NUGGET.get(), ResourceLocation.withDefaultNamespace("nugget"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.DINOSAUR_NUGGET.get(), new ResourceLocation("nugget"), (stack, level, living, j) -> {
             return (stack.getCount() % 4) / 4F;
         });
-        ItemProperties.register(ACItemRegistry.LIMESTONE_SPEAR.get(), ResourceLocation.withDefaultNamespace("throwing"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.LIMESTONE_SPEAR.get(), new ResourceLocation("throwing"), (stack, level, living, j) -> {
             return living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.EXTINCTION_SPEAR.get(), ResourceLocation.withDefaultNamespace("throwing"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.EXTINCTION_SPEAR.get(), new ResourceLocation("throwing"), (stack, level, living, j) -> {
             return living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.REMOTE_DETONATOR.get(), ResourceLocation.withDefaultNamespace("active"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.REMOTE_DETONATOR.get(), new ResourceLocation("active"), (stack, level, living, j) -> {
             return RemoteDetonatorItem.isActive(stack) ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.MAGIC_CONCH.get(), ResourceLocation.withDefaultNamespace("tooting"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.MAGIC_CONCH.get(), new ResourceLocation("tooting"), (stack, level, living, j) -> {
             return living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.ORTHOLANCE.get(), ResourceLocation.withDefaultNamespace("charging"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.ORTHOLANCE.get(), new ResourceLocation("charging"), (stack, level, living, j) -> {
             return living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.TOTEM_OF_POSSESSION.get(), ResourceLocation.withDefaultNamespace("totem"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.TOTEM_OF_POSSESSION.get(), new ResourceLocation("totem"), (stack, level, living, j) -> {
             return TotemOfPossessionItem.isBound(stack) ? living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.5F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.CANDY_CANE_HOOK.get(), ResourceLocation.withDefaultNamespace("cast"), (stack, level, holder, i) -> {
+        ItemProperties.register(ACItemRegistry.CANDY_CANE_HOOK.get(), new ResourceLocation("cast"), (stack, level, holder, i) -> {
             return holder != null && CandyCaneHookItem.isActive(stack) ? 1.0F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.SACK_OF_SATING.get(), ResourceLocation.withDefaultNamespace("open"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.SACK_OF_SATING.get(), new ResourceLocation("open"), (stack, level, living, j) -> {
             return level != null && SackOfSatingItem.isChewing(stack, level.getGameTime()) ? 1.0F : stack.getTag() == null || living instanceof Player player && player.containerMenu != null && SackOfSatingItem.calculateWholeStackHungerValue(player.containerMenu.getCarried(), player) > 0 ? 0.5F : 0.0F;
         });
-        ItemProperties.register(ACItemRegistry.FROSTMINT_SPEAR.get(), ResourceLocation.withDefaultNamespace("throwing"), (stack, level, living, j) -> {
+        ItemProperties.register(ACItemRegistry.FROSTMINT_SPEAR.get(), new ResourceLocation("throwing"), (stack, level, living, j) -> {
             return living != null && living.isUsingItem() && living.getUseItem() == stack ? 1.0F : 0.0F;
         });
         blockedParticleLocations.clear();
         PostEffectRegistry.registerEffect(IRRADIATED_SHADER);
         PostEffectRegistry.registerEffect(HOLOGRAM_SHADER);
         PostEffectRegistry.registerEffect(PURPLE_WITCH_SHADER);
+        ACBlockRenderLayerRegistry.register();
         MenuScreens.register(ACMenuRegistry.SPELUNKERY_TABLE_MENU.get(), SpelunkeryTableScreen::new);
         MenuScreens.register(ACMenuRegistry.NUCLEAR_FURNACE_MENU.get(), NuclearFurnaceScreen::new);
         hasACSplashText = random.nextInt(300) == 0;
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.ACID_FLUID_SOURCE.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.ACID_FLUID_FLOWING.get(), RenderType.cutoutMipped());
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(), RenderType.translucent());
-        ItemBlockRenderTypes.setRenderLayer(ACFluidRegistry.PURPLE_SODA_FLUID_FLOWING.get(), RenderType.translucent());
+        BlockRenderLayerMap.INSTANCE.putFluids(RenderType.cutoutMipped(), ACFluidRegistry.ACID_FLUID_SOURCE.get(), ACFluidRegistry.ACID_FLUID_FLOWING.get());
+        BlockRenderLayerMap.INSTANCE.putFluids(RenderType.translucent(), ACFluidRegistry.PURPLE_SODA_FLUID_SOURCE.get(), ACFluidRegistry.PURPLE_SODA_FLUID_FLOWING.get());
     }
 
     public void setupParticles(RegisterParticleProvidersEvent registry) {
@@ -405,6 +455,14 @@ public class ClientProxy extends CommonProxy {
         registry.registerSpriteSet(ACParticleRegistry.SUGAR_FLAKE.get(), SugarFlakeParticle.Factory::new);
     }
 
+    private void bootstrapFabricClientRegistrations() {
+        this.setupParticles(new RegisterParticleProvidersEvent());
+        this.registerKeybinds(new RegisterKeyMappingsEvent());
+        this.onItemColors(new RegisterColorHandlersEvent.Item());
+        this.onBlockColors(new RegisterColorHandlersEvent.Block());
+        this.onRegisterTooltips(new RegisterClientTooltipComponentFactoriesEvent());
+    }
+
     public void onItemColors(RegisterColorHandlersEvent.Item event) {
         AlexsCaves.LOGGER.info("loaded in item colorizer");
         event.register((stack, colorIn) -> colorIn != 1 ? -1 : CaveInfoItem.getBiomeColorOf(Minecraft.getInstance().level, stack, false), ACItemRegistry.CAVE_TABLET.get());
@@ -427,7 +485,7 @@ public class ClientProxy extends CommonProxy {
     private void bakeModels(final ModelEvent.ModifyBakingResult e) {
         if (AlexsCaves.CLIENT_CONFIG.emissiveBlockModels.get()) {
             long time = System.currentTimeMillis();
-            for (ResourceLocation id : e.getModels().keySet()) {
+            for (ModelResourceLocation id : e.getModels().keySet()) {
                 if (FULLBRIGHTS.stream().anyMatch(str -> id.toString().startsWith(str))) {
                     e.getModels().put(id, new BakedModelShadeLayerFullbright(e.getModels().get(id)));
                 }
@@ -439,19 +497,23 @@ public class ClientProxy extends CommonProxy {
 
     private void registerShaders(final RegisterShadersEvent e) {
         try {
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_ferrouslime_gel"), DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeFerrouslimeGelShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_hologram"), DefaultVertexFormat.POSITION_COLOR), ACInternalShaders::setRenderTypeHologramShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_irradiated"), DefaultVertexFormat.POSITION_COLOR_TEX), ACInternalShaders::setRenderTypeIrradiatedShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_blue_irradiated"), DefaultVertexFormat.POSITION_COLOR_TEX), ACInternalShaders::setRenderTypeBlueIrradiatedShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_bubbled"), DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeBubbledShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_sepia"), DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeSepiaShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_red_ghost"), DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypeRedGhostShader);
-            e.registerShader(new ShaderInstance(e.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "rendertype_purple_witch"), DefaultVertexFormat.NEW_ENTITY), ACInternalShaders::setRenderTypePurpleWitchShader);
+            registerInternalShaders((id, vertexFormat, consumer) -> e.registerShader(new ShaderInstance(e.getResourceProvider(), id.toString(), vertexFormat), consumer));
             AlexsCaves.LOGGER.info("registered internal shaders");
         } catch (IOException exception) {
             AlexsCaves.LOGGER.error("could not register internal shaders");
             exception.printStackTrace();
         }
+    }
+
+    private static void registerInternalShaders(ShaderRegistrar registrar) throws IOException {
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_ferrouslime_gel"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeFerrouslimeGelShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_hologram"), DefaultVertexFormat.POSITION_COLOR, ACInternalShaders::setRenderTypeHologramShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_irradiated"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeIrradiatedShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_blue_irradiated"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeBlueIrradiatedShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_bubbled"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeBubbledShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_sepia"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeSepiaShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_red_ghost"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypeRedGhostShader);
+        registrar.register(new ResourceLocation(AlexsCaves.MODID, "rendertype_purple_witch"), DefaultVertexFormat.NEW_ENTITY, ACInternalShaders::setRenderTypePurpleWitchShader);
     }
 
     private void registerKeybinds(RegisterKeyMappingsEvent e) {
@@ -541,7 +603,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public float getPartialTicks() {
-        return Minecraft.getInstance().getPartialTick();
+        return Minecraft.getInstance().getFrameTime();
     }
 
     public void setSpelunkeryTutorialComplete(boolean completedTutorial) {
@@ -886,7 +948,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     private boolean isSoundPlaying(AbstractTickableSoundInstance sound) {
-        return Minecraft.getInstance().getSoundManager().soundEngine.queuedTickableSounds.contains(sound) || Minecraft.getInstance().getSoundManager().soundEngine.tickingSounds.contains(sound);
+        return Minecraft.getInstance().getSoundManager().isActive(sound);
     }
 
     public void playWorldEvent(int messageId, Level level, BlockPos pos) {
@@ -1075,5 +1137,9 @@ public class ClientProxy extends CommonProxy {
     public void renderVanillaMapDecoration(MapDecoration mapDecoration, int index){
         ClientEvents.renderVanillaMapDecoration(mapDecoration, index + 1);
     }
-}
 
+    @FunctionalInterface
+    private interface ShaderRegistrar {
+        void register(ResourceLocation id, VertexFormat vertexFormat, java.util.function.Consumer<ShaderInstance> consumer) throws IOException;
+    }
+}

@@ -27,7 +27,7 @@ public class PrehistoricMixtureItem extends BowlFoodItem {
     }
 
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player player, LivingEntity livingEntity, InteractionHand hand) {
-        FoodProperties foodProperties = itemStack.getFoodProperties(livingEntity);
+        FoodProperties foodProperties = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getFoodProperties(itemStack, livingEntity);
         if (!livingEntity.level().isClientSide && livingEntity instanceof Mob && canFeedMob(player, (Mob) livingEntity) && foodProperties != null) {
             livingEntity.heal(foodProperties.getNutrition());
             if (!(livingEntity instanceof DinosaurEntity dinosaur && dinosaur.onFeedMixture(itemStack, player))) {

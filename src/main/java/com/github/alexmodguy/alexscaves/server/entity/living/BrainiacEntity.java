@@ -274,7 +274,7 @@ public class BrainiacEntity extends Monster implements IAnimatedEntity {
         this.entityData.set(HAS_BARREL, barrel);
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return 1.1F;
     }
 

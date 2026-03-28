@@ -20,8 +20,8 @@ public class DesolateDaggerItem extends SwordItem {
 
     public boolean hurtEnemy(ItemStack stack, LivingEntity hurt, LivingEntity player) {
         if (super.hurtEnemy(stack, hurt, player)) {
-            int delayedLevel = stack.getEnchantmentLevel(ACEnchantmentRegistry.IMPENDING_STAB.get());
-            for(int i = 0; i < 1 + stack.getEnchantmentLevel(ACEnchantmentRegistry.DOUBLE_STAB.get()); i++){
+            int delayedLevel = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.IMPENDING_STAB.get());
+            for(int i = 0; i < 1 + com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.DOUBLE_STAB.get()); i++){
                 DesolateDaggerEntity daggerEntity = ACEntityRegistry.DESOLATE_DAGGER.get().create(player.level());
                 daggerEntity.setTargetId(hurt.getId());
                 daggerEntity.copyPosition(player);

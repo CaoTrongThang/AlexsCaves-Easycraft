@@ -63,7 +63,7 @@ public class EntityWidget extends BookWidget {
 
     public void render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, float partialTicks, boolean onFlippingPage) {
         if (actualRenderEntity == null) {
-            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.parse(entityId));
+            EntityType type = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(entityId));
             if (type != null) {
                 actualRenderEntity = type.create(Minecraft.getInstance().level);
                 if (actualRenderEntity instanceof LivingEntity living && nbt != null && !nbt.isEmpty()) {
@@ -120,7 +120,7 @@ public class EntityWidget extends BookWidget {
                     EntityModel model = renderer.getModel();
                     VertexConsumer ivertexbuilder = bufferIn.getBuffer(ACRenderTypes.getBookWidget(render.getTextureLocation(entityIn), sepia));
                     matrixStack.pushPose();
-                    boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+                    boolean shouldSit = entityIn.isPassenger();
                     model.young = living.isBaby();
                     model.riding = shouldSit;
                     model.setupAnim(living, 0.0F, 0.0F, 1.0F, 0.0F, 0.0F);

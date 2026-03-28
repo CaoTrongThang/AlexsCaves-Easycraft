@@ -26,8 +26,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer {
     @Inject(method = "Lnet/minecraft/client/player/LocalPlayer;updateIsUnderwater()Z",
             at = @At("TAIL"))
     private void ac_updateIsUnderwater(CallbackInfoReturnable<Boolean> cir) {
-        boolean underAcid = this.getEyeInFluidType().equals(ACFluidRegistry.ACID_FLUID_TYPE.get());
-        boolean underPurpleSoda = this.getEyeInFluidType().equals(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get());
+        var eyeFluidType = com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getEyeInFluidType(this);
+        boolean underAcid = eyeFluidType == ACFluidRegistry.ACID_FLUID_TYPE.get();
+        boolean underPurpleSoda = eyeFluidType == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get();
         if(wasUnderAcid != underAcid){
             if(underAcid){
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ACSoundRegistry.ACID_SUBMERGE.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);

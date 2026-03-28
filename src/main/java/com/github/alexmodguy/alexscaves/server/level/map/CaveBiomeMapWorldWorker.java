@@ -24,7 +24,6 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
 import net.minecraftforge.common.WorldWorkerManager;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -94,7 +93,7 @@ public class CaveBiomeMapWorldWorker implements WorldWorkerManager.IWorker {
             if(ACBiomeRarity.isQuartInRareBiome(serverLevel.getSeed(), quartX, quartZ)){
                 for (int blockY : searchedHeights) {
                     int quartY = QuartPos.fromBlock(blockY);
-                    Biome biome = source.getNoiseBiome(quartX, quartY, quartZ, sampler).get();
+                    Biome biome = source.getNoiseBiome(quartX, quartY, quartZ, sampler).value();
                     if (verifyBiomeRespectRegistry(serverLevel, biome, biomeResourceKey)) {
                         lastBiomePos = new BlockPos(nextBlockX, blockY, nextBlockZ);
                     }
@@ -157,7 +156,7 @@ public class CaveBiomeMapWorldWorker implements WorldWorkerManager.IWorker {
     }
 
     private static boolean verifyBiomeRespectRegistry(Level level, Biome biome, ResourceKey<Biome> matches) {
-        Optional<Registry<Biome>> biomeRegistry = level.registryAccess().registry(ForgeRegistries.Keys.BIOMES);
+        Optional<Registry<Biome>> biomeRegistry = level.registryAccess().registry(Registries.BIOME);
         if (biomeRegistry.isPresent()) {
             Optional<ResourceKey<Biome>> resourceKey = biomeRegistry.get().getResourceKey(biome);
             return resourceKey.isPresent() && resourceKey.get().equals(matches);

@@ -202,10 +202,12 @@ public class MagnetBlockEntity extends BlockEntity {
             return false;
         } else if (state.is(ACTagRegistry.MAGNETIC_BLOCKS)) {
             return true;
-        } else if (state.isStickyBlock()) {
-            return state.canStickTo(other);
+        } else if (state.is(Blocks.SLIME_BLOCK)) {
+            return !other.is(Blocks.HONEY_BLOCK);
+        } else if (state.is(Blocks.HONEY_BLOCK)) {
+            return !other.is(Blocks.SLIME_BLOCK);
         }
-        return other.isStickyBlock();
+        return other.is(Blocks.SLIME_BLOCK) || other.is(Blocks.HONEY_BLOCK);
     }
 
     public Direction getDirection() {

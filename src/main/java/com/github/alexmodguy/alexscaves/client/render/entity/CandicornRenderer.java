@@ -12,11 +12,11 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 public class CandicornRenderer extends MobRenderer<CandicornEntity, CandicornModel> {
-    private static final ResourceLocation TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/candicorn_0.png");
-    private static final ResourceLocation TEXTURE_1 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/candicorn_1.png");
-    private static final ResourceLocation TEXTURE_2 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/candicorn_2.png");
-    private static final ResourceLocation TEXTURE_3 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/candicorn_3.png");
-    private static final ResourceLocation TEXTURE_4 = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/candicorn_4.png");
+    private static final ResourceLocation TEXTURE_0 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/candicorn_0.png");
+    private static final ResourceLocation TEXTURE_1 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/candicorn_1.png");
+    private static final ResourceLocation TEXTURE_2 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/candicorn_2.png");
+    private static final ResourceLocation TEXTURE_3 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/candicorn_3.png");
+    private static final ResourceLocation TEXTURE_4 = new ResourceLocation(AlexsCaves.MODID, "textures/entity/candicorn_4.png");
 
     public CandicornRenderer(EntityRendererProvider.Context renderManagerIn) {
         super(renderManagerIn, new CandicornModel(), 0.8F);

@@ -36,12 +36,12 @@ import java.util.*;
 
 public class SpelunkeryTableScreen extends AbstractContainerScreen<SpelunkeryTableMenu> {
 
-    protected static final Style GLYPH_FONT = Style.EMPTY.withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "alt"));
+    protected static final Style GLYPH_FONT = Style.EMPTY.withFont(new ResourceLocation("minecraft", "alt"));
 
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/gui/spelunkery_table.png");
-    public static final ResourceLocation TABLET_TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/gui/spelunkery_table_tablet.png");
-    public static final ResourceLocation WIDGETS_TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/gui/spelunkery_table_widgets.png");
-    public static final ResourceLocation DEFAULT_WORDS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "minigame/en_us/magnetic_caves.txt");
+    public static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/gui/spelunkery_table.png");
+    public static final ResourceLocation TABLET_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/gui/spelunkery_table_tablet.png");
+    public static final ResourceLocation WIDGETS_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/gui/spelunkery_table_widgets.png");
+    public static final ResourceLocation DEFAULT_WORDS = new ResourceLocation(AlexsCaves.MODID, "minigame/en_us/magnetic_caves.txt");
     private int tickCount = 0;
 
     private int attemptsLeft = 0;
@@ -140,18 +140,24 @@ public class SpelunkeryTableScreen extends AbstractContainerScreen<SpelunkeryTab
     }
 
     private void renderTabletText(GuiGraphics guiGraphics) {
-        float partialTick = Minecraft.getInstance().getPartialTick();
+        float partialTick = Minecraft.getInstance().getFrameTime();
         float x = getMagnifyPosX(partialTick);
         float y = getMagnifyPosY(partialTick);
         if (hasTablet()) {
             guiGraphics.pose().pushPose();
-            for (Renderable renderable : renderables) {
-                if (renderable instanceof SpelunkeryTableWordButton tableWordButton) {
-                    tableWordButton.renderTranslationText(tickCount, highlightColor, guiGraphics, font, x + 5, x + 32, y + 6, y + 32);
-                }
+            for (SpelunkeryTableWordButton tableWordButton : wordButtons) {
+                tableWordButton.renderTranslationText(tickCount, highlightColor, guiGraphics, font, x + 5, x + 32, y + 6, y + 32);
             }
             guiGraphics.pose().popPose();
         }
+    }
+
+    public int getGuiLeft() {
+        return leftPos;
+    }
+
+    public int getGuiTop() {
+        return topPos;
     }
 
     @Override
@@ -410,13 +416,13 @@ public class SpelunkeryTableScreen extends AbstractContainerScreen<SpelunkeryTab
         }
         String s1 = getMinigameStr(stack) + ".txt";
         String lang = Minecraft.getInstance().getLanguageManager().getSelected().toLowerCase();
-        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "minigame/" + lang + "/" + s1);
+        ResourceLocation resourceLocation = new ResourceLocation(AlexsCaves.MODID, "minigame/" + lang + "/" + s1);
         try {
             InputStream is = Minecraft.getInstance().getResourceManager().open(resourceLocation);
             is.close();
         } catch (Exception var4) {
             AlexsCaves.LOGGER.warn("Could not find language file for translation, defaulting to english");
-            resourceLocation = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "minigame/en_us/" + s1);
+            resourceLocation = new ResourceLocation(AlexsCaves.MODID, "minigame/en_us/" + s1);
         }
         return resourceLocation;
     }

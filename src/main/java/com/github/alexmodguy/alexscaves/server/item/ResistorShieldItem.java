@@ -27,7 +27,6 @@ public class ResistorShieldItem extends ShieldItem {
         super(new Item.Properties().stacksTo(1).durability(1000).rarity(Rarity.UNCOMMON));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
@@ -61,7 +60,7 @@ public class ResistorShieldItem extends ShieldItem {
         int i = getUseDuration(stack) - timeUsing;
         boolean scarlet = isScarlet(stack);
         boolean firstHit = i >= 10 && i <= 12;
-        int slamEnchantAmount = stack.getEnchantmentLevel(ACEnchantmentRegistry.HEAVY_SLAM.get());
+        int slamEnchantAmount = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.HEAVY_SLAM.get());
         float range = 5F;
         if (level.isClientSide) {
             setUseTime(stack, i);

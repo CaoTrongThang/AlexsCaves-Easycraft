@@ -461,7 +461,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
                                 int i1 = j2 + k2;
                                 BlockPos blockpos = new BlockPos(l2, l, i1);
                                 BlockState blockstate = this.level().getBlockState(blockpos);
-                                if (blockstate.canEntityDestroy(this.level(), blockpos, this) && !blockstate.is(ACTagRegistry.UNMOVEABLE) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
+                                if (blockstate.getDestroySpeed(this.level(), blockpos) >= 0.0F && !blockstate.is(ACTagRegistry.UNMOVEABLE) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
                                     flag = this.level().destroyBlock(blockpos, true, this) || flag;
                                 }
                             }
@@ -508,7 +508,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         return target.getType().is(ACTagRegistry.WEAK_TO_FORSAKEN_SONIC_ATTACK) ? 45.0F : 4.0F;
     }
 
-    public float getStepHeight() {
+    public float maxUpStep() {
         return hasRunningAttributes ? 1.1F : 0.6F;
     }
 

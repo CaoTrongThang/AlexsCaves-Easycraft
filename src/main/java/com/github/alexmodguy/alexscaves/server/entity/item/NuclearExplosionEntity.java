@@ -197,7 +197,7 @@ public class NuclearExplosionEntity extends Entity {
                             }else if (AlexsCaves.COMMON_CONFIG.nukesSpawnItemDrops.get() && random.nextFloat() < itemDropModifier && state.getFluidState().isEmpty()) {
                                 level().destroyBlock(carve, true);
                             } else {
-                                state.onBlockExploded(level(), carve, dummyExplosion);
+                                level().destroyBlock(carve, false);
                             }
                         }
                     }

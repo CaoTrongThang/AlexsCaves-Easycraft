@@ -25,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CorrodentRenderer extends MobRenderer<CorrodentEntity, CorrodentModel> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/corrodent.png");
-    private static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/corrodent_eyes.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/corrodent.png");
+    private static final ResourceLocation TEXTURE_EYES = new ResourceLocation(AlexsCaves.MODID, "textures/entity/corrodent_eyes.png");
     private static final Map<BlockPos, Integer> allDugBlocksOnScreen = new HashMap<>();
 
     public CorrodentRenderer(EntityRendererProvider.Context renderManagerIn) {
@@ -69,8 +69,7 @@ public class CorrodentRenderer extends MobRenderer<CorrodentEntity, CorrodentMod
                     poseStack.translate((double) pos.getX(), (double) pos.getY(), (double) pos.getZ());
                     PoseStack.Pose posestack$pose1 = poseStack.last();
                     VertexConsumer vertexconsumer1 = new SheetedDecalTextureGenerator(multibuffersource$buffersource.getBuffer(ModelBakery.DESTROY_TYPES.get(progress)), posestack$pose1.pose(), posestack$pose1.normal(), 1.0F);
-                    net.minecraftforge.client.model.data.ModelData modelData = Minecraft.getInstance().level.getModelDataManager().getAt(pos);
-                    Minecraft.getInstance().getBlockRenderer().renderBreakingTexture(Minecraft.getInstance().level.getBlockState(pos), pos, Minecraft.getInstance().level, poseStack, vertexconsumer1, modelData == null ? net.minecraftforge.client.model.data.ModelData.EMPTY : modelData);
+                    Minecraft.getInstance().getBlockRenderer().renderBreakingTexture(Minecraft.getInstance().level.getBlockState(pos), pos, Minecraft.getInstance().level, poseStack, vertexconsumer1);
                     poseStack.popPose();
                 }
             }
@@ -93,5 +92,4 @@ public class CorrodentRenderer extends MobRenderer<CorrodentEntity, CorrodentMod
         }
     }
 }
-
 

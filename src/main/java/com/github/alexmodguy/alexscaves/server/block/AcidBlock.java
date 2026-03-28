@@ -36,7 +36,7 @@ public class AcidBlock extends LiquidBlock {
     private static Map<Block, Block> CORRODES_INTERACTIONS;
 
     public AcidBlock(RegistryObject<FlowingFluid> flowingFluid, BlockBehaviour.Properties properties) {
-        super(flowingFluid, properties);
+        super(flowingFluid.get(), properties);
     }
 
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource randomSource) {
@@ -51,7 +51,7 @@ public class AcidBlock extends LiquidBlock {
     }
 
     public void entityInside(BlockState blockState, Level level, BlockPos pos, Entity entity) {
-        if (!entity.getType().is(ACTagRegistry.RESISTS_ACID) && entity.getFluidTypeHeight(ACFluidRegistry.ACID_FLUID_TYPE.get()) > 0.1) {
+        if (!entity.getType().is(ACTagRegistry.RESISTS_ACID) && com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(entity, ACFluidRegistry.ACID_FLUID_TYPE.get()) > 0.1) {
             boolean armor = false;
             boolean hurtSound = false;
             float dmgMultiplier = 1.0F;

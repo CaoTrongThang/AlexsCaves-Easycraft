@@ -22,7 +22,7 @@ public class AllFluidsPathNavigator extends SemiAquaticPathNavigatorNoSpin {
 
     @Override
     protected Vec3 getTempMobPos() {
-        return this.mob.isInFluidType() ? super.getTempMobPos() :  new Vec3(this.mob.getX(), Math.floor(this.mob.getY() + 0.5D), this.mob.getZ());
+        return com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this.mob) ? super.getTempMobPos() :  new Vec3(this.mob.getX(), Math.floor(this.mob.getY() + 0.5D), this.mob.getZ());
     }
 
 
@@ -34,6 +34,6 @@ public class AllFluidsPathNavigator extends SemiAquaticPathNavigatorNoSpin {
     }
 
     protected boolean isInLiquid() {
-        return this.mob.isInFluidType();
+        return com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this.mob);
     }
 }

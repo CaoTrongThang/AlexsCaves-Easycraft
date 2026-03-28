@@ -20,11 +20,11 @@ public class CandyCaneBlock extends RotatedPillarBlock {
 
     public BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
         ItemStack itemStack = context.getItemInHand();
-        if (!itemStack.canPerformAction(toolAction))
+        if (!ToolActions.canPerformAction(itemStack, toolAction))
             return null;
         if (ToolActions.AXE_STRIP == toolAction && (this == ACBlockRegistry.CANDY_CANE_BLOCK.get() || this == ACBlockRegistry.CHISELED_CANDY_CANE_BLOCK.get())) {
             return ACBlockRegistry.STRIPPED_CANDY_CANE_BLOCK.get().defaultBlockState().setValue(AXIS, state.getValue(AXIS));
         }
-        return super.getToolModifiedState(state, context, toolAction, simulate);
+        return null;
     }
 }

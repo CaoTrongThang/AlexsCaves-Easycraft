@@ -67,7 +67,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
@@ -85,14 +84,14 @@ import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class ClientEvents {
 
-    private static final ResourceLocation POTION_EFFECT_HUD_OVERLAYS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/potion_effect_hud_overlays.png");
-    private static final ResourceLocation BOSS_BAR_HUD_OVERLAYS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/boss_bar_hud_overlays.png");
-    private static final ResourceLocation DINOSAUR_HUD_OVERLAYS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/dinosaur_hud_overlays.png");
-    private static final ResourceLocation ARMOR_HUD_OVERLAYS = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/armor_hud_overlays.png");
-    private static final ResourceLocation SUBMARINE_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "shaders/post/submarine_light.json");
-    private static final ResourceLocation WATCHER_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "shaders/post/watcher_perspective.json");
-    private static final ResourceLocation SUGAR_RUSH_SHADER = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "shaders/post/sugar_rush.json");
-    private static final ResourceLocation TRAIL_TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/particle/teletor_trail.png");
+    private static final ResourceLocation POTION_EFFECT_HUD_OVERLAYS = new ResourceLocation(AlexsCaves.MODID, "textures/misc/potion_effect_hud_overlays.png");
+    private static final ResourceLocation BOSS_BAR_HUD_OVERLAYS = new ResourceLocation(AlexsCaves.MODID, "textures/misc/boss_bar_hud_overlays.png");
+    private static final ResourceLocation DINOSAUR_HUD_OVERLAYS = new ResourceLocation(AlexsCaves.MODID, "textures/misc/dinosaur_hud_overlays.png");
+    private static final ResourceLocation ARMOR_HUD_OVERLAYS = new ResourceLocation(AlexsCaves.MODID, "textures/misc/armor_hud_overlays.png");
+    private static final ResourceLocation SUBMARINE_SHADER = new ResourceLocation(AlexsCaves.MODID, "shaders/post/submarine_light.json");
+    private static final ResourceLocation WATCHER_SHADER = new ResourceLocation(AlexsCaves.MODID, "shaders/post/watcher_perspective.json");
+    private static final ResourceLocation SUGAR_RUSH_SHADER = new ResourceLocation(AlexsCaves.MODID, "shaders/post/sugar_rush.json");
+    private static final ResourceLocation TRAIL_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/particle/teletor_trail.png");
 
     private static float lastSampledFogNearness = 0.0F;
     private static float lastSampledWaterFogFarness = 0.0F;
@@ -102,7 +101,7 @@ public class ClientEvents {
     public static PoseStack lastVanillaMapPoseStack;
     public static MultiBufferSource lastVanillaMapRenderBuffer;
     public static int lastVanillaMapRenderPackedLight;
-    private static final RenderType UNDERGROUND_CABIN_MAP_ICONS = RenderType.text(ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/misc/underground_cabin_map_icons.png"));
+    private static final RenderType UNDERGROUND_CABIN_MAP_ICONS = RenderType.text(new ResourceLocation(AlexsCaves.MODID, "textures/misc/underground_cabin_map_icons.png"));
 
     @SubscribeEvent
     public void setupEntityRotations(EventLivingRenderer.SetupRotations event) {
@@ -184,8 +183,8 @@ public class ClientEvents {
     private static void attemptLoadShader(ResourceLocation resourceLocation) {
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
         if (ClientProxy.shaderLoadAttemptCooldown <= 0) {
-            renderer.loadEffect(resourceLocation);
-            if (!renderer.effectActive) {
+            com.github.alexmodguy.alexscaves.fabric.ClientAccess.loadEffect(renderer, resourceLocation);
+            if (!com.github.alexmodguy.alexscaves.fabric.ClientAccess.hasCurrentEffect(renderer, resourceLocation)) {
                 ClientProxy.shaderLoadAttemptCooldown = 12000;
                 AlexsCaves.LOGGER.warn("Alex's Caves could not load the shader {}, will attempt to load shader in 30 seconds", resourceLocation);
             }
@@ -243,7 +242,7 @@ public class ClientEvents {
     @SubscribeEvent
     public void computeCameraAngles(ViewportEvent.ComputeCameraAngles event) {
         Entity player = Minecraft.getInstance().getCameraEntity();
-        float partialTick = Minecraft.getInstance().getPartialTick();
+        float partialTick = Minecraft.getInstance().getFrameTime();
         float tremorAmount = ClientProxy.renderNukeSkyDarkFor > 0 ? 1.5F : 0F;
         if (player instanceof PossessesCamera watcherEntity) {
             Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
@@ -271,23 +270,23 @@ public class ClientEvents {
                     ClientProxy.lastTremorTick = player.tickCount;
                 }
                 double intensity = tremorAmount * Minecraft.getInstance().options.screenEffectScale().get();
-                event.getCamera().move(ClientProxy.randomTremorOffsets[0] * 0.2F * intensity, ClientProxy.randomTremorOffsets[1] * 0.2F * intensity, ClientProxy.randomTremorOffsets[2] * 0.5F * intensity);
+                com.github.alexmodguy.alexscaves.fabric.ClientAccess.moveCamera(event.getCamera(), ClientProxy.randomTremorOffsets[0] * 0.2F * intensity, ClientProxy.randomTremorOffsets[1] * 0.2F * intensity, ClientProxy.randomTremorOffsets[2] * 0.5F * intensity);
             }
         }
         if (player != null && player.isPassenger() && player.getVehicle() instanceof SubmarineEntity && event.getCamera().isDetached()) {
-            event.getCamera().move(-event.getCamera().getMaxZoom(4F), 0, 0);
+            com.github.alexmodguy.alexscaves.fabric.ClientAccess.moveCamera(event.getCamera(), -com.github.alexmodguy.alexscaves.fabric.ClientAccess.getMaxZoom(event.getCamera(), 4F), 0, 0);
         }
         if (player != null && player.isPassenger() && player.getVehicle() instanceof TremorsaurusEntity && event.getCamera().isDetached()) {
-            event.getCamera().move(-event.getCamera().getMaxZoom(2F), 0, 0);
+            com.github.alexmodguy.alexscaves.fabric.ClientAccess.moveCamera(event.getCamera(), -com.github.alexmodguy.alexscaves.fabric.ClientAccess.getMaxZoom(event.getCamera(), 2F), 0, 0);
         }
         if (player != null && player.isPassenger() && player.getVehicle() instanceof AtlatitanEntity && event.getCamera().isDetached()) {
-            event.getCamera().move(-event.getCamera().getMaxZoom(4F), 0, 0);
+            com.github.alexmodguy.alexscaves.fabric.ClientAccess.moveCamera(event.getCamera(), -com.github.alexmodguy.alexscaves.fabric.ClientAccess.getMaxZoom(event.getCamera(), 4F), 0, 0);
         }
         if (player != null && player.isPassenger() && player.getVehicle() instanceof TremorzillaEntity && event.getCamera().isDetached()) {
-            event.getCamera().move(-event.getCamera().getMaxZoom(10F), 0, 0);
+            com.github.alexmodguy.alexscaves.fabric.ClientAccess.moveCamera(event.getCamera(), -com.github.alexmodguy.alexscaves.fabric.ClientAccess.getMaxZoom(event.getCamera(), 10F), 0, 0);
         }
         if (player != null && player.isPassenger() && player.getVehicle() instanceof GumWormSegmentEntity && event.getCamera().isDetached()) {
-            event.getCamera().move(-event.getCamera().getMaxZoom(12F), 0, 0);
+            com.github.alexmodguy.alexscaves.fabric.ClientAccess.moveCamera(event.getCamera(), -com.github.alexmodguy.alexscaves.fabric.ClientAccess.getMaxZoom(event.getCamera(), 12F), 0, 0);
         }
         if (player != null && player instanceof LivingEntity livingEntity && livingEntity.hasEffect(ACEffectRegistry.STUNNED.get())) {
             event.setRoll((float) (Math.sin((player.tickCount + partialTick) * 0.2F) * 10F));
@@ -571,7 +570,7 @@ public class ClientEvents {
         if (event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id()) && player.getVehicle() instanceof RidingMeterMount mount && mount.hasRidingMeter()) {
             int screenWidth = event.getWindow().getGuiScaledWidth();
             int screenHeight = event.getWindow().getGuiScaledHeight();
-            int forgeGuiY = Minecraft.getInstance().gui instanceof ForgeGui forgeGui ? Math.max(forgeGui.leftHeight, forgeGui.rightHeight) : 0;
+            int forgeGuiY = 0;
             if (player.getArmorValue() > 0 && mount instanceof SubterranodonEntity) {
                 forgeGuiY += 25;
             }
@@ -622,7 +621,7 @@ public class ClientEvents {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
             int screenWidth = event.getWindow().getGuiScaledWidth();
             int screenHeight = event.getWindow().getGuiScaledHeight();
-            int forgeGuiY = Minecraft.getInstance().gui instanceof ForgeGui forgeGui ? Math.max(forgeGui.leftHeight, forgeGui.rightHeight) : 0;
+            int forgeGuiY = 0;
             if (forgeGuiY < 53) {
                 forgeGuiY = 53;
             }
@@ -641,7 +640,7 @@ public class ClientEvents {
             int width = event.getWindow().getGuiScaledWidth();
             int height = event.getWindow().getGuiScaledHeight();
             int health = Mth.ceil(player.getHealth());
-            int forgeGuiTick = Minecraft.getInstance().gui instanceof ForgeGui forgeGui ? forgeGui.getGuiTicks() : 0;
+            int forgeGuiTick = player.tickCount;
             AttributeInstance attrMaxHealth = player.getAttribute(Attributes.MAX_HEALTH);
             float healthMax = (float) attrMaxHealth.getValue();
             float absorb = Mth.ceil(player.getAbsorptionAmount());
@@ -732,7 +731,7 @@ public class ClientEvents {
         Entity player = Minecraft.getInstance().getCameraEntity();
         FluidState fluidstate = player.level().getFluidState(event.getCamera().getBlockPosition());
         BlockState blockState = player.level().getBlockState(event.getCamera().getBlockPosition());
-        if (!fluidstate.isEmpty() && fluidstate.getType().getFluidType().equals(ACFluidRegistry.ACID_FLUID_TYPE.get())) {
+        if (!fluidstate.isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidstate.getType()).equals(ACFluidRegistry.ACID_FLUID_TYPE.get())) {
             event.setCanceled(true);
             float farness = 10.0F;
             if (Minecraft.getInstance().player.hasEffect(ACEffectRegistry.DEEPSIGHT.get())) {
@@ -742,7 +741,7 @@ public class ClientEvents {
             event.setNearPlaneDistance(0.0F);
             return;
         }
-        if (!fluidstate.isEmpty() && fluidstate.getType().getFluidType().equals(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get())) {
+        if (!fluidstate.isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getFluidType(fluidstate.getType()).equals(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get())) {
             event.setCanceled(true);
             float farness = 20.0F;
             float nearness = -8.0F;
@@ -792,16 +791,17 @@ public class ClientEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void fogColor(ViewportEvent.ComputeFogColor event) {
         Entity player = Minecraft.getInstance().player;
+        var eyeFluidType = com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat.getEyeInFluidType(player);
         BlockState blockState = player.level().getBlockState(event.getCamera().getBlockPosition());
         if (blockState.is(ACBlockRegistry.PRIMAL_MAGMA.get()) || blockState.is(ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get())) {
             event.setRed(1F);
             event.setGreen(0.4F);
             event.setBlue((float) (0));
-        } else if (player.getEyeInFluidType() != null && player.getEyeInFluidType().equals(ACFluidRegistry.ACID_FLUID_TYPE.get())) {
+        } else if (eyeFluidType == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
             event.setRed((float) (0));
             event.setGreen((float) (1));
             event.setBlue((float) (0));
-        } else if (player.getEyeInFluidType() != null && player.getEyeInFluidType().equals(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get())) {
+        } else if (eyeFluidType == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
             event.setRed(0.6F);
             event.setGreen(0.1F);
             event.setBlue(0.85F);
@@ -1030,8 +1030,11 @@ public class ClientEvents {
             } else if (ClientProxy.possessionStrengthAmount > 0F) {
                 ClientProxy.possessionStrengthAmount = Math.max(ClientProxy.possessionStrengthAmount - 0.05F, 0F);
             }
-            if (Minecraft.getInstance().screen instanceof AdvancementsScreen advancementsScreen && advancementsScreen.selectedTab != null && ACAdvancementTabs.isAlexsCavesWidget(advancementsScreen.selectedTab.getAdvancement())) {
-                ACAdvancementTabs.tick();
+            if (Minecraft.getInstance().screen instanceof AdvancementsScreen advancementsScreen) {
+                var selectedAdvancement = com.github.alexmodguy.alexscaves.fabric.ClientAccess.getSelectedAdvancement(advancementsScreen);
+                if (selectedAdvancement != null && ACAdvancementTabs.isAlexsCavesWidget(selectedAdvancement)) {
+                    ACAdvancementTabs.tick();
+                }
             }
             if (ClientProxy.primordialBossActive && Minecraft.getInstance().level != null && !Minecraft.getInstance().isPaused()) {
                 ClientLevel level = Minecraft.getInstance().level;

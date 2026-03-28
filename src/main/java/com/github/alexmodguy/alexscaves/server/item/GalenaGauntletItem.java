@@ -26,7 +26,6 @@ public class GalenaGauntletItem extends Item {
         super(new Item.Properties().stacksTo(1).durability(400).rarity(Rarity.UNCOMMON));
     }
 
-    @Override
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());
     }
@@ -34,7 +33,7 @@ public class GalenaGauntletItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
         ItemStack itemstack = player.getItemInHand(interactionHand);
         ItemStack otherHand = interactionHand == InteractionHand.MAIN_HAND ? player.getItemInHand(InteractionHand.OFF_HAND) : player.getItemInHand(InteractionHand.MAIN_HAND);
-        boolean crystallization = itemstack.getEnchantmentLevel(ACEnchantmentRegistry.CRYSTALLIZATION.get()) > 0;
+        boolean crystallization = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemstack, ACEnchantmentRegistry.CRYSTALLIZATION.get()) > 0;
         if (otherHand.is(crystallization ? ACTagRegistry.GALENA_GAUNTLET_CRYSTALLIZATION_ITEMS : ACTagRegistry.MAGNETIC_ITEMS)) {
             if (!player.isCreative()) {
                 itemstack.hurtAndBreak(1, player, (player1) -> {
@@ -92,7 +91,7 @@ public class GalenaGauntletItem extends Item {
         AlexsCaves.PROXY.playWorldSound(living, (byte) 11);
         ItemStack otherStack = living.getItemInHand(otherHand);
         boolean otherMagneticWeaponsInUse = false;
-        boolean crystallization = stack.getEnchantmentLevel(ACEnchantmentRegistry.CRYSTALLIZATION.get()) > 0;
+        boolean crystallization = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.CRYSTALLIZATION.get()) > 0;
         if (otherStack.is(crystallization ? ACTagRegistry.GALENA_GAUNTLET_CRYSTALLIZATION_ITEMS : ACTagRegistry.MAGNETIC_ITEMS)) {
             for(MagneticWeaponEntity magneticWeapon : level.getEntitiesOfClass(MagneticWeaponEntity.class, living.getBoundingBox().inflate(64, 64, 64))){
                 Entity controller = magneticWeapon.getController();
