@@ -46,9 +46,15 @@ public class CaveBookProgress {
         tag.put(PLAYER_CAVE_BOOK_PROGRESS_TAG, savedTag);
         CitadelEntityData.setCitadelTag(player, tag);
         if (!player.level().isClientSide) {
-            PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new PropertiesMessage("CitadelTagUpdate", tag, player.getId()));
+            syncCaveBookProgress(player);
         } else {
             PacketDistributor.sendToServer(new PropertiesMessage("CitadelTagUpdate", tag, player.getId()));
+        }
+    }
+
+    public static void syncCaveBookProgress(Player player) {
+        if (!player.level().isClientSide) {
+            PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new PropertiesMessage("CitadelTagUpdate", CitadelEntityData.getOrCreateCitadelTag(player), player.getId()));
         }
     }
 

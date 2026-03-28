@@ -1,10 +1,13 @@
 package com.github.alexthe666.citadel.server.message;
 
+import com.github.alexthe666.citadel.server.entity.CitadelEntityData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record PropertiesMessage(String identifier, CompoundTag tag, int entityId) implements CustomPacketPayload {
@@ -27,5 +30,14 @@ public record PropertiesMessage(String identifier, CompoundTag tag, int entityId
     }
 
     public static void handle(PropertiesMessage message, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Entity entity = context.player() == null ? null : context.player().level().getEntity(message.entityId);
+            if (!(entity instanceof LivingEntity livingEntity)) {
+                return;
+            }
+            if ("CitadelPatreonConfig".equals(message.identifier) || "CitadelTagUpdate".equals(message.identifier)) {
+                CitadelEntityData.setCitadelTag(livingEntity, message.tag);
+            }
+        });
     }
 }

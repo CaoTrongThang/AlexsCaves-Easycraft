@@ -3,6 +3,8 @@ package com.github.alexmodguy.alexscaves.mixin;
 import com.github.alexmodguy.alexscaves.server.entity.util.*;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexthe666.citadel.CitadelConstants;
+import com.github.alexthe666.citadel.server.entity.ICitadelDataEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,7 +30,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements HeadRotationEntityAccessor, WatcherPossessionAccessor, DarknessIncarnateUserAccessor, EntityDropChanceAccessor, FrostmintFreezableAccessor {
+public abstract class LivingEntityMixin extends Entity implements HeadRotationEntityAccessor, WatcherPossessionAccessor, DarknessIncarnateUserAccessor, EntityDropChanceAccessor, FrostmintFreezableAccessor, ICitadelDataEntity {
+
+    @Unique
+    private static final String CITADEL_DATA_TAG = "CitadelData";
+
+    @Unique
+    private CompoundTag citadelEntityData = new CompoundTag();
 
     @Shadow
     public abstract float getYHeadRot();
@@ -59,6 +67,18 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
 
     public LivingEntityMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
+    }
+
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    private void ac_addCitadelData(CompoundTag compoundTag, CallbackInfo ci) {
+        if (!this.citadelEntityData.isEmpty()) {
+            compoundTag.put(CITADEL_DATA_TAG, this.citadelEntityData.copy());
+        }
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    private void ac_readCitadelData(CompoundTag compoundTag, CallbackInfo ci) {
+        this.citadelEntityData = compoundTag.contains(CITADEL_DATA_TAG, 10) ? compoundTag.getCompound(CITADEL_DATA_TAG).copy() : new CompoundTag();
     }
 
     // Magnetic data is now handled via NeoForge Attachment API in EntityMixin
@@ -176,5 +196,15 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
     @Unique
     private static boolean isPossessed(Entity e) {
         return com.github.alexmodguy.alexscaves.server.misc.ACRuntimeData.getOrCreate(e).getBoolean("TotemPossessed");
+    }
+
+    @Override
+    public CompoundTag getCitadelEntityData() {
+        return this.citadelEntityData;
+    }
+
+    @Override
+    public void setCitadelEntityData(CompoundTag nbt) {
+        this.citadelEntityData = nbt == null ? new CompoundTag() : nbt.copy();
     }
 }

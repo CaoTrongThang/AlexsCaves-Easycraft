@@ -21,6 +21,7 @@ import com.github.alexmodguy.alexscaves.mixin.ChunkGeneratorAccessor;
 import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
+import com.github.alexmodguy.alexscaves.server.misc.CaveBookProgress;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.DarknessIncarnateEffect;
 import com.github.alexmodguy.alexscaves.server.potion.SugarRushEffect;
@@ -474,6 +475,9 @@ public class CommonEvents {
                     event.getEntity().sendSystemMessage(Component.translatable("alexscaves.startup_warning.generation_incompatible", modid).withStyle(ChatFormatting.RED));
                 }
             }
+        }
+        if (!event.getEntity().level().isClientSide) {
+            CaveBookProgress.syncCaveBookProgress(event.getEntity());
         }
     }
 
