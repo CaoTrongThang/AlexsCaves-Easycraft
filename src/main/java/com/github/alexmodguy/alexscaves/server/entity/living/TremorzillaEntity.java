@@ -4,7 +4,6 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.NuclearSirenBlockEntity;
-import com.github.alexmodguy.alexscaves.server.block.poi.ACPOIRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityDataRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ai.*;
@@ -17,7 +16,6 @@ import com.github.alexthe666.citadel.animation.Animation;
 import com.github.alexthe666.citadel.animation.AnimationHandler;
 import com.github.alexthe666.citadel.animation.IAnimatedEntity;
 import com.github.alexthe666.citadel.server.entity.pathfinding.raycoms.ITallWalker;
-import com.google.common.base.Predicates;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -50,7 +48,6 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -72,7 +69,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMount, IAnimatedEntity, ShakesScreen, KaijuMob, ActivatesSirens, ITallWalker, MultiPartEntity {
     private static EntityDataAccessor<Optional<Vec3>> BEAM_END_POSITION = SynchedEntityData.defineId(TremorzillaEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
@@ -459,7 +455,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 }
                 this.setSpikesDownAmount(Math.min(this.getSpikesDownAmount() + 0.005F, 1F));
                 if ((tickCount + this.getId()) % 10 == 0 && level() instanceof ServerLevel serverLevel) {
-                    getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
+                    NuclearSirenBlockEntity.getNearbySirens(serverLevel, this.blockPosition(), 256).forEach(this::activateSiren);
                 }
                 float f = calculateSpikesDownAmount(this.getSpikesDownAmount(), 6F);
                 if (Math.floor(f - 0.005F) != Math.floor(f) && chargeSoundCooldown <= 0 && f <= 5) {
@@ -1115,11 +1111,6 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     public float maxSitTicks() {
         return 20.0F;
-    }
-
-    private Stream<BlockPos> getNearbySirens(ServerLevel world, int range) {
-        PoiManager pointofinterestmanager = world.getPoiManager();
-        return pointofinterestmanager.findAll(poiTypeHolder -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey()), Predicates.alwaysTrue(), this.blockPosition(), range, PoiManager.Occupancy.ANY);
     }
 
     private void activateSiren(BlockPos pos) {

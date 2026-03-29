@@ -4,10 +4,8 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.NuclearSirenBlockEntity;
-import com.github.alexmodguy.alexscaves.server.block.poi.ACPOIRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
-import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -21,15 +19,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.stream.Stream;
 
 public class NuclearBombEntity extends Entity {
 
@@ -61,7 +56,7 @@ public class NuclearBombEntity extends Entity {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.7D, -0.7, 0.7D));
         }
         if((tickCount + this.getId()) % 10 == 0 && level() instanceof ServerLevel serverLevel){
-            getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
+            NuclearSirenBlockEntity.getNearbySirens(serverLevel, this.blockPosition(), 256).forEach(this::activateSiren);
         }
         int i = this.getTime() + 1;
         if (i > MAX_TIME) {
@@ -103,12 +98,6 @@ public class NuclearBombEntity extends Entity {
         }
         super.checkFallDamage(y, onGround, state, pos);
     }
-
-    private Stream<BlockPos> getNearbySirens(ServerLevel world, int range) {
-        PoiManager pointofinterestmanager = world.getPoiManager();
-        return pointofinterestmanager.findAll(poiTypeHolder -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey()), Predicates.alwaysTrue(), this.blockPosition(), range, PoiManager.Occupancy.ANY);
-    }
-
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {

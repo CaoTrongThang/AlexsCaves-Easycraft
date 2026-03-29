@@ -37,6 +37,7 @@
     "MultifaceGrowthFeatureMixin",
     "MultiNoiseBiomeSourceMixin",
     "NaturalSpawnerMixin",
+    "NoiseBasedChunkGeneratorMixin",
     "OceanMonumentStructureMixin",
     "OreFeatureMixin",
     "PlayerMixin",

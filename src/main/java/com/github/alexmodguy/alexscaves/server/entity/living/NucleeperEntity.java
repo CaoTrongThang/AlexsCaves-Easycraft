@@ -2,7 +2,6 @@ package com.github.alexmodguy.alexscaves.server.entity.living;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.block.blockentity.NuclearSirenBlockEntity;
-import com.github.alexmodguy.alexscaves.server.block.poi.ACPOIRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.ai.GroundPathNavigatorNoSpin;
 import com.github.alexmodguy.alexscaves.server.entity.item.NuclearExplosionEntity;
@@ -10,7 +9,6 @@ import com.github.alexmodguy.alexscaves.server.entity.util.ActivatesSirens;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACDamageTypes;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
-import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -31,7 +29,6 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +38,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.EnumSet;
-import java.util.stream.Stream;
 
 public class NucleeperEntity extends Monster implements ActivatesSirens, PowerableMob {
 
@@ -187,7 +183,7 @@ public class NucleeperEntity extends Monster implements ActivatesSirens, Powerab
                 this.setExploding(true);
             }
             if ((tickCount + this.getId()) % 10 == 0 && level() instanceof ServerLevel serverLevel) {
-                getNearbySirens(serverLevel, 256).forEach(this::activateSiren);
+                NuclearSirenBlockEntity.getNearbySirens(serverLevel, this.blockPosition(), 256).forEach(this::activateSiren);
             }
         }
         if (this.isTriggered() && this.isAlive()) {
@@ -213,11 +209,6 @@ public class NucleeperEntity extends Monster implements ActivatesSirens, Powerab
     public void remove(Entity.RemovalReason removalReason) {
         AlexsCaves.PROXY.clearSoundCacheFor(this);
         super.remove(removalReason);
-    }
-
-    private Stream<BlockPos> getNearbySirens(ServerLevel world, int range) {
-        PoiManager pointofinterestmanager = world.getPoiManager();
-        return pointofinterestmanager.findAll(poiTypeHolder -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey()), Predicates.alwaysTrue(), this.blockPosition(), range, PoiManager.Occupancy.ANY);
     }
 
     private void activateSiren(BlockPos pos) {

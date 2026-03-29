@@ -4,24 +4,26 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.particle.ACParticleRegistry;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.NuclearSirenBlock;
-import com.github.alexmodguy.alexscaves.server.block.poi.ACPOIRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.util.ActivatesSirens;
 import com.github.alexmodguy.alexscaves.server.misc.ACMath;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class NuclearSirenBlockEntity extends BlockEntity {
@@ -126,12 +128,38 @@ public class NuclearSirenBlockEntity extends BlockEntity {
     }
 
     private Stream<BlockPos> getNearbyCriticalFurnaces(ServerLevel world, int range) {
-        PoiManager pointofinterestmanager = world.getPoiManager();
-        return pointofinterestmanager.findAll(poiTypeHolder -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_FURNACE.getKey()), this::isCriticalFurnace, this.getBlockPos(), range, PoiManager.Occupancy.ANY);
+        return getNearbyBlockEntities(world, this.getBlockPos(), range, this::isCriticalFurnace);
     }
 
     private boolean isCriticalFurnace(BlockPos pos) {
         return level.getBlockEntity(pos) instanceof NuclearFurnaceBlockEntity nuclearFurnaceBlockEntity && nuclearFurnaceBlockEntity.getCriticality() >= 2;
+    }
+
+    public static Stream<BlockPos> getNearbySirens(ServerLevel world, BlockPos origin, int range) {
+        return getNearbyBlockEntities(world, origin, range, pos -> world.getBlockEntity(pos) instanceof NuclearSirenBlockEntity);
+    }
+
+    private static Stream<BlockPos> getNearbyBlockEntities(ServerLevel world, BlockPos origin, int range, java.util.function.Predicate<BlockPos> predicate) {
+        int minChunkX = SectionPos.blockToSectionCoord(origin.getX() - range);
+        int maxChunkX = SectionPos.blockToSectionCoord(origin.getX() + range);
+        int minChunkZ = SectionPos.blockToSectionCoord(origin.getZ() - range);
+        int maxChunkZ = SectionPos.blockToSectionCoord(origin.getZ() + range);
+        double maxDistanceSqr = range * range;
+        List<BlockPos> matches = new ArrayList<>();
+        for (int chunkX = minChunkX; chunkX <= maxChunkX; chunkX++) {
+            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; chunkZ++) {
+                LevelChunk chunk = world.getChunkSource().getChunkNow(chunkX, chunkZ);
+                if (chunk == null) {
+                    continue;
+                }
+                for (BlockPos pos : chunk.getBlockEntities().keySet()) {
+                    if (pos.distSqr(origin) <= maxDistanceSqr && predicate.test(pos)) {
+                        matches.add(pos.immutable());
+                    }
+                }
+            }
+        }
+        return matches.stream();
     }
 
     @Override
