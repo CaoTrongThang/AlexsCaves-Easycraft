@@ -1,6 +1,5 @@
 package com.github.alexmodguy.alexscaves.server.entity.ai;
 
-import com.github.alexmodguy.alexscaves.server.misc.ACFluidHelper;
 import com.github.alexmodguy.alexscaves.server.entity.living.GumWormEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -47,15 +46,9 @@ public class GumWormRidingGoal extends Goal {
             } else {
                 entity.setLeaping(false);
                 Vec3 forwardsVec = new Vec3(entity.isValidRider() ? ridingPlayer.xxa * 2.5F : 0.0F, 0, 10F).yRot((float) -Math.toRadians(entity.yBodyRot)).add(entity.position());
-                this.entity.getMoveControl().setWantedPosition(forwardsVec.x, forwardsVec.y, forwardsVec.z, 4.5F);
+                this.entity.getMoveControl().setWantedPosition(forwardsVec.x, forwardsVec.y, forwardsVec.z, 3.0F);
                 this.entity.setTargetDigPitch(this.entity.horizontalCollision ? -45.0F : 0.0F);
                 leapRot = entity.getYRot();
-                if (!entity.onGround() && !entity.isInWall() && !ACFluidHelper.isInAnyFluid(entity) && !entity.horizontalCollision) {
-                    // Only apply downward force if above the ground surface to prevent going underground
-                    if (entity.getY() > entity.getSurfaceY()) {
-                        this.entity.setDeltaMovement(this.entity.getDeltaMovement().add(0, -3.8F, 0));
-                    }
-                }
             }
             if (entity.isMouthOpen()) {
                 entity.attackAllAroundMouth((float) entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue(), 2.0F);

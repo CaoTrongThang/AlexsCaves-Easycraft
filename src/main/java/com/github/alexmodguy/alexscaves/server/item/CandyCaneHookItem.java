@@ -34,15 +34,23 @@ public class CandyCaneHookItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         ItemStack itemStackOpposite = player.getItemInHand(hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
-        if(!level.isClientSide){
-            if (canLaunchHook(player, itemstack, level, true, hand) && (hand == InteractionHand.MAIN_HAND || !itemStackOpposite.is(this) || isHookLaunchedInWorld(level, itemStackOpposite))) {
+        if (level.isClientSide) {
+            boolean canLaunch = canLaunchHook(player, itemstack, level, true, hand)
+                    && (hand == InteractionHand.MAIN_HAND || !itemStackOpposite.is(this) || CandyCaneHookItem.isActive(itemStackOpposite));
+            boolean canReel = !(player.getRootVehicle() instanceof GumWormSegmentEntity)
+                    && !(itemStackOpposite.is(this) && !isActive(itemStackOpposite))
+                    && isActive(itemstack);
+            if (canLaunch || canReel) {
+                return InteractionResultHolder.sidedSuccess(itemstack, true);
+            }
+            return InteractionResultHolder.pass(itemstack);
+        }
+        if (canLaunchHook(player, itemstack, level, true, hand) && (hand == InteractionHand.MAIN_HAND || !itemStackOpposite.is(this) || isHookLaunchedInWorld(level, itemStackOpposite))) {
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), ACSoundRegistry.CANDY_CANE_HOOK_LAUNCH.get(), SoundSource.NEUTRAL, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
                 CandyCaneHookEntity hookEntity = new CandyCaneHookEntity(player, level, itemstack, hand == InteractionHand.OFF_HAND);
                 hookEntity.setOwner(player);
                 hookEntity.setReeling(false);
-                if (!level.isClientSide) {
-                    level.addFreshEntity(hookEntity);
-                }
+                level.addFreshEntity(hookEntity);
                 setLastLaunchedHookUUID(itemstack, hookEntity.getUUID());
                 setReelingIn(itemstack, false);
 
@@ -50,24 +58,19 @@ public class CandyCaneHookItem extends Item {
                 player.gameEvent(GameEvent.ITEM_INTERACT_START);
                 player.swing(hand);
                 return InteractionResultHolder.consume(itemstack);
-            } else if(!(player.getRootVehicle() instanceof GumWormSegmentEntity) && !(itemStackOpposite.is(this) && !isActive(itemStackOpposite))){
-                if (isActive(itemstack)) {
-                    InteractionHand oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-                    if(itemStackOpposite.is(this) && isActive(itemStackOpposite) && !isReelingIn(itemStackOpposite)){
-                        setReelingIn(itemStackOpposite, true);
-                        if (!level.isClientSide) {
-                            itemStackOpposite.hurtAndBreak(1, player, oppositeHand == InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
-                        }
-                    }
-                    if (!isReelingIn(itemstack)) {
-                        setReelingIn(itemstack, true);
-                        if (!level.isClientSide) {
-                            itemstack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
-                        }
-                        level.playSound(null, player.getX(), player.getY(), player.getZ(), ACSoundRegistry.CANDY_CANE_HOOK_REEL.get(), SoundSource.NEUTRAL, 1.0F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
-                        player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-                        return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide());
-                    }
+        } else if(!(player.getRootVehicle() instanceof GumWormSegmentEntity) && !(itemStackOpposite.is(this) && !isActive(itemStackOpposite))){
+            if (isActive(itemstack)) {
+                InteractionHand oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+                if(itemStackOpposite.is(this) && isActive(itemStackOpposite) && !isReelingIn(itemStackOpposite)){
+                    setReelingIn(itemStackOpposite, true);
+                    itemStackOpposite.hurtAndBreak(1, player, oppositeHand == InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+                }
+                if (!isReelingIn(itemstack)) {
+                    setReelingIn(itemstack, true);
+                    itemstack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(), ACSoundRegistry.CANDY_CANE_HOOK_REEL.get(), SoundSource.NEUTRAL, 1.0F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+                    player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+                    return InteractionResultHolder.sidedSuccess(itemstack, false);
                 }
             }
         }

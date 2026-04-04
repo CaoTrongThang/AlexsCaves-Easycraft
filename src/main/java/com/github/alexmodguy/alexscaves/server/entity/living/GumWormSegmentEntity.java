@@ -309,14 +309,10 @@ public class GumWormSegmentEntity extends Entity implements ICustomCollisions, K
                 Vec3 vec31 = distVec.length() > 1F ? distVec.normalize().scale(1F + extraLength) : distVec;
                 Vec3 vec32 = this.position().add(vec31);
                 riddenFlag = head instanceof GumWormEntity gumWorm && gumWorm.isRidingMode();
-                boolean isHeadReturning = head instanceof GumWormEntity gumWorm2 && gumWorm2.isReturningToGround();
-                // Skip surface Y clamping if head is leaping OR returning to ground
-                if ((!front.isInWall() || riddenFlag) && !(head instanceof GumWormEntity gumWorm && gumWorm.isLeaping()) && !isHeadReturning) {
+                if ((!front.isInWall() || riddenFlag) && !(head instanceof GumWormEntity gumWorm && gumWorm.isLeaping())) {
                     float f = Mth.approach((float) this.getY(), riddenFlag ? (float) Math.max(surfaceY, ideal.y) :  (float) Math.min(surfaceY, vec31.y), 1F);
                     vec32 = new Vec3(vec32.x, f, vec32.z);
                 }
-                // Also set noPhysics on segment when head is returning
-                this.noPhysics = isHeadReturning;
                 this.setPos(vec32);
                 Vec3 frontsBack = front.position().add(new Vec3(0F, 0F, 3F).xRot(-(float) Math.toRadians(front.getXRot())).yRot(-(float) Math.toRadians(front.getYRot())));
                 double d0 = frontsBack.x - this.getX();

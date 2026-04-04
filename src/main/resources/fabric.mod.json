@@ -33,8 +33,5 @@
   },
   "suggests": {
     "jei": "*"
-  },
-  "breaks": {
-    "citadel": "*"
   }
 }

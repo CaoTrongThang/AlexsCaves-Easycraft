@@ -5,6 +5,7 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
 import com.github.alexmodguy.alexscaves.client.render.entity.SubmarineRenderer;
 import com.github.alexmodguy.alexscaves.client.render.entity.layer.ACPotionEffectLayer;
+import com.github.alexmodguy.alexscaves.client.render.item.RaygunRenderHelper;
 import com.github.alexmodguy.alexscaves.server.entity.item.SubmarineEntity;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexthe666.citadel.client.shader.PostEffectRegistry;
@@ -99,6 +100,12 @@ public abstract class GameRendererMixin {
     public void ac_renderLevel(DeltaTracker deltaTracker, CallbackInfo ci) {
         float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
         Entity player = Minecraft.getInstance().cameraEntity;
+        if (Minecraft.getInstance().options.getCameraType().isFirstPerson() && player instanceof LivingEntity living) {
+            PoseStack poseStack = new PoseStack();
+            Quaternionf cameraRotation = mainCamera.rotation().conjugate(new Quaternionf());
+            poseStack.mulPose(cameraRotation);
+            RaygunRenderHelper.renderRaysFor(living, mainCamera.getPosition(), poseStack, renderBuffers.bufferSource(), partialTicks, true, 2);
+        }
         if (player != null && player.isPassenger() && player.getVehicle() instanceof SubmarineEntity submarine && SubmarineRenderer.isFirstPersonFloodlightsMode(submarine)) {
             Vec3 offset = submarine.getPosition(partialTicks).subtract(player.getEyePosition(partialTicks));
             // In 1.21, we need to create our own PoseStack with camera rotation applied
@@ -123,6 +130,13 @@ public abstract class GameRendererMixin {
             )
     )
     public void ac_renderLevelAfterHand(DeltaTracker deltaTracker, CallbackInfo ci) {
+        float partialTicks = deltaTracker.getGameTimeDeltaPartialTick(true);
+        if (Minecraft.getInstance().options.getCameraType().isFirstPerson() && Minecraft.getInstance().getCameraEntity() instanceof LivingEntity living) {
+            PoseStack poseStack = new PoseStack();
+            Quaternionf cameraRotation = mainCamera.rotation().conjugate(new Quaternionf());
+            poseStack.mulPose(cameraRotation);
+            RaygunRenderHelper.renderRaysFor(living, mainCamera.getPosition(), poseStack, renderBuffers.bufferSource(), partialTicks, true, 1);
+        }
         if (Minecraft.getInstance().getCameraEntity() instanceof LivingEntity living && living.hasEffect(ACEffectRegistry.BUBBLED) && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
             MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
             // For first-person screen overlay effects, we don't apply camera rotation

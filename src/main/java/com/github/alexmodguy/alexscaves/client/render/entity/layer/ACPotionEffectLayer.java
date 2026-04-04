@@ -4,6 +4,7 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
 import com.github.alexmodguy.alexscaves.client.render.ACRenderTypes;
 import com.github.alexmodguy.alexscaves.client.render.ColorUtil;
+import com.github.alexmodguy.alexscaves.client.render.item.RaygunRenderHelper;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.DarknessIncarnateEffect;
 import com.github.alexmodguy.alexscaves.server.potion.IrradiatedEffect;
@@ -91,6 +92,9 @@ public class ACPotionEffectLayer extends RenderLayer {
             float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw,
             float headPitch) {
         if (entity instanceof LivingEntity living) {
+            if (!AlexsCaves.PROXY.isFirstPersonPlayer(living)) {
+                RaygunRenderHelper.renderRaysFor(living, living.getPosition(partialTicks), poseStack, bufferIn, partialTicks, false, 0);
+            }
             if (living.hasEffect(ACEffectRegistry.IRRADIATED)
                     && AlexsCaves.CLIENT_CONFIG.radiationGlowEffect.get()) {
                 PostEffectRegistry.renderEffectForNextTick(ClientProxy.IRRADIATED_SHADER);
