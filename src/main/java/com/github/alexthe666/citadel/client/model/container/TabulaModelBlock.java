@@ -189,7 +189,8 @@ public class TabulaModelBlock
 
     private ItemTransform getTransform(ItemDisplayContext type)
     {
-        return this.parent != null && !this.cameraTransforms.hasTransform(type) ? this.parent.getTransform(type) : this.cameraTransforms.getTransform(type);
+        ItemTransform transform = this.cameraTransforms.getTransform(type);
+        return this.parent != null && transform == ItemTransform.NO_TRANSFORM ? this.parent.getTransform(type) : transform;
     }
 
     public static void checkModelHierarchy(Map<ResourceLocation, TabulaModelBlock> p_178312_0_)

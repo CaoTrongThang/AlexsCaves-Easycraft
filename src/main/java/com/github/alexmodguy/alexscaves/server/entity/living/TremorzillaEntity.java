@@ -1405,7 +1405,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         return 4;
     }
 
-    public float getScale() {
+    public float getAgeScale() {
         return this.isBaby() ? 0.15F : 1.0F;
     }
 

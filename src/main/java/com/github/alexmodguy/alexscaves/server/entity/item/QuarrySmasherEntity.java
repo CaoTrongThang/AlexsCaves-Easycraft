@@ -224,7 +224,7 @@ public class QuarrySmasherEntity extends Entity implements MultiPartEntity {
         super.addPassenger(passenger);
         if (this.isControlledByLocalInstance() && this.lSteps > 0) {
             this.lSteps = 0;
-            this.absMoveTo(this.lx, this.ly, this.lz, (float) this.lyr, (float) this.lxr);
+            this.moveTo(this.lx, this.ly, this.lz, (float) this.lyr, (float) this.lxr);
         }
     }
 
@@ -400,6 +400,14 @@ public class QuarrySmasherEntity extends Entity implements MultiPartEntity {
 
     public PartEntity<?>[] getParts() {
         return allParts;
+    }
+
+    public boolean isControlledByLocalInstance() {
+        return this.isEffectiveAi();
+    }
+
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        return super.isInvulnerableTo(damageSource);
     }
 
     @Override

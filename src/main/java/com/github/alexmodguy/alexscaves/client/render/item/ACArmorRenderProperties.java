@@ -6,12 +6,12 @@ import com.github.alexmodguy.alexscaves.client.render.ACRenderTypes;
 import com.github.alexmodguy.alexscaves.server.item.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexMultiConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -71,12 +71,12 @@ public class ACArmorRenderProperties implements IClientItemExtensions {
     public static void renderCustomArmor(PoseStack poseStack, MultiBufferSource multiBufferSource, int light, ItemStack itemStack, ArmorItem armorItem, Model armorModel, boolean legs, ResourceLocation texture) {
         // In 1.21, armorItem.getMaterial() returns Holder<ArmorMaterial>, so compare with .getHolder()
         if(armorItem.getMaterial() == ACItemRegistry.DARKNESS_ARMOR_MATERIAL.getHolder()){
-            VertexConsumer vertexconsumer1 = itemStack.hasFoil() ? VertexMultiConsumer.create(multiBufferSource.getBuffer(RenderType.entityGlintDirect()), multiBufferSource.getBuffer(RenderType.entityTranslucent(texture))) : multiBufferSource.getBuffer(RenderType.entityTranslucent(texture));
+            VertexConsumer vertexconsumer1 = ItemRenderer.getArmorFoilBuffer(multiBufferSource, RenderType.entityTranslucent(texture), itemStack.hasFoil());
             armorModel.renderToBuffer(poseStack, vertexconsumer1, light, OverlayTexture.NO_OVERLAY, -1);
             VertexConsumer vertexconsumer2 = multiBufferSource.getBuffer(ACRenderTypes.getEyesAlphaEnabled(DARKNESS_ARMOR_GLOW));
             armorModel.renderToBuffer(poseStack, vertexconsumer2, 240, OverlayTexture.NO_OVERLAY, -1);
         }else if(armorItem.getMaterial() == ACItemRegistry.RAINBOUNCE_ARMOR_MATERIAL.getHolder()){
-            VertexConsumer vertexconsumer1 = itemStack.hasFoil() ? VertexMultiConsumer.create(multiBufferSource.getBuffer(RenderType.entityGlintDirect()), multiBufferSource.getBuffer(ACRenderTypes.getTeslaBulb(texture))) : multiBufferSource.getBuffer(ACRenderTypes.getTeslaBulb(texture));
+            VertexConsumer vertexconsumer1 = ItemRenderer.getArmorFoilBuffer(multiBufferSource, ACRenderTypes.getTeslaBulb(texture), itemStack.hasFoil());
             armorModel.renderToBuffer(poseStack, vertexconsumer1, 240, OverlayTexture.NO_OVERLAY, -1);
         }
     }

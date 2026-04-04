@@ -178,4 +178,8 @@ public class NuclearBombEntity extends Entity {
     public boolean causeFallDamage(float f, float f1, DamageSource damageSource) {
         return false;
     }
+
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
 }

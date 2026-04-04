@@ -19,6 +19,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -55,6 +56,10 @@ public class NuclearExplosionEntity extends Entity {
 
     public NuclearExplosionEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
+    }
+
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float amount) {
+        return false;
     }
 
     public void tick() {

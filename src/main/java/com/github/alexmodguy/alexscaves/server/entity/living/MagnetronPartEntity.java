@@ -88,6 +88,10 @@ public class MagnetronPartEntity extends PartEntity<MagnetronEntity> {
         return parent != null && parent.isPickable();
     }
 
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        return super.isInvulnerableTo(damageSource);
+    }
+
     @Override
     public boolean hurt(DamageSource source, float amount) {
         MagnetronEntity parent = this.getParent();

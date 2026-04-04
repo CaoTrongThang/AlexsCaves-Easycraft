@@ -504,7 +504,7 @@ public class GumWormSegmentEntity extends Entity implements ICustomCollisions, K
     }
 
     public AABB getBoundingBoxForCulling() {
-        return super.getBoundingBoxForCulling().inflate(8.0F);
+        return this.getBoundingBox().inflate(8.0F);
     }
 
     public float getBodyZRot(float partialTicks) {

@@ -4,6 +4,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -37,8 +38,17 @@ public class ACForgeEventMixin {
         }
     }
 
-    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "hurt", at = @At("HEAD"), cancellable = true, require = 0)
     private void ac_livingHurtPre(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        ac_postLivingHurtPre(source, amount, cir);
+    }
+
+    @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true, require = 0)
+    private void ac_livingHurtPre(ServerLevel serverLevel, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        ac_postLivingHurtPre(source, amount, cir);
+    }
+
+    private void ac_postLivingHurtPre(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         // Fire both Pre (damage modification) and IncomingDamage (cancellation) events
         LivingDamageEvent.Pre preEvent = new LivingDamageEvent.Pre((LivingEntity) (Object) this, source, amount);
         NeoForge.EVENT_BUS.post(preEvent);

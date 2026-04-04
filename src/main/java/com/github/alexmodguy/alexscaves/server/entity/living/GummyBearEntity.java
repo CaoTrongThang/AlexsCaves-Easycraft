@@ -486,7 +486,7 @@ public class GummyBearEntity extends Animal implements IDancesToJukebox, IAnimat
             if (this.getAnimation() == ANIMATION_BACKSCRATCH) {
                 if (this.getAnimationTick() % 15 == 0 && this.getAnimationTick() > 0) {
                     if (jellybeansToMake > 0) {
-                        spawnAtLocation(createJellybean(), 1.0F + random.nextFloat());
+                        this.spawnAtLocation(createJellybean(), 1.0F + random.nextFloat());
                         jellybeansToMake--;
                     }
                 }

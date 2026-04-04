@@ -73,6 +73,10 @@ public class HullbreakerPartEntity extends PartEntity<HullbreakerEntity> {
         return parent != null && parent.isPickable();
     }
 
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        return super.isInvulnerableTo(damageSource);
+    }
+
     @Override
     public boolean hurt(DamageSource source, float amount) {
         HullbreakerEntity parent = this.getParent();

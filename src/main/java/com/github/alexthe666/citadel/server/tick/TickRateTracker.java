@@ -4,6 +4,7 @@ import com.github.alexthe666.citadel.server.tick.modifier.TickRateModifier;
 import com.github.alexthe666.citadel.server.tick.modifier.TickRateModifierType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
@@ -53,10 +54,12 @@ public abstract class TickRateTracker {
         if (tag.contains("TickRateModifiers")) {
             ListTag list = tag.getList("TickRateModifiers", 10);
             for (int i = 0; i < list.size(); ++i) {
-                CompoundTag tag1 = list.getCompound(i);
-                TickRateModifier modifier = TickRateModifier.fromTag(tag1);
-                if (!modifier.doRemove()) {
-                    tickRateModifierList.add(modifier);
+                Tag element = list.get(i);
+                if (element instanceof CompoundTag tag1) {
+                    TickRateModifier modifier = TickRateModifier.fromTag(tag1);
+                    if (!modifier.doRemove()) {
+                        tickRateModifierList.add(modifier);
+                    }
                 }
             }
         }

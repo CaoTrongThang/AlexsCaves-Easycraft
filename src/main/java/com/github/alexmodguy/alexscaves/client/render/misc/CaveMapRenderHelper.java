@@ -1,7 +1,7 @@
 package com.github.alexmodguy.alexscaves.client.render.misc;
 
 import com.github.alexmodguy.alexscaves.client.render.ACRenderTypes;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.alexmodguy.alexscaves.client.render.compat.RenderSystemCompat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -83,7 +83,7 @@ public class CaveMapRenderHelper {
     }
 
     private static void renderMapHand(PoseStack poseStack, MultiBufferSource bufferSource, int i, HumanoidArm humanoidArm) {
-        RenderSystem.setShaderTexture(0, Minecraft.getInstance().player.getSkin().texture());
+        RenderSystemCompat.setShaderTexture(Minecraft.getInstance().player.getSkin().texture());
         PlayerRenderer playerrenderer = (PlayerRenderer)Minecraft.getInstance().getEntityRenderDispatcher().<AbstractClientPlayer>getRenderer(Minecraft.getInstance().player);
         poseStack.pushPose();
         float f = humanoidArm == HumanoidArm.RIGHT ? 1.0F : -1.0F;
@@ -114,7 +114,7 @@ public class CaveMapRenderHelper {
         poseStack.mulPose(Axis.YP.rotationDegrees(f * f6 * 70.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(f * f5 * -20.0F));
         AbstractClientPlayer abstractclientplayer = Minecraft.getInstance().player;
-        RenderSystem.setShaderTexture(0, abstractclientplayer.getSkin().texture());
+        RenderSystemCompat.setShaderTexture(abstractclientplayer.getSkin().texture());
         poseStack.translate(f * -1.0F, 3.6F, 3.5F);
         poseStack.mulPose(Axis.ZP.rotationDegrees(f * 120.0F));
         poseStack.mulPose(Axis.XP.rotationDegrees(200.0F));

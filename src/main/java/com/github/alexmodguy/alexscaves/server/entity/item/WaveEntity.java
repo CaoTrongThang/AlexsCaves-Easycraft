@@ -108,6 +108,10 @@ public class WaveEntity extends Entity {
         compoundTag.putInt("Lifespan", this.getLifespan());
     }
 
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float damageValue) {
+        return false;
+    }
+
     public float getYRot() {
         return this.entityData.get(Y_ROT);
     }

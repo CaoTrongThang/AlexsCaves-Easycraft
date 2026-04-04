@@ -4,6 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.phys.AABB;
 
 public abstract class PartEntity<T extends Entity> extends Entity {
 
@@ -28,5 +29,9 @@ public abstract class PartEntity<T extends Entity> extends Entity {
 
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    }
+
+    public AABB getBoundingBoxForCulling() {
+        return this.getBoundingBox();
     }
 }

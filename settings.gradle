@@ -7,7 +7,13 @@ pluginManagement {
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
 rootProject.name = 'alexscaves'
+
+include 'mc1211', 'mc121x', 'mc261'
+
+project(':mc1211').projectDir = file('versions/1.21.1')
+project(':mc121x').projectDir = file('versions/1.21.x')
+project(':mc261').projectDir = file('versions/26.1')

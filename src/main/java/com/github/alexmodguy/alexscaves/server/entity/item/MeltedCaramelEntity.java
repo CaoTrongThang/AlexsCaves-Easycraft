@@ -82,4 +82,8 @@ public class MeltedCaramelEntity extends Entity {
     public float getYRenderOffset() {
         return yRenderOffset;
     }
+
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
 }

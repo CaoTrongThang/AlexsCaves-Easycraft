@@ -14,6 +14,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -170,6 +171,10 @@ public class BeholderEyeEntity extends Entity implements PossessesCamera {
         if (uuid1 != null) {
             tag.putUUID("UsingPlayerUUID", uuid1);
         }
+    }
+
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float amount) {
+        return false;
     }
 
     public void setUsingPlayerUUID(UUID uuid) {

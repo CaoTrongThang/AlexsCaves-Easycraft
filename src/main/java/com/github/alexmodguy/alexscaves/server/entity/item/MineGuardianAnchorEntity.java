@@ -121,6 +121,10 @@ public class MineGuardianAnchorEntity extends Entity {
         }
     }
 
+    public boolean hurtServer(ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
+
     public Vec3 getChainTo(float partialTicks) {
         if (getGuardian() instanceof MineGuardianEntity mineGuardianEntity) {
             return mineGuardianEntity.getPosition(partialTicks);

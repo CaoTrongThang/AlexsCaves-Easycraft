@@ -378,7 +378,7 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
         return ACEntityRegistry.ATLATITAN.get().create(level);
     }
 
-    public float getScale() {
+    public float getAgeScale() {
         return this.isBaby() ? 0.15F : 1.0F;
     }
 

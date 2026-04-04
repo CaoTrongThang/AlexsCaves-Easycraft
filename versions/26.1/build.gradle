@@ -1,0 +1,59 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+ext.targetConfig = [
+    minecraftVersion          : '26.1',
+    minecraftVersionLabel     : '26.1',
+    minecraftVersionConstraint: '=26.1',
+    fabricLoaderVersion       : '0.18.5',
+    fabricApiVersion          : '0.144.3+26.1',
+    javaVersion               : 25,
+    remapping                 : false,
+    useGeneratedSources       : true,
+    javaReplacements          : [
+        'net.minecraft.resources.ResourceLocation'               : 'net.minecraft.resources.Identifier',
+        'net.minecraft.client.gui.GuiGraphics'                  : 'net.minecraft.client.gui.GuiGraphicsExtractor',
+        'net.minecraft.client.renderer.RenderType'              : 'net.minecraft.client.renderer.rendertype.RenderType',
+        'net.minecraft.client.renderer.block.model.BakedQuad'   : 'net.minecraft.client.resources.model.geometry.BakedQuad',
+        'net.minecraft.client.resources.model.BakedModel'       : 'net.minecraft.client.resources.model.ResolvedModel',
+        'net.minecraft.world.entity.vehicle.Boat'               : 'net.minecraft.world.entity.vehicle.boat.Boat',
+        'net.minecraft.world.entity.npc.AbstractVillager'       : 'net.minecraft.world.entity.npc.villager.AbstractVillager',
+        'net.minecraft.world.entity.animal.Wolf'                : 'net.minecraft.world.entity.animal.wolf.Wolf',
+        'net.minecraft.world.entity.monster.Husk'               : 'net.minecraft.world.entity.monster.zombie.Husk',
+        'net.minecraft.world.entity.MobSpawnType'               : 'net.minecraft.world.entity.EntitySpawnReason',
+        'net.minecraft.world.level.GameRules'                   : 'net.minecraft.world.level.gamerules.GameRules',
+        'net.minecraft.world.entity.animal.WaterAnimal'         : 'net.minecraft.world.entity.animal.fish.WaterAnimal',
+        'net.minecraft.world.entity.animal.Cat'                 : 'net.minecraft.world.entity.animal.feline.Cat',
+        'net.minecraft.world.entity.animal.AbstractGolem'       : 'net.minecraft.world.entity.animal.golem.AbstractGolem',
+        'net.minecraft.world.entity.animal.PolarBear'           : 'net.minecraft.world.entity.animal.polarbear.PolarBear',
+        'net.minecraft.world.entity.vehicle.AbstractMinecart'   : 'net.minecraft.world.entity.vehicle.minecart.AbstractMinecart',
+        'net.minecraft.world.entity.projectile.AbstractArrow'   : 'net.minecraft.world.entity.projectile.arrow.AbstractArrow',
+        'net.minecraft.world.entity.projectile.ThrownTrident'   : 'net.minecraft.world.entity.projectile.arrow.ThrownTrident',
+        'net.minecraft.client.resources.PlayerSkin'             : 'net.minecraft.world.entity.player.PlayerSkin',
+        'net.minecraft.client.renderer.block.model.ItemTransforms': 'net.minecraft.client.resources.model.cuboid.ItemTransforms',
+        'net.minecraft.Util'                                    : 'net.minecraft.util.Util',
+        'import net.minecraft.core.particles.ParticleGroup;'    : 'import net.minecraft.core.particles.ParticleLimit;',
+        'public ParticleRenderType getRenderType()'             : 'public ParticleRenderType getGroup()',
+        'public Optional<ParticleGroup> getParticleGroup()'     : 'public Optional<ParticleLimit> getParticleLimit()',
+        'public static final ParticleGroup PARTICLE_GROUP = new ParticleGroup(100);': 'public static final ParticleLimit PARTICLE_GROUP = new ParticleLimit(100);',
+        'ParticleRenderType.PARTICLE_SHEET_LIT'                 : 'ParticleRenderType.SINGLE_QUADS',
+        'ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT'         : 'ParticleRenderType.SINGLE_QUADS',
+        'ParticleRenderType.PARTICLE_SHEET_OPAQUE'              : 'ParticleRenderType.SINGLE_QUADS',
+        'ParticleRenderType.CUSTOM'                             : 'ParticleRenderType.SINGLE_QUADS'
+    ],
+    javaRegexReplacements     : [
+        '\\bResourceLocation\\b'                               : 'Identifier',
+        '\\bGuiGraphics\\b'                                    : 'GuiGraphicsExtractor',
+        '\\bMobSpawnType\\b'                                   : 'EntitySpawnReason',
+        '\\bBakedModel\\b'                                     : 'ResolvedModel'
+    ],
+    excludedJava              : [],
+    excludedResources         : ['alexscaves.accesswidener']
+]
+
+apply from: rootProject.file('gradle/fabric-version.gradle')

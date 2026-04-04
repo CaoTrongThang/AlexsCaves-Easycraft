@@ -18,6 +18,7 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -144,7 +145,12 @@ public class CaveBiomeMapWorldWorker implements WorldWorkerManager.IWorker {
                 if (lastSampledPos != null) {
                     distance = (int) Math.sqrt(center.distSqr(lastSampledPos));
                 }
-                player.sendSystemMessage(Component.translatable("item.alexscaves.cave_map.error", distance).withStyle(ChatFormatting.RED));
+                Component errorMessage = Component.translatable("item.alexscaves.cave_map.error", distance).withStyle(ChatFormatting.RED);
+                if (player instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.sendSystemMessage(errorMessage);
+                } else {
+                    player.displayClientMessage(errorMessage, false);
+                }
                 AlexsCaves.LOGGER.info("Could not find {} after {}s", biomeResourceKey.location(), stopwatch.elapsed().toSeconds());
             }
             tag.putBoolean("Loading", false);

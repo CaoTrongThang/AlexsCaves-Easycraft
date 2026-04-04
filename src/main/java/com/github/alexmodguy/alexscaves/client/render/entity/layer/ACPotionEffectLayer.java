@@ -4,6 +4,8 @@ import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.client.ClientProxy;
 import com.github.alexmodguy.alexscaves.client.render.ACRenderTypes;
 import com.github.alexmodguy.alexscaves.client.render.ColorUtil;
+import com.github.alexmodguy.alexscaves.client.render.compat.ModelCompat;
+import com.github.alexmodguy.alexscaves.client.render.compat.RenderSystemCompat;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.DarknessIncarnateEffect;
 import com.github.alexmodguy.alexscaves.server.potion.IrradiatedEffect;
@@ -57,7 +59,7 @@ public class ACPotionEffectLayer extends RenderLayer {
     public static void renderBubbledFluid(Minecraft p110726, PoseStack poseStack, ResourceLocation texture,
             boolean translate) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, texture);
+        RenderSystemCompat.setShaderTexture(texture);
         BlockPos blockpos = BlockPos.containing(p110726.player.getX(), p110726.player.getEyeY(), p110726.player.getZ());
         float f = LightTexture.getBrightness(p110726.player.level().dimensionType(),
                 p110726.player.level().getMaxLocalRawBrightness(blockpos));
@@ -131,7 +133,7 @@ public class ACPotionEffectLayer extends RenderLayer {
                         LivingEntityRenderer.getOverlayCoords((LivingEntity) entity, 0), ColorUtil.packColor(0.0F, 0.0F, 0.0F, alpha));
                 poseStack.popPose();
             }
-            if (living.hasEffect(ACEffectRegistry.SUGAR_RUSH) && getParentModel() instanceof HumanoidModel<?>) {
+            if (living.hasEffect(ACEffectRegistry.SUGAR_RUSH) && ModelCompat.isHumanoid(getParentModel())) {
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(TEXTURE_SUGAR_RUSH));
                 this.getParentModel().renderToBuffer(poseStack, ivertexbuilder, packedLightIn,
                         LivingEntityRenderer.getOverlayCoords((LivingEntity) entity, 0), ColorUtil.packColor(1.0F, 1.0F, 1.0F, 1.0F));

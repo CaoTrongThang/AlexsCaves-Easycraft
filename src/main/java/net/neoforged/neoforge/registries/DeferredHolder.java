@@ -41,8 +41,8 @@ public class DeferredHolder<R, T extends R> implements Supplier<T>, Holder<T> {
 
         Registry<T> registry = getRegistry();
         if (registry != null && registry.containsKey(getId())) {
-            value = registry.get(getId());
-            holder = registry.getHolder(getId()).orElse(null);
+            value = registry.get(getId().location());
+            holder = registry.getHolder(id).orElse(null);
             if (value != null) {
                 return value;
             }
@@ -51,7 +51,7 @@ public class DeferredHolder<R, T extends R> implements Supplier<T>, Holder<T> {
         value = factory.get();
         if (registry != null) {
             if (registry.containsKey(getId())) {
-                holder = registry.getHolder(getId()).orElse(null);
+                holder = registry.getHolder(id).orElse(null);
             } else {
                 holder = Registry.registerForHolder(registry, getId(), value);
             }
@@ -72,7 +72,7 @@ public class DeferredHolder<R, T extends R> implements Supplier<T>, Holder<T> {
         if (registry == null) {
             return null;
         }
-        holder = registry.getHolder(getId()).orElse(null);
+        holder = registry.getHolder(id).orElse(null);
         return holder;
     }
 

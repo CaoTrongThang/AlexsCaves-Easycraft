@@ -275,7 +275,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         super.addPassenger(passenger);
         if (this.isControlledByLocalInstance() && this.lSteps > 0) {
             this.lSteps = 0;
-            this.absMoveTo(this.lx, this.ly, this.lz, (float) this.lyr, (float) this.lxr);
+            this.moveTo(this.lx, this.ly, this.lz, (float) this.lyr, (float) this.lxr);
         }
     }
 
@@ -351,6 +351,10 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
 
     public boolean canBeRiddenUnderFluidType(FluidType type, Entity rider) {
         return true;
+    }
+
+    public boolean isControlledByLocalInstance() {
+        return this.isEffectiveAi();
     }
 
     @Nullable

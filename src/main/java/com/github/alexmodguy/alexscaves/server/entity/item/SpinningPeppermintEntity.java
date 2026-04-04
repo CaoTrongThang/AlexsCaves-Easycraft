@@ -306,4 +306,8 @@ public class SpinningPeppermintEntity extends Entity {
         this.lzd = lerpZ;
         this.setDeltaMovement(this.lxd, this.lyd, this.lzd);
     }
+
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
 }

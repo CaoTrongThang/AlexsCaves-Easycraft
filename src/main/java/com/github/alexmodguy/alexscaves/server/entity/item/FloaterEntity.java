@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 
 public class FloaterEntity extends Entity {
 
@@ -68,6 +69,10 @@ public class FloaterEntity extends Entity {
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
 
+    }
+
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float damageValue) {
+        return false;
     }
 
     public boolean isPickable() {

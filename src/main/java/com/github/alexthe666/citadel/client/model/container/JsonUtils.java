@@ -109,7 +109,6 @@ public class JsonUtils
     @Nullable
     public static Item getByNameOrId(String id)
     {
-
         return BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
     }
 

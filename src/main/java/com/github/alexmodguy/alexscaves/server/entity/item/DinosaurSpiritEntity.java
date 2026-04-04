@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -207,6 +208,10 @@ public class DinosaurSpiritEntity extends Entity {
             tag.putUUID("UsingPlayerUUID", uuid1);
         }
         tag.putInt("DinosaurType", this.getDinosaurTypeInt());
+    }
+
+    public boolean hurtServer(ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
     }
 
     public void setPlayerUUID(UUID uuid) {

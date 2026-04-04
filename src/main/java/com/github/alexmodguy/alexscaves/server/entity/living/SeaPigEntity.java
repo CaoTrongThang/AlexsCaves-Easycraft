@@ -189,7 +189,7 @@ public class SeaPigEntity extends WaterAnimal implements Bucketable {
         if (!level().isClientSide) {
             LootTable loottable = level().getServer().reloadableRegistries().getLootTable(DIGESTION_LOOT_TABLE);
             List<ItemStack> items = loottable.getRandomItems((new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.PIGLIN_BARTER));
-            items.forEach(this::spawnAtLocation);
+            items.forEach(itemStack -> this.spawnAtLocation(itemStack));
         }
         this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
     }

@@ -9,6 +9,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -58,7 +59,7 @@ public class IceCreamBlock extends Block {
         blockStateBuilder.add(TYPE);
     }
 
-    public int getType(LevelAccessor levelAccessor, BlockPos iceCreamPos) {
+    public int getType(LevelReader levelAccessor, BlockPos iceCreamPos) {
         BlockState beneathState = levelAccessor.getBlockState(iceCreamPos.below());
         if (beneathState.is(this)) {
             return 0;

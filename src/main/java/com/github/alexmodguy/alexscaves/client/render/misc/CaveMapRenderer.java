@@ -81,8 +81,8 @@ public class CaveMapRenderer {
     }
 
     private void updateTexture() {
-        Registry<Biome> registry = Minecraft.getInstance().level.registryAccess().registry(Registries.BIOME).orElse(null);
-        if (registry != null && mapBiomes.length >= 128 * 128) {
+        Registry<Biome> registry = Minecraft.getInstance().level.registryAccess().registryOrThrow(Registries.BIOME);
+        if (mapBiomes.length >= 128 * 128) {
             for (int i = 0; i < 128; ++i) {
                 for (int j = 0; j < 128; ++j) {
                     int k = j + i * 128;
@@ -125,8 +125,8 @@ public class CaveMapRenderer {
     private void updateLabels() {
         labels.clear();
         int extraBiomes = random.nextInt(3) + 3;
-        Registry<Biome> registry = Minecraft.getInstance().level.registryAccess().registry(Registries.BIOME).orElse(null);
-        if (registry != null && mapBiomes.length >= 128 * 128) {
+        Registry<Biome> registry = Minecraft.getInstance().level.registryAccess().registryOrThrow(Registries.BIOME);
+        if (mapBiomes.length >= 128 * 128) {
             Pair<Integer, Integer> targetBiomeLoc = centerBiomeCoordinates(64, 64);
 
             BiomeLabel centerLabel = buildLabelFrom(targetBiomeLoc, registry, (targetBiomeLoc.getFirst() - 64) / 2, true);

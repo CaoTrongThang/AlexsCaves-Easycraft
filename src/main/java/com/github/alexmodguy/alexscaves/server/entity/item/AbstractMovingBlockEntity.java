@@ -237,6 +237,10 @@ public abstract class AbstractMovingBlockEntity extends Entity {
         return this.getPosition(f);
     }
 
+    public boolean hurtServer(ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
+
 
     public static CompoundTag createTagFromData(List<MovingBlockData> blocks) {
         CompoundTag tag = new CompoundTag();

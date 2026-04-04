@@ -7,14 +7,14 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.function.Predicate;
 
-public class MobTarget3DGoal extends NearestAttackableTargetGoal {
+public class MobTarget3DGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
 
-    public MobTarget3DGoal(Mob mob, Class targetClass, boolean sight) {
+    public MobTarget3DGoal(Mob mob, Class<T> targetClass, boolean sight) {
         super(mob, targetClass, sight);
     }
 
 
-    public MobTarget3DGoal(Mob mob, Class targetClass, boolean sight, int chance, Predicate<LivingEntity> predicate) {
+    public MobTarget3DGoal(Mob mob, Class<T> targetClass, boolean sight, int chance, Predicate<LivingEntity> predicate) {
         super(mob, targetClass, chance, sight, false, predicate);
     }
 

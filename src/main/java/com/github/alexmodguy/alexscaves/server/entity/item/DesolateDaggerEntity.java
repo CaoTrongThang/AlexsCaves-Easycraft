@@ -206,4 +206,8 @@ public class DesolateDaggerEntity extends Entity {
         int id = getPlayerId();
         return id == -1 ? null : level().getEntity(id);
     }
+
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
 }

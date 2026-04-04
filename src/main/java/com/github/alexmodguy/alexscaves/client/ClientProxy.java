@@ -9,6 +9,7 @@ import com.github.alexmodguy.alexscaves.client.model.baked.BakedModelShadeLayerF
 import com.github.alexmodguy.alexscaves.client.particle.*;
 import com.github.alexmodguy.alexscaves.client.render.ACInternalShaders;
 import com.github.alexmodguy.alexscaves.client.render.ACBlockRenderLayerRegistry;
+import com.github.alexmodguy.alexscaves.client.render.compat.RenderSystemCompat;
 import com.github.alexmodguy.alexscaves.client.render.blockentity.*;
 import com.github.alexmodguy.alexscaves.client.render.entity.*;
 import com.github.alexmodguy.alexscaves.client.render.entity.layer.ClientLayerRegistry;
@@ -1423,7 +1424,7 @@ public class ClientProxy extends CommonProxy {
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, nukeFlashAmount * screenEffectIntensity);
-            RenderSystem.setShaderTexture(0, ClientProxy.BOMB_FLASH);
+            RenderSystemCompat.setShaderTexture(ClientProxy.BOMB_FLASH);
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
             bufferbuilder.addVertex(0.0F, (float) screenHeight, -90.0F).setUv(0.0F, 1.0F);
@@ -1432,7 +1433,7 @@ public class ClientProxy extends CommonProxy {
             bufferbuilder.addVertex(0.0F, 0.0F, -90.0F).setUv(0.0F, 0.0F);
             BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
             RenderSystem.depthMask(true);
-            RenderSystem.enableDepthTest();
+            RenderSystemCompat.enableDepthTest();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
         if (watcherPossessionStrength > 0) {
@@ -1444,7 +1445,7 @@ public class ClientProxy extends CommonProxy {
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, watcherPossessionStrength * screenEffectIntensity);
-            RenderSystem.setShaderTexture(0, ClientProxy.WATCHER_EFFECT);
+            RenderSystemCompat.setShaderTexture(ClientProxy.WATCHER_EFFECT);
             Tesselator tesselator2 = Tesselator.getInstance();
             BufferBuilder bufferbuilder2 = tesselator2.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
             bufferbuilder2.addVertex(0.0F, (float) screenHeight, -90.0F).setUv(0.0F, 1.0F);
@@ -1453,7 +1454,7 @@ public class ClientProxy extends CommonProxy {
             bufferbuilder2.addVertex(0.0F, 0.0F, -90.0F).setUv(0.0F, 0.0F);
             BufferUploader.drawWithShader(bufferbuilder2.buildOrThrow());
             RenderSystem.depthMask(true);
-            RenderSystem.enableDepthTest();
+            RenderSystemCompat.enableDepthTest();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }

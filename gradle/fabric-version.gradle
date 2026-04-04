@@ -1,0 +1,236 @@
+def prismModsDirPath = providers.gradleProperty('prismModsDir')
+    .orElse(providers.environmentVariable('PRISM_MODS_DIR'))
+
+def javaVersion = targetConfig.javaVersion as int
+def isRemappingProject = targetConfig.remapping as boolean
+def archiveMinecraftVersion = targetConfig.minecraftVersion as String
+def archiveMinecraftLabel = (targetConfig.minecraftVersionLabel ?: archiveMinecraftVersion) as String
+def minecraftVersionConstraint = (targetConfig.minecraftVersionConstraint ?: "~${archiveMinecraftVersion}") as String
+def packageTaskName = isRemappingProject ? 'remapJar' : 'jar'
+def accessWidenerFile = project.file('src/main/resources/alexscaves.accesswidener')
+def useGeneratedSources = (targetConfig.useGeneratedSources ?: false) as boolean
+def generatedJavaDir = layout.buildDirectory.dir("generated/versioned/${project.name}/java")
+if (!accessWidenerFile.exists()) {
+    accessWidenerFile = rootProject.file('src/main/resources/alexscaves.accesswidener')
+}
+
+version = "${rootProject.mod_version}+mc${archiveMinecraftLabel}"
+group = rootProject.group
+
+repositories {
+    mavenLocal()
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://www.cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    maven {
+        name = 'ModMaven'
+        url = 'https://modmaven.dev'
+    }
+    mavenCentral()
+}
+
+base {
+    archivesName = "alexscaves-fabric-${archiveMinecraftLabel}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(javaVersion)
+
+loom {
+    accessWidenerPath = accessWidenerFile
+    if (isRemappingProject) {
+        mixin {
+            useLegacyMixinAp = true
+            defaultRefmapName = 'alexscaves.refmap.json'
+        }
+    }
+}
+
+if (useGeneratedSources) {
+    def prepareVersionedJava = tasks.register('prepareVersionedJava', Sync) {
+        into generatedJavaDir
+        includeEmptyDirs = false
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+        from(rootProject.file('src/main/java'))
+        from(project.file('src/main/java'))
+
+        def replacements = targetConfig.javaReplacements ?: [:]
+        def regexReplacements = targetConfig.javaRegexReplacements ?: [:]
+        inputs.properties([
+            exactReplacements: replacements,
+            regexReplacements: regexReplacements
+        ])
+        filesMatching('**/*.java') {
+            filter { String line ->
+                String updated = line
+                replacements.each { from, to ->
+                    updated = updated.replace(from as String, to as String)
+                }
+                regexReplacements.each { pattern, to ->
+                    updated = updated.replaceAll(pattern as String, to as String)
+                }
+                return updated
+            }
+        }
+
+        def excludedJava = targetConfig.excludedJava ?: []
+        if (!excludedJava.isEmpty()) {
+            exclude(excludedJava)
+        }
+    }
+
+    tasks.named('compileJava') {
+        dependsOn prepareVersionedJava
+    }
+}
+
+sourceSets {
+    main {
+        java.setSrcDirs(useGeneratedSources ? [generatedJavaDir] : [
+            rootProject.file('src/main/java'),
+            project.file('src/main/java')
+        ])
+        resources.setSrcDirs([
+            rootProject.file('src/main/resources'),
+            project.file('src/main/resources'),
+            rootProject.file('src/generated/resources')
+        ])
+
+        if (!useGeneratedSources) {
+            def excludedJava = targetConfig.excludedJava ?: []
+            if (!excludedJava.isEmpty()) {
+                java.exclude(excludedJava)
+            }
+        }
+
+        def excludedResources = targetConfig.excludedResources ?: []
+        if (!excludedResources.isEmpty()) {
+            resources.exclude(excludedResources)
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${targetConfig.minecraftVersion}"
+
+    if (isRemappingProject) {
+        mappings loom.officialMojangMappings()
+        modImplementation "net.fabricmc:fabric-loader:${targetConfig.fabricLoaderVersion}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${targetConfig.fabricApiVersion}"
+
+        if (targetConfig.jeiVersion) {
+            modCompileOnlyApi "mezz.jei:${targetConfig.jeiApiArtifact}:${targetConfig.jeiVersion}"
+        }
+    } else {
+        implementation "net.fabricmc:fabric-loader:${targetConfig.fabricLoaderVersion}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${targetConfig.fabricApiVersion}"
+
+        if (targetConfig.jeiVersion) {
+            compileOnly "mezz.jei:${targetConfig.jeiApiArtifact}:${targetConfig.jeiVersion}"
+        }
+    }
+
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+}
+
+tasks.processResources {
+    var replaceProperties = [
+        minecraft_version    : targetConfig.minecraftVersion,
+        minecraft_version_constraint: minecraftVersionConstraint,
+        fabric_loader_version: targetConfig.fabricLoaderVersion,
+        fabric_api_version   : targetConfig.fabricApiVersion,
+        java_version         : javaVersion,
+        mod_id               : rootProject.mod_id,
+        mod_name             : rootProject.mod_name,
+        mod_license          : rootProject.mod_license,
+        mod_version          : project.version,
+        mod_authors          : rootProject.mod_authors,
+        mod_description      : rootProject.mod_description
+    ]
+
+    inputs.properties replaceProperties
+    filesMatching(['fabric.mod.json', 'alexscaves.mixins.json']) {
+        expand replaceProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = javaVersion
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'    : rootProject.mod_id,
+            'Specification-Vendor'   : rootProject.mod_authors,
+            'Specification-Version'  : '1',
+            'Implementation-Title'   : project.name,
+            'Implementation-Version' : project.jar.archiveVersion,
+            'Implementation-Vendor'  : rootProject.mod_authors
+        ])
+    }
+}
+
+tasks.register('deployToPrismMods') {
+    onlyIf {
+        prismModsDirPath.present && !prismModsDirPath.get().isBlank()
+    }
+
+    doLast {
+        def source = tasks.named(packageTaskName).get().archiveFile.get().asFile.toPath()
+        def prismModsDir = file(prismModsDirPath.get())
+        def targetDir = prismModsDir.toPath()
+        def target = targetDir.resolve(source.fileName.toString())
+        def temp = targetDir.resolve("${source.fileName}.tmp")
+
+        java.nio.file.Files.createDirectories(targetDir)
+        java.nio.file.Files.copy(source, temp, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        try {
+            java.nio.file.Files.move(
+                temp,
+                target,
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                java.nio.file.StandardCopyOption.ATOMIC_MOVE
+            )
+        } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
+            java.nio.file.Files.move(temp, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+}
+
+tasks.named(packageTaskName) {
+    finalizedBy tasks.named('deployToPrismMods')
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
+    }
+}

@@ -458,6 +458,10 @@ public class MagneticWeaponEntity extends Entity {
         return prevReturnProgress + (returnProgress - prevReturnProgress) * partialTick;
     }
 
+    public boolean hurtServer(ServerLevel serverLevel, net.minecraft.world.damagesource.DamageSource damageSource, float damageValue) {
+        return false;
+    }
+
     public Vec3 getControllerHandPos(Player controller, float partialTicks) {
         float yBodyRot = Mth.lerp(partialTicks, controller.yBodyRotO, controller.yBodyRot);
         boolean mainHand = controller.getItemInHand(InteractionHand.MAIN_HAND).is(ACItemRegistry.GALENA_GAUNTLET.get());
