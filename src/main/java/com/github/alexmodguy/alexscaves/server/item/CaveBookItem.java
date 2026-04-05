@@ -33,7 +33,7 @@ public class CaveBookItem extends Item {
         if (worldIn.isClientSide) {
             AlexsCaves.PROXY.openBookGUI(itemStackIn);
         }
-        return new InteractionResultHolder(InteractionResult.PASS, itemStackIn);
+        return new InteractionResultHolder<>(InteractionResult.sidedSuccess(worldIn.isClientSide), itemStackIn);
     }
 
     @Override
