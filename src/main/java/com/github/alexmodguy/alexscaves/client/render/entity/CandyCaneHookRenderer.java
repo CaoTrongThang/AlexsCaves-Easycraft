@@ -33,12 +33,12 @@ public class CandyCaneHookRenderer extends EntityRenderer<CandyCaneHookEntity> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AlexsCaves.MODID, "textures/entity/candy_cane_hook.png");
     private static final CandyCaneHookModel MODEL = new CandyCaneHookModel();
 
-    private static final float LICORICE_COLOR_1_R = 80 / 255F;
-    private static final float LICORICE_COLOR_1_G = 0;
-    private static final float LICORICE_COLOR_1_B = 104 / 255F;
-    private static final float LICORICE_COLOR_2_R = 34 / 255F;
-    private static final float LICORICE_COLOR_2_G = 0;
-    private static final float LICORICE_COLOR_2_B = 45 / 255F;
+    private static final float LICORICE_COLOR_1_R = 18 / 255F;
+    private static final float LICORICE_COLOR_1_G = 18 / 255F;
+    private static final float LICORICE_COLOR_1_B = 18 / 255F;
+    private static final float LICORICE_COLOR_2_R = 6 / 255F;
+    private static final float LICORICE_COLOR_2_G = 6 / 255F;
+    private static final float LICORICE_COLOR_2_B = 6 / 255F;
 
     public CandyCaneHookRenderer(EntityRendererProvider.Context context) {
         super(context);

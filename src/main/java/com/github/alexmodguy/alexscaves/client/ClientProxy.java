@@ -14,6 +14,7 @@ import com.github.alexmodguy.alexscaves.client.render.entity.*;
 import com.github.alexmodguy.alexscaves.client.render.entity.layer.ClientLayerRegistry;
 import com.github.alexmodguy.alexscaves.client.render.item.ACArmorRenderProperties;
 import com.github.alexmodguy.alexscaves.client.render.item.ACItemRenderProperties;
+import com.github.alexmodguy.alexscaves.client.render.item.RaygunRenderHelper;
 import com.github.alexmodguy.alexscaves.client.render.item.tooltip.ClientSackOfSatingTooltip;
 import com.github.alexmodguy.alexscaves.client.sound.*;
 import com.github.alexmodguy.alexscaves.mixin.client.SoundEngineAccessor;
@@ -56,6 +57,8 @@ import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -194,6 +197,8 @@ public class ClientProxy extends CommonProxy {
 
     public static void registerFabricClientLifecycle() {
         ClientTickEvents.END_CLIENT_TICK.register(ClientProxy::onFabricClientTick);
+        WorldRenderEvents.BEFORE_ENTITIES.register(ClientProxy::onFabricBeforeEntities);
+        WorldRenderEvents.AFTER_ENTITIES.register(ClientProxy::onFabricAfterEntities);
     }
 
     public static void registerFabricBuiltinItemRenderers() {
@@ -297,6 +302,26 @@ public class ClientProxy extends CommonProxy {
             lastSampledFogColor = Vec3.ZERO;
             lastSampledWaterFogColor = Vec3.ZERO;
         }
+    }
+
+    private static void onFabricBeforeEntities(WorldRenderContext context) {
+        renderFirstPersonRaygunRays(context, 2);
+    }
+
+    private static void onFabricAfterEntities(WorldRenderContext context) {
+        renderFirstPersonRaygunRays(context, 1);
+    }
+
+    private static void renderFirstPersonRaygunRays(WorldRenderContext context, int firstPersonPass) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (!minecraft.options.getCameraType().isFirstPerson() || context.matrixStack() == null || context.consumers() == null) {
+            return;
+        }
+        if (!(minecraft.getCameraEntity() instanceof LivingEntity living)) {
+            return;
+        }
+        float partialTick = minecraft.getTimer().getGameTimeDeltaPartialTick(true);
+        RaygunRenderHelper.renderRaysFor(living, minecraft.gameRenderer.getMainCamera().getPosition(), context.matrixStack(), context.consumers(), partialTick, true, firstPersonPass);
     }
 
     private static float calculateBiomeAmbientLight(Entity player) {

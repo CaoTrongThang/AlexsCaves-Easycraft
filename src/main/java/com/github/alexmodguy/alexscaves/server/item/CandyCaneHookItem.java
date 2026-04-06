@@ -27,6 +27,11 @@ import java.util.UUID;
 
 public class CandyCaneHookItem extends Item {
 
+    private static final String LAST_LAUNCHED_HOOK_UUID = "LastLaunchedHookUUID";
+    private static final String LAST_LAUNCHED_HOOK_GAME_TIME = "LastLaunchedHookGameTime";
+    private static final String REELING = "Reeling";
+    private static final int MIN_REEL_TICKS = 5;
+
     public CandyCaneHookItem() {
         super(new Item.Properties().durability(200));
     }
@@ -39,7 +44,7 @@ public class CandyCaneHookItem extends Item {
                     && (hand == InteractionHand.MAIN_HAND || !itemStackOpposite.is(this) || CandyCaneHookItem.isActive(itemStackOpposite));
             boolean canReel = !(player.getRootVehicle() instanceof GumWormSegmentEntity)
                     && !(itemStackOpposite.is(this) && !isActive(itemStackOpposite))
-                    && isActive(itemstack);
+                    && canReelHook(level, itemstack);
             if (canLaunch || canReel) {
                 return InteractionResultHolder.sidedSuccess(itemstack, true);
             }
@@ -52,6 +57,7 @@ public class CandyCaneHookItem extends Item {
                 hookEntity.setReeling(false);
                 level.addFreshEntity(hookEntity);
                 setLastLaunchedHookUUID(itemstack, hookEntity.getUUID());
+                setLastLaunchedHookTime(itemstack, level.getGameTime());
                 setReelingIn(itemstack, false);
 
                 player.awardStat(Stats.ITEM_USED.get(this));
@@ -59,9 +65,9 @@ public class CandyCaneHookItem extends Item {
                 player.swing(hand);
                 return InteractionResultHolder.consume(itemstack);
         } else if(!(player.getRootVehicle() instanceof GumWormSegmentEntity) && !(itemStackOpposite.is(this) && !isActive(itemStackOpposite))){
-            if (isActive(itemstack)) {
+            if (canReelHook(level, itemstack)) {
                 InteractionHand oppositeHand = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-                if(itemStackOpposite.is(this) && isActive(itemStackOpposite) && !isReelingIn(itemStackOpposite)){
+                if(itemStackOpposite.is(this) && canReelHook(level, itemStackOpposite) && !isReelingIn(itemStackOpposite)){
                     setReelingIn(itemStackOpposite, true);
                     itemStackOpposite.hurtAndBreak(1, player, oppositeHand == InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
                 }
@@ -81,14 +87,27 @@ public class CandyCaneHookItem extends Item {
         if(isActive(stack)){
             CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
             CompoundTag compoundTag = customData.copyTag();
-            if (level instanceof ServerLevel serverLevel && compoundTag.contains("LastLaunchedHookUUID")) {
-                Entity entity = serverLevel.getEntity(compoundTag.getUUID("LastLaunchedHookUUID"));
+            if (level instanceof ServerLevel serverLevel && compoundTag.contains(LAST_LAUNCHED_HOOK_UUID)) {
+                Entity entity = serverLevel.getEntity(compoundTag.getUUID(LAST_LAUNCHED_HOOK_UUID));
                 if (entity instanceof CandyCaneHookEntity candyCaneHook) {
                     return candyCaneHook.isAlive() && candyCaneHook.tickCount > 0;
                 }
             }
         }
         return false;
+    }
+
+    private boolean canReelHook(Level level, ItemStack itemStack) {
+        return isActive(itemStack) && getTicksSinceLaunch(level, itemStack) >= MIN_REEL_TICKS;
+    }
+
+    private static long getTicksSinceLaunch(Level level, ItemStack itemStack) {
+        CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        CompoundTag compoundTag = customData.copyTag();
+        if (!compoundTag.contains(LAST_LAUNCHED_HOOK_GAME_TIME)) {
+            return Long.MAX_VALUE;
+        }
+        return Math.max(0L, level.getGameTime() - compoundTag.getLong(LAST_LAUNCHED_HOOK_GAME_TIME));
     }
 
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int i, boolean held) {
@@ -107,15 +126,15 @@ public class CandyCaneHookItem extends Item {
     public static boolean isActive(ItemStack itemStack) {
         CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag compoundtag = customData.copyTag();
-        return compoundtag.contains("LastLaunchedHookUUID");
+        return compoundtag.contains(LAST_LAUNCHED_HOOK_UUID);
     }
 
     @Nullable
     public static UUID getLaunchedHookUUID(ItemStack itemStack) {
         CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag compoundtag = customData.copyTag();
-        if (compoundtag.contains("LastLaunchedHookUUID")) {
-            return compoundtag.getUUID("LastLaunchedHookUUID");
+        if (compoundtag.contains(LAST_LAUNCHED_HOOK_UUID)) {
+            return compoundtag.getUUID(LAST_LAUNCHED_HOOK_UUID);
         } else {
             return null;
         }
@@ -125,32 +144,40 @@ public class CandyCaneHookItem extends Item {
         CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag compoundtag = customData.copyTag();
         if(uuid == null){
-            compoundtag.remove("LastLaunchedHookUUID");
+            compoundtag.remove(LAST_LAUNCHED_HOOK_UUID);
+            compoundtag.remove(LAST_LAUNCHED_HOOK_GAME_TIME);
+            compoundtag.remove(REELING);
         }else{
-            compoundtag.putUUID("LastLaunchedHookUUID", uuid);
+            compoundtag.putUUID(LAST_LAUNCHED_HOOK_UUID, uuid);
         }
         itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundtag));
     }
 
+    public static void setLastLaunchedHookTime(ItemStack itemStack, long gameTime) {
+        CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        CompoundTag compoundtag = customData.copyTag();
+        compoundtag.putLong(LAST_LAUNCHED_HOOK_GAME_TIME, gameTime);
+        itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundtag));
+    }
 
     public static boolean isReelingIn(ItemStack itemStack) {
         CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag compoundtag = customData.copyTag();
-        return isActive(itemStack) && compoundtag.getBoolean("Reeling");
+        return isActive(itemStack) && compoundtag.getBoolean(REELING);
     }
 
     public static void setReelingIn(ItemStack itemStack, boolean reeling) {
         CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag compoundtag = customData.copyTag();
-        compoundtag.putBoolean("Reeling", reeling);
+        compoundtag.putBoolean(REELING, reeling);
         itemStack.set(DataComponents.CUSTOM_DATA, CustomData.of(compoundtag));
     }
 
     public static boolean canLaunchHook(Player player, ItemStack itemStack, Level level, boolean checkHands, InteractionHand hand) {
         CustomData customData = itemStack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag compoundtag = customData.copyTag();
-        if (level instanceof ServerLevel serverLevel && compoundtag.contains("LastLaunchedHookUUID")) {
-            Entity entity = serverLevel.getEntity(compoundtag.getUUID("LastLaunchedHookUUID"));
+        if (level instanceof ServerLevel serverLevel && compoundtag.contains(LAST_LAUNCHED_HOOK_UUID)) {
+            Entity entity = serverLevel.getEntity(compoundtag.getUUID(LAST_LAUNCHED_HOOK_UUID));
             if (entity instanceof CandyCaneHookEntity candyCaneHook) {
                 return !(candyCaneHook.isAlive() && candyCaneHook.getOwner() != null && candyCaneHook.getOwner().is(player) && (!checkHands || hand == candyCaneHook.getHandLaunchedFrom()));
             }
