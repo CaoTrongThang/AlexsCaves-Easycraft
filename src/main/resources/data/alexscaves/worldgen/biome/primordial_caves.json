@@ -103,21 +103,7 @@
         "maxCount": 2,
         "minCount": 1,
         "weight": 7
-      }
-    ],
-    "misc": [],
-    "monster": [],
-    "underground_water_creature": [],
-    "water_ambient": [
-      {
-        "type": "alexscaves:trilocaris",
-        "maxCount": 2,
-        "minCount": 1,
-        "weight": 15
-      }
-    ],
-    "water_creature": [],
-    "creature": [
+      },
       {
         "type": "alexscaves:subterranodon",
         "maxCount": 5,
@@ -154,7 +140,19 @@
         "minCount": 2,
         "weight": 10
       }
-    ]
+    ],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [
+      {
+        "type": "alexscaves:trilocaris",
+        "maxCount": 2,
+        "minCount": 1,
+        "weight": 15
+      }
+    ],
+    "water_creature": []
   },
   "temperature": 0.95
 }

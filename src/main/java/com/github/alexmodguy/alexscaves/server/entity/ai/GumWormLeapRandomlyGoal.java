@@ -1,5 +1,4 @@
 package com.github.alexmodguy.alexscaves.server.entity.ai;
-
 import com.github.alexmodguy.alexscaves.server.entity.living.GumWormEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -100,11 +99,11 @@ public class GumWormLeapRandomlyGoal extends Goal {
         BlockPos.MutableBlockPos checkBefore = new BlockPos.MutableBlockPos();
 
         for (int i = 0; i < 20; i++) {
-            check.move(entity.blockPosition());
+            check.set(entity.blockPosition());
             check.move(entity.getRandom().nextInt(32) - 16, entity.getRandom().nextInt(32) - 16, entity.getRandom().nextInt(32) - 16);
             checkBefore.set(check);
             if (check.getY() < entity.level().getMinBuildHeight() || !entity.level().isLoaded(check)) {
-                break;
+                continue;
             }
             while (entity.level().isEmptyBlock(check) && check.getY() > entity.level().getMinBuildHeight()) {
                 checkBefore.set(check);
@@ -126,4 +125,3 @@ public class GumWormLeapRandomlyGoal extends Goal {
 
 
 }
-

@@ -75,6 +75,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     private static final EntityDataAccessor<Integer> RIDER_LEAP_TIME_MAX = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DIGGING = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> VALID_RIDER = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> RETURNING_TO_GROUND = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
     private int lSteps;
     private double lx;
     private double ly;
@@ -105,6 +106,17 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     private int stopDiggingNoiseCooldown;
     private boolean wasDiggingLastTick;
     private int outOfGroundTime = 0;
+    private int postRidingDigDownTicks = 0;
+    private int stuckAboveGobthumperTicks = 0;
+    private int stuckInAirTicks = 0;
+    private Vec3 lastTickPosition = null;
+    private boolean returnNeedsInitialBurst = false;
+    private double returnTargetX = 0;
+    private double returnTargetY = 0;
+    private double returnTargetZ = 0;
+    private Vec3 returnMoveDirection = null;
+    private boolean detectedStuckState = false;
+    private int idleUndergroundTicks = 0;
 
     public GumWormEntity(EntityType type, Level level) {
         super(type, level);
@@ -146,6 +158,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         builder.define(RIDER_LEAP_TIME, 0);
         builder.define(DIGGING, false);
         builder.define(VALID_RIDER, false);
+        builder.define(RETURNING_TO_GROUND, false);
     }
 
     protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
@@ -179,6 +192,15 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         prevScreenShakeAmount = screenShakeAmount;
         prevMouthOpenProgress = mouthOpenProgress;
 
+        if (ridingPlayer != null && ridingModeTicks > 0) {
+            Entity ridingSegment = this.getRidingSegment();
+            if (ridingSegment == null || ridingPlayer.getVehicle() != ridingSegment) {
+                ridingPlayer = null;
+                ridingModeTicks = 0;
+                postRidingDigDownTicks = 40;
+            }
+        }
+
         if (isMoving() || surfacePosition == null) {
             surfacePosition = calculateLightAbovePosition();
         }
@@ -194,13 +216,14 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         this.yBodyRot = this.getYRot();
         this.yHeadRot = this.getYRot();
         Entity target = this.getTarget();
-        if(!level().isClientSide && (!this.isLeaping() || (target == null || !target.isAlive())) && !this.isRidingMode()){
+        if(!level().isClientSide && (!this.isLeaping() || (target == null || !target.isAlive())) && !this.isRidingMode() && !this.isReturningToGround()){
             this.setTargetDigPitch((float) (-(Mth.atan2(this.getDeltaMovement().y, this.getDeltaMovement().horizontalDistance()) * (180F / (float) Math.PI))));
         }
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.34F);
         }
-        this.digPitch = Mth.approachDegrees(digPitch, getTargetDigPitch(), 5);
+        float pitchSpeed = isReturningToGround() ? 20 : 5;
+        this.digPitch = Mth.approachDegrees(digPitch, getTargetDigPitch(), pitchSpeed);
         if (this.isMoving()) {
             this.zRot += (this.entityData.get(Z_ROT_DIRECTION) ? -10 : 10);
             if (random.nextInt(300) == 0 && !level().isClientSide) {
@@ -234,16 +257,199 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         boolean flag = false;
         BlockState centralState = level().getBlockState(this.blockPosition());
         BlockState centralStateBelow = level().getBlockState(this.blockPosition().below());
-        if ((!isSafeDig(level(), this.blockPosition())) && !this.isLeaping()) {
-            if (!canDigBlock(centralStateBelow)) {
+        
+        boolean forcingReturnToGobthumper = false;
+        
+        if (isReturningToGround()) {
+            forcingReturnToGobthumper = true;
+            this.noPhysics = true;
+            this.setLeaping(false);
+            
+            if (level().isClientSide) {
+                this.digPitch = getTargetDigPitch();
+            }
+            
+            if (!level().isClientSide) {
+                int targetWorldHeight = level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) returnTargetX, (int) returnTargetZ);
+                double horizontalDistance = Math.sqrt((returnTargetX - this.getX()) * (returnTargetX - this.getX()) + (returnTargetZ - this.getZ()) * (returnTargetZ - this.getZ()));
+                
+                if (returnNeedsInitialBurst) {
+                    returnNeedsInitialBurst = false;
+                    Vec3 targetPos = new Vec3(returnTargetX, returnTargetY, returnTargetZ);
+                    Vec3 directionToTarget = targetPos.subtract(this.position());
+                    double distanceToTarget = directionToTarget.length();
+                    returnMoveDirection = distanceToTarget > 0.1 ? directionToTarget.normalize() : new Vec3(0, -1, 0);
+                    
+                    float targetPitch = (float) (-(Mth.atan2(returnMoveDirection.y, returnMoveDirection.horizontalDistance()) * (180F / (float) Math.PI)));
+                    float targetYaw = -((float) Mth.atan2(returnMoveDirection.x, returnMoveDirection.z)) * (180F / (float) Math.PI);
+                    
+                    this.setDeltaMovement(returnMoveDirection.scale(1.8F));
+                    this.setYRot(targetYaw);
+                    this.digPitch = targetPitch;
+                    this.setTargetDigPitch(targetPitch);
+                }
+                
+                if (returnMoveDirection != null) {
+                    double speed = 1.2;
+                    this.setDeltaMovement(returnMoveDirection.scale(speed));
+                    float lockedPitch = (float) (-(Mth.atan2(returnMoveDirection.y, returnMoveDirection.horizontalDistance()) * (180F / (float) Math.PI)));
+                    this.digPitch = lockedPitch;
+                    this.setTargetDigPitch(lockedPitch);
+                }
+                
+                if (horizontalDistance <= 5 && this.getY() <= targetWorldHeight - 5) {
+                    setReturningToGround(false);
+                    returnMoveDirection = null;
+                    this.noPhysics = false;
+                    stuckAboveGobthumperTicks = 0;
+                    stuckInAirTicks = 0;
+                    forcingReturnToGobthumper = false;
+                    detectedStuckState = false;
+                    postRidingDigDownTicks = 60;
+                }
+            }
+            
+            flag = true;
+        } else if (!level().isClientSide && !isRidingMode() && postRidingDigDownTicks <= 0 && !isLeaping()) {
+            BlockPos gobthumperPos = getGobthumperPos();
+            
+            Vec3 currentPos = this.position();
+            boolean isMotionless = false;
+            if (lastTickPosition != null) {
+                double movement = currentPos.distanceToSqr(lastTickPosition);
+                isMotionless = movement < 0.01;
+            }
+            lastTickPosition = currentPos;
+            
+            int worldHeight = level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) this.getX(), (int) this.getZ());
+            boolean isAboveSurface = this.getY() > worldHeight;
+            boolean isInUnsafePosition = !isSafeDig(level(), this.blockPosition());
+            double targetY = gobthumperPos != null ? gobthumperPos.getY() : (worldHeight - 10);
+            
+            if (gobthumperPos != null) {
+                double heightAboveGobthumper = this.getY() - gobthumperPos.getY();
+                boolean isInsideSolidBlock = centralState.isSolid();
+                if (heightAboveGobthumper > 8.0 && (isAboveSurface || isInsideSolidBlock)) {
+                    detectedStuckState = true;
+                }
+                
+                if (detectedStuckState) {
+                    stuckAboveGobthumperTicks++;
+                    if (stuckAboveGobthumperTicks > 60) {
+                        double angle = random.nextDouble() * Math.PI * 2;
+                        double distance = 20 + random.nextDouble() * 5;
+                        returnTargetX = gobthumperPos.getX() + Math.cos(angle) * distance;
+                        returnTargetZ = gobthumperPos.getZ() + Math.sin(angle) * distance;
+                        int targetGroundHeight = level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) returnTargetX, (int) returnTargetZ);
+                        returnTargetY = targetGroundHeight - 10;
+                        
+                        setReturningToGround(true);
+                        returnNeedsInitialBurst = true;
+                        forcingReturnToGobthumper = true;
+                        this.setLeaping(false);
+                    }
+                }
+            } else {
+                if (isAboveSurface) {
+                    detectedStuckState = true;
+                }
+                
+                if (detectedStuckState) {
+                    stuckAboveGobthumperTicks++;
+                    if (stuckAboveGobthumperTicks > 60) {
+                        returnTargetX = this.getX();
+                        returnTargetZ = this.getZ();
+                        returnTargetY = worldHeight - 10;
+                        
+                        setReturningToGround(true);
+                        returnNeedsInitialBurst = true;
+                        forcingReturnToGobthumper = true;
+                        this.setLeaping(false);
+                    }
+                }
+            }
+            
+            if (isMotionless && !forcingReturnToGobthumper) {
+                stuckInAirTicks++;
+                if (stuckInAirTicks > 60) {
+                    if (gobthumperPos != null) {
+                        double angle = random.nextDouble() * Math.PI * 2;
+                        double distance = 20 + random.nextDouble() * 5;
+                        returnTargetX = gobthumperPos.getX() + Math.cos(angle) * distance;
+                        returnTargetZ = gobthumperPos.getZ() + Math.sin(angle) * distance;
+                    } else {
+                        returnTargetX = this.getX();
+                        returnTargetZ = this.getZ();
+                    }
+                    int targetGroundHeight = level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) returnTargetX, (int) returnTargetZ);
+                    returnTargetY = targetGroundHeight - 10;
+                    
+                    setReturningToGround(true);
+                    returnNeedsInitialBurst = true;
+                    forcingReturnToGobthumper = true;
+                    detectedStuckState = true;
+                    this.setLeaping(false);
+                }
+            } else if (!isMotionless) {
+                stuckInAirTicks = Math.max(0, stuckInAirTicks - 10);
+            }
+        } else {
+            stuckAboveGobthumperTicks = 0;
+            stuckInAirTicks = 0;
+            detectedStuckState = false;
+        }
+
+        boolean undergroundish = this.getY() <= this.surfaceY + 2.0D || this.isInWall() || isSafeDig(level(), this.blockPosition());
+        if (!level().isClientSide && !isReturningToGround() && !isRidingMode() && !isLeaping() && getTarget() == null && undergroundish) {
+            boolean isMotionlessUnderground = lastTickPosition != null && this.position().distanceToSqr(lastTickPosition) < 0.01D;
+            if (isMotionlessUnderground) {
+                if (++idleUndergroundTicks > 40) {
+                    if (!this.getNavigation().isDone()) {
+                        this.getNavigation().stop();
+                    }
+                    Vec3 fallbackTarget = findUndergroundDigTarget(false);
+                    if (fallbackTarget == null) {
+                        fallbackTarget = findUndergroundDigTarget(true);
+                    }
+                    if (fallbackTarget != null) {
+                        this.getNavigation().moveTo(fallbackTarget.x, fallbackTarget.y, fallbackTarget.z, 1.0D);
+                        this.getMoveControl().setWantedPosition(fallbackTarget.x, fallbackTarget.y, fallbackTarget.z, 1.0D);
+                        Vec3 fallbackDelta = fallbackTarget.subtract(this.position());
+                        if (fallbackDelta.lengthSqr() > 1.0E-4D) {
+                            this.setDeltaMovement(this.getDeltaMovement().add(fallbackDelta.normalize().scale(0.35D)));
+                        }
+                    } else {
+                        this.setDeltaMovement(this.getDeltaMovement().add(random.nextFloat() - 0.5F, 0.0D, random.nextFloat() - 0.5F));
+                    }
+                    idleUndergroundTicks = 0;
+                }
+            } else {
+                idleUndergroundTicks = 0;
+            }
+        } else {
+            idleUndergroundTicks = 0;
+        }
+        
+        if (postRidingDigDownTicks > 0) {
+            postRidingDigDownTicks--;
+            if (canDigBlock(centralStateBelow) || centralStateBelow.isAir()) {
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.8).add(0, -0.6, 0));
+                flag = true;
+            }
+        } else if (!forcingReturnToGobthumper && (!isSafeDig(level(), this.blockPosition())) && !this.isLeaping()) {
+            boolean canKeepDiggingDown = canDigBlock(centralStateBelow) || centralStateBelow.isAir();
+            if (canKeepDiggingDown && !isRidingMode()) {
+                if (surfaceY < this.getEyeY() || !canDigBlock(centralState) || centralStateBelow.isAir() || ACFluidHelper.isInAnyFluid(this)) {
+                    if (outOfGroundTime++ > 10) {
+                        this.setDeltaMovement(this.getDeltaMovement().add(0, -0.5, 0));
+                        flag = true;
+                    }
+                }
+            } else {
                 this.setDeltaMovement(random.nextFloat() - 0.5F, 0.8F, random.nextFloat() - 0.5F);
                 flag = true;
             }
-        }else if((surfaceY < this.getEyeY() || centralStateBelow.isAir() || ACFluidHelper.isInAnyFluid(this)) && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode() && !this.isLeaping()){
-            if(outOfGroundTime++ > 10){
-                this.setDeltaMovement(this.getDeltaMovement().add(0, -0.5, 0));
-            }
-        }else{
+        }else if (!forcingReturnToGobthumper) {
             outOfGroundTime = 0;
         }
         if(isRidingMode()){
@@ -275,7 +481,8 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
                 attemptPlayStopDiggingNoise();
             }
         }
-        this.setNoGravity(!this.getNavigation().isDone() && !this.isLeaping() && !flag && !this.isInWall());
+        boolean isAboveGroundLevel = this.getY() > surfaceY;
+        this.setNoGravity(!forcingReturnToGobthumper && !isAboveGroundLevel && !this.getNavigation().isDone() && !this.isLeaping() && !flag && !this.isInWall());
         if (timeBetweenAttacks > 0) {
             timeBetweenAttacks--;
         }
@@ -456,6 +663,14 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         this.entityData.set(LEAPING, leaping);
     }
 
+    /**
+     * Set a forced dig-down period to prevent bounce-up behavior.
+     * Used after gobthumper destruction or dismounting.
+     */
+    public void setForceDigDownTicks(int ticks) {
+        this.postRidingDigDownTicks = ticks;
+    }
+
     public boolean isBiting() {
         return this.entityData.get(BITING);
     }
@@ -478,6 +693,14 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
     public float getTargetDigPitch() {
         return this.entityData.get(TARGET_DIG_PITCH);
+    }
+
+    public boolean isReturningToGround() {
+        return this.entityData.get(RETURNING_TO_GROUND);
+    }
+
+    public void setReturningToGround(boolean returning) {
+        this.entityData.set(RETURNING_TO_GROUND, returning);
     }
 
     public BlockPos getGobthumperPos() {
@@ -576,6 +799,34 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         return 1D + mutableBlockPos.getY();
     }
 
+    private Vec3 findUndergroundDigTarget(boolean favoredBlocksOnly) {
+        BlockPos.MutableBlockPos check = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos checkBefore = new BlockPos.MutableBlockPos();
+        for (int i = 0; i < 20; i++) {
+            check.set(this.blockPosition());
+            check.move(this.getRandom().nextInt(64) - 32, this.getRandom().nextInt(32) - 16, this.getRandom().nextInt(64) - 32);
+            checkBefore.set(check);
+            if (check.getY() < this.level().getMinBuildHeight() || !this.level().isLoaded(check)) {
+                continue;
+            }
+            while (this.level().isEmptyBlock(check) && check.getY() > this.level().getMinBuildHeight() - 1) {
+                checkBefore.set(check);
+                check.move(0, -1, 0);
+            }
+            while (check.getY() < this.level().getMinBuildHeight() + 1) {
+                check.move(0, 1, 0);
+            }
+            if (isSafeDig(this.level(), check.immutable()) && (!favoredBlocksOnly || this.level().getBlockState(checkBefore).is(ACTagRegistry.GUM_WORM_FAVORED_DIGGING))) {
+                return Vec3.atCenterOf(check.immutable());
+            }
+        }
+        return null;
+    }
+
+    public double getSurfaceY() {
+        return surfaceY;
+    }
+
 
     @javax.annotation.Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficultyIn, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData spawnDataIn) {
@@ -629,7 +880,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     public boolean isColliding(BlockPos pos, BlockState blockstate) {
-        return canDigBlock(blockstate) && super.isColliding(pos, blockstate);
+        return (!this.isDigging() || canDigBlock(blockstate)) && super.isColliding(pos, blockstate);
     }
 
     public Vec3 collide(Vec3 vec3) {
@@ -676,7 +927,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     public static boolean canDigBlock(BlockState state) {
-        return state.isAir() || !state.is(ACTagRegistry.GUM_WORM_BLOCKS_DIGGING);
+        return !state.is(ACTagRegistry.GUM_WORM_BLOCKS_DIGGING) && state.getFluidState().isEmpty() && state.canOcclude();
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {
@@ -816,8 +1067,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
                 double width = mob.getBoundingBox().getSize();
                 float digSpeed = 0.25F;
                 Vec3 vector3d1 = vector3d.scale(this.speedModifier * digSpeed / d0);
-                boolean safeDig = isSafeDig(level(), BlockPos.containing(wantedX, Mth.clamp(this.wantedY, this.mob.getY() - 1.0, this.mob.getY() + 1.0), wantedZ));
-                if (isSafeDig(level(), BlockPos.containing(wantedX, wantedY, wantedZ))) {
+                if (isSafeDig(level(), BlockPos.containing(wantedX, wantedY, wantedZ)) || GumWormEntity.this.isRidingMode()) {
                     mob.setDeltaMovement(mob.getDeltaMovement().add(vector3d1).scale(0.9F));
                 } else {
                     mob.setDeltaMovement(mob.getDeltaMovement().add(0, 0.1, 0).scale(0.7F));

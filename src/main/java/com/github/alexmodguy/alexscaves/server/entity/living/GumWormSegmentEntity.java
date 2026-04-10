@@ -309,10 +309,12 @@ public class GumWormSegmentEntity extends Entity implements ICustomCollisions, K
                 Vec3 vec31 = distVec.length() > 1F ? distVec.normalize().scale(1F + extraLength) : distVec;
                 Vec3 vec32 = this.position().add(vec31);
                 riddenFlag = head instanceof GumWormEntity gumWorm && gumWorm.isRidingMode();
-                if ((!front.isInWall() || riddenFlag) && !(head instanceof GumWormEntity gumWorm && gumWorm.isLeaping())) {
-                    float f = Mth.approach((float) this.getY(), riddenFlag ? (float) Math.max(surfaceY, ideal.y) :  (float) Math.min(surfaceY, vec31.y), 1F);
+                boolean headReturningToGround = head instanceof GumWormEntity gumWorm && gumWorm.isReturningToGround();
+                if ((!front.isInWall() || riddenFlag) && !(head instanceof GumWormEntity gumWorm && gumWorm.isLeaping()) && !headReturningToGround) {
+                    float f = Mth.approach((float) this.getY(), riddenFlag ? (float) Math.max(surfaceY, ideal.y) : (float) Math.min(surfaceY, ideal.y), 1F);
                     vec32 = new Vec3(vec32.x, f, vec32.z);
                 }
+                this.noPhysics = headReturningToGround;
                 this.setPos(vec32);
                 Vec3 frontsBack = front.position().add(new Vec3(0F, 0F, 3F).xRot(-(float) Math.toRadians(front.getXRot())).yRot(-(float) Math.toRadians(front.getYRot())));
                 double d0 = frontsBack.x - this.getX();

@@ -1,5 +1,4 @@
 package com.github.alexmodguy.alexscaves.server.entity.ai;
-
 import com.github.alexmodguy.alexscaves.server.entity.living.GumWormEntity;
 import com.github.alexmodguy.alexscaves.server.misc.ACTagRegistry;
 import net.minecraft.core.BlockPos;
@@ -16,6 +15,7 @@ public class GumWormDigRandomlyGoal extends Goal {
     private double y;
     private double z;
     private boolean surface = false;
+    private int wanderFor = 0;
 
     public GumWormDigRandomlyGoal(GumWormEntity worm) {
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
@@ -44,15 +44,26 @@ public class GumWormDigRandomlyGoal extends Goal {
     }
 
     public void start() {
+        wanderFor = 120;
         entity.getNavigation().moveTo(this.x, this.y, this.z, 1F);
+        entity.getMoveControl().setWantedPosition(this.x, this.y, this.z, 1F);
     }
 
     public boolean canContinueToUse() {
-        return !this.entity.getNavigation().isDone() && !this.entity.getNavigation().isStuck();
+        return wanderFor > 0 && !this.entity.isRidingMode() && this.entity.distanceToSqr(this.x, this.y, this.z) > 6.0D;
     }
 
     public void stop() {
         surface = false;
+        wanderFor = 0;
+        entity.getNavigation().stop();
+    }
+
+    @Override
+    public void tick() {
+        wanderFor--;
+        entity.getNavigation().moveTo(this.x, this.y, this.z, 1F);
+        entity.getMoveControl().setWantedPosition(this.x, this.y, this.z, 1F);
     }
 
 
@@ -62,11 +73,11 @@ public class GumWormDigRandomlyGoal extends Goal {
         Entity target = entity.getTarget();
         Entity center = target == null ? entity : target;
         for (int i = 0; i < 20; i++) {
-            check.move(center.blockPosition());
+            check.set(center.blockPosition());
             check.move(entity.getRandom().nextInt(64) - 32, entity.getRandom().nextInt(64) - 32, entity.getRandom().nextInt(64) - 32);
             checkBefore.set(check);
             if (check.getY() < entity.level().getMinBuildHeight() || !entity.level().isLoaded(check)) {
-                break;
+                continue;
             }
             if (surface) {
                 while (!entity.level().isEmptyBlock(check) && check.getY() < entity.level().getMaxBuildHeight()) {
@@ -94,4 +105,3 @@ public class GumWormDigRandomlyGoal extends Goal {
 
 
 }
-
