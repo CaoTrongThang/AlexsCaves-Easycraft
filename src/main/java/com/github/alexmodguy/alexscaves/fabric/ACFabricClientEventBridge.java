@@ -16,9 +16,18 @@ public final class ACFabricClientEventBridge {
                 client -> MinecraftForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.START)));
         ClientTickEvents.END_CLIENT_TICK
                 .register(client -> MinecraftForge.EVENT_BUS.post(new TickEvent.ClientTickEvent(TickEvent.Phase.END)));
+        WorldRenderEvents.START.register(context -> {
+            com.github.alexthe666.citadel.client.shader.PostEffectRegistry
+                    .beginFrame(net.minecraft.client.Minecraft.getInstance().getMainRenderTarget());
+        });
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftForge.EVENT_BUS.post(new RenderLevelStageEvent(RenderLevelStageEvent.Stage.AFTER_ENTITIES,
                     context.worldRenderer(), context.matrixStack(), 0, context.camera(), context.tickDelta()));
+        });
+        WorldRenderEvents.END.register(context -> {
+            com.github.alexthe666.citadel.client.shader.PostEffectRegistry
+                    .processEffects(net.minecraft.client.Minecraft.getInstance().getMainRenderTarget());
+            com.github.alexthe666.citadel.client.shader.PostEffectRegistry.blitEffects();
         });
     }
 }

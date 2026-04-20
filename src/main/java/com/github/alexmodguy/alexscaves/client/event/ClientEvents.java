@@ -814,6 +814,7 @@ public class ClientEvents {
                 }
             }
             event.getGuiGraphics().pose().popPose();
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
