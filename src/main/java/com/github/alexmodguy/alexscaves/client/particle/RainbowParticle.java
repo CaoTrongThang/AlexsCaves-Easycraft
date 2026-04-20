@@ -29,7 +29,8 @@ import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class RainbowParticle extends Particle {
     public static final ParticleGroup PARTICLE_GROUP = new ParticleGroup(100);
-    private static final RenderType RAINBOW_RENDER_TYPE = ACRenderTypes.getTeslaBulb(new ResourceLocation(AlexsCaves.MODID, "textures/particle/rainbow.png"));
+    private static final RenderType RAINBOW_RENDER_TYPE = ACRenderTypes
+            .getTeslaBulb(new ResourceLocation(AlexsCaves.MODID, "textures/particle/rainbow.png"));
     public int rainbowVecCount = 64;
     public int fadeSpeed = 15;
     public int fillSpeed = 40;
@@ -76,14 +77,15 @@ public class RainbowParticle extends Particle {
     }
 
     public void render(VertexConsumer consumer, Camera camera, float partialTick) {
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         VertexConsumer vertexconsumer = multibuffersource$buffersource.getBuffer(RAINBOW_RENDER_TYPE);
         Vec3 cameraPos = camera.getPosition();
         PoseStack posestack = new PoseStack();
         posestack.pushPose();
         posestack.translate(origin.x - cameraPos.x, origin.y - cameraPos.y, origin.z - cameraPos.z);
         float f = processAngle((float) angle, partialTick, posestack);
-        posestack.mulPose(Axis.YP.rotation(f  - Mth.HALF_PI));
+        posestack.mulPose(Axis.YP.rotation(f - Mth.HALF_PI));
         scaleRainbow(partialTick, posestack);
         int j = getLightColor(partialTick);
         int vertIndex = 0;
@@ -102,14 +104,21 @@ public class RainbowParticle extends Particle {
             Matrix3f matrix3f = posestack$pose.normal();
             float alpha0 = calcAlphaForVertex(vertIndex, alphaProgressionLerped) * alphaLerped;
             float alpha1 = calcAlphaForVertex(vertIndex + 1, alphaProgressionLerped) * alphaLerped;
-            vertexconsumer.vertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw1.z + width).color(1F, 1F, 1F, alpha0).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw1.z + width).color(1F, 1F, 1F, alpha1).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw2.z - width).color(1F, 1F, 1F, alpha1).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            vertexconsumer.vertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw2.z - width).color(1F, 1F, 1F, alpha0).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            vertexconsumer.vertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw1.z + width)
+                    .color(1F, 1F, 1F, alpha0).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(j)
+                    .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            vertexconsumer.vertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw1.z + width)
+                    .color(1F, 1F, 1F, alpha1).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(j)
+                    .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            vertexconsumer.vertex(matrix4f, (float) draw2.x, (float) draw2.y, (float) draw2.z - width)
+                    .color(1F, 1F, 1F, alpha1).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(j)
+                    .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            vertexconsumer.vertex(matrix4f, (float) draw1.x, (float) draw1.y, (float) draw2.z - width)
+                    .color(1F, 1F, 1F, alpha0).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(j)
+                    .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
             vertIndex++;
             posestack.popPose();
         }
-        multibuffersource$buffersource.endBatch();
         posestack.popPose();
 
     }
@@ -131,7 +140,7 @@ public class RainbowParticle extends Particle {
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
     }
 
     public void tick() {
@@ -159,7 +168,8 @@ public class RainbowParticle extends Particle {
         public Factory() {
         }
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new RainbowParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
         }
     }

@@ -38,7 +38,8 @@ public class MagnetLightningParticle extends Particle {
         this.lifetime = (int) Math.ceil(to.length());
         int sections = 4 * this.lifetime;
         boolean blue = random.nextBoolean();
-        LightningBoltData.BoltRenderInfo boltData = new LightningBoltData.BoltRenderInfo(0.2F, 0.1F, 0.2F, 0.6F, new Vector4f(blue ? 0.1F : 0.8F, 0.1F, blue ? 0.8F : 0.1F, 0.3F), 0.5F);
+        LightningBoltData.BoltRenderInfo boltData = new LightningBoltData.BoltRenderInfo(0.2F, 0.1F, 0.2F, 0.6F,
+                new Vector4f(blue ? 0.1F : 0.8F, 0.1F, blue ? 0.8F : 0.1F, 0.3F), 0.5F);
         LightningBoltData bolt = new LightningBoltData(boltData, Vec3.ZERO, to, sections)
                 .size(0.3F + random.nextFloat() * 0.2F)
                 .lifespan(this.lifetime + 1)
@@ -53,7 +54,8 @@ public class MagnetLightningParticle extends Particle {
     private Vec3 findLightningToPos(ClientLevel world, double x, double y, double z, int range) {
         Vec3 vec3 = new Vec3(x, y, z);
         for (int i = 0; i < 10; i++) {
-            Vec3 vec31 = vec3.add(random.nextFloat() * range - range / 2F, random.nextFloat() * range - range / 2F, random.nextFloat() * range - range / 2F);
+            Vec3 vec31 = vec3.add(random.nextFloat() * range - range / 2F, random.nextFloat() * range - range / 2F,
+                    random.nextFloat() * range - range / 2F);
             if (canSeeBlock(vec3, vec31)) {
                 return vec31;
             }
@@ -62,10 +64,10 @@ public class MagnetLightningParticle extends Particle {
     }
 
     private boolean canSeeBlock(Vec3 from, Vec3 to) {
-        BlockHitResult result = this.level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null));
+        BlockHitResult result = this.level.clip(new ClipContext(from, to, ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE, null));
         return Vec3.atCenterOf(result.getBlockPos()).distanceTo(to) < 3.0F;
     }
-
 
     public void tick() {
         this.xo = this.x;
@@ -82,9 +84,9 @@ public class MagnetLightningParticle extends Particle {
         }
     }
 
-
     public void render(VertexConsumer consumer, Camera camera, float partialTick) {
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         Vec3 cameraPos = camera.getPosition();
         float x = (float) (Mth.lerp((double) partialTick, this.xo, this.x));
         float y = (float) (Mth.lerp((double) partialTick, this.yo, this.y));
@@ -94,13 +96,29 @@ public class MagnetLightningParticle extends Particle {
         posestack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
         posestack.translate(x, y, z);
         lightningRender.render(partialTick, posestack, multibuffersource$buffersource);
-        multibuffersource$buffersource.endBatch();
         posestack.popPose();
     }
 
+    public static final ParticleRenderType DEFERRED_RENDER_TYPE = new ParticleRenderType() {
+        @Override
+        public void begin(com.mojang.blaze3d.vertex.BufferBuilder builder,
+                net.minecraft.client.renderer.texture.TextureManager textureManager) {
+        }
+
+        @Override
+        public void end(com.mojang.blaze3d.vertex.Tesselator tesselator) {
+            Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
+        }
+
+        @Override
+        public String toString() {
+            return "ALEXSCAVES_DEFERRED_BATCH_RENDER";
+        }
+    };
+
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return DEFERRED_RENDER_TYPE;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -109,7 +127,8 @@ public class MagnetLightningParticle extends Particle {
         public Factory() {
         }
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new MagnetLightningParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
         }
     }

@@ -25,7 +25,7 @@ import org.joml.Vector3f;
 
 public class VoidBeingEyeParticle extends Particle {
 
-    private static final ResourceLocation[] TEXTURES = new ResourceLocation[]{
+    private static final ResourceLocation[] TEXTURES = new ResourceLocation[] {
             new ResourceLocation(AlexsCaves.MODID, "textures/particle/void_eye_0.png"),
             new ResourceLocation(AlexsCaves.MODID, "textures/particle/void_eye_1.png"),
             new ResourceLocation(AlexsCaves.MODID, "textures/particle/void_eye_2.png")
@@ -38,7 +38,8 @@ public class VoidBeingEyeParticle extends Particle {
     private float cameraOffsetY = 0;
     private float animationOffset = 0;
 
-    public VoidBeingEyeParticle(ClientLevel world, double x, double y, double z, float cameraOffsetX, float cameraOffsetY) {
+    public VoidBeingEyeParticle(ClientLevel world, double x, double y, double z, float cameraOffsetX,
+            float cameraOffsetY) {
         super(world, x, y, z);
         textureIndex = random.nextInt(2);
         this.xd = 0;
@@ -69,7 +70,6 @@ public class VoidBeingEyeParticle extends Particle {
 
     }
 
-
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float partialTick) {
         this.alpha = VoidBeingCloudParticle.getAlphaFromAge(age, lifetime);
@@ -85,15 +85,18 @@ public class VoidBeingEyeParticle extends Particle {
             float f3 = Mth.lerp(partialTick, this.oRoll, this.roll);
             quaternion.mul(Axis.ZP.rotation(f3));
         }
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer portalStatic = multibuffersource$buffersource.getBuffer(ForgeRenderTypes.getUnlitTranslucent(TEXTURES[textureIndex]));
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
+        VertexConsumer portalStatic = multibuffersource$buffersource
+                .getBuffer(ForgeRenderTypes.getUnlitTranslucent(TEXTURES[textureIndex]));
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
         Matrix3f matrix3f = posestack$pose.normal();
 
         Vector3f vector3f1 = new Vector3f(-1.0F, -1.0F, 0.0F);
         vector3f1.rotate(quaternion);
-        Vector3f[] avector3f = new Vector3f[]{new Vector3f(-1.0F, -1.0F, -0.05F), new Vector3f(-1.0F, 1.0F, -0.05F), new Vector3f(1.0F, 1.0F, -0.05F), new Vector3f(1.0F, -1.0F, -0.05F)};
+        Vector3f[] avector3f = new Vector3f[] { new Vector3f(-1.0F, -1.0F, -0.05F), new Vector3f(-1.0F, 1.0F, -0.05F),
+                new Vector3f(1.0F, 1.0F, -0.05F), new Vector3f(1.0F, -1.0F, -0.05F) };
         float f4 = 0.5F;
         float offsetX = prevCameraOffsetX + (cameraOffsetX - prevCameraOffsetX) * partialTick;
         float offsetY = prevCameraOffsetY + (cameraOffsetY - prevCameraOffsetY) * partialTick;
@@ -104,7 +107,8 @@ public class VoidBeingEyeParticle extends Particle {
             shakeY = 0.3F * (float) -Math.sin((age + partialTick + 3 * animationOffset) * 0.54F + 2);
         }
         for (int i = 0; i < 4; ++i) {
-            Vector3f vector3f = avector3f[i].add(offsetX + shakeX, offsetY + shakeY + 0.2F * (float) Math.sin((age + partialTick + animationOffset) * 0.1F), 0);
+            Vector3f vector3f = avector3f[i].add(offsetX + shakeX,
+                    offsetY + shakeY + 0.2F * (float) Math.sin((age + partialTick + animationOffset) * 0.1F), 0);
             vector3f.rotate(quaternion);
             vector3f.mul(f4);
             vector3f.add(f, f1, f2);
@@ -114,22 +118,29 @@ public class VoidBeingEyeParticle extends Particle {
         float f5 = 0;
         float f6 = 1;
         int j = 240;
-        portalStatic.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        portalStatic.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-
-        multibuffersource$buffersource.endBatch();
+        portalStatic.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        portalStatic.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        portalStatic.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        portalStatic.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
     }
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
     }
 
     @OnlyIn(Dist.CLIENT)
     public static class Factory implements ParticleProvider<SimpleParticleType> {
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new VoidBeingEyeParticle(worldIn, x, y, z, (float) xSpeed, (float) ySpeed);
         }
     }

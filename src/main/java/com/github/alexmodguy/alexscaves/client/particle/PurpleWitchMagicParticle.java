@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
@@ -25,14 +26,17 @@ import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class PurpleWitchMagicParticle extends AbstractTrailParticle {
 
-    private static final ResourceLocation CENTER_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/particle/purple_witch_magic.png");
-    private static final ResourceLocation TRAIL_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/particle/trail.png");
+    private static final ResourceLocation CENTER_TEXTURE = new ResourceLocation(AlexsCaves.MODID,
+            "textures/particle/purple_witch_magic.png");
+    private static final ResourceLocation TRAIL_TEXTURE = new ResourceLocation(AlexsCaves.MODID,
+            "textures/particle/trail.png");
 
     private final double xTarget;
     private final double yTarget;
     private final double zTarget;
 
-    protected PurpleWitchMagicParticle(ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+    protected PurpleWitchMagicParticle(ClientLevel world, double x, double y, double z, double xSpeed, double ySpeed,
+            double zSpeed) {
         super(world, x, y, z, xSpeed, ySpeed, zSpeed);
         this.alpha = 1;
         this.hasPhysics = false;
@@ -64,12 +68,15 @@ public class PurpleWitchMagicParticle extends AbstractTrailParticle {
             quaternion.mul(Axis.ZP.rotation(f3));
         }
 
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer vertexconsumer = multibuffersource$buffersource.getBuffer(ACRenderTypes.itemEntityTranslucentCull(getTexture()));
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
+        VertexConsumer vertexconsumer = multibuffersource$buffersource
+                .getBuffer(ACRenderTypes.itemEntityTranslucentCull(getTexture()));
 
         Vector3f vector3f1 = new Vector3f(-1.0F, -1.0F, 0.0F);
         vector3f1.rotate(quaternion);
-        Vector3f[] avector3f = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
+        Vector3f[] avector3f = new Vector3f[] { new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F),
+                new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F) };
         float f4 = 0.3F;
 
         for (int i = 0; i < 4; ++i) {
@@ -88,11 +95,18 @@ public class PurpleWitchMagicParticle extends AbstractTrailParticle {
         PoseStack.Pose posestack$pose = posestack.last();
         Matrix4f matrix4f = posestack$pose.pose();
         Matrix3f matrix3f = posestack$pose.normal();
-        vertexconsumer.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, alpha).uv(f8, f6).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-        vertexconsumer.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, alpha).uv(f8, f5).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-        vertexconsumer.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, alpha).uv(f7, f5).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-        vertexconsumer.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, alpha).uv(f7, f6).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-        multibuffersource$buffersource.endBatch();
+        vertexconsumer.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z())
+                .color(this.rCol, this.gCol, this.bCol, alpha).uv(f8, f6).overlayCoords(NO_OVERLAY).uv2(j)
+                .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+        vertexconsumer.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z())
+                .color(this.rCol, this.gCol, this.bCol, alpha).uv(f8, f5).overlayCoords(NO_OVERLAY).uv2(j)
+                .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+        vertexconsumer.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z())
+                .color(this.rCol, this.gCol, this.bCol, alpha).uv(f7, f5).overlayCoords(NO_OVERLAY).uv2(j)
+                .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+        vertexconsumer.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z())
+                .color(this.rCol, this.gCol, this.bCol, alpha).uv(f7, f6).overlayCoords(NO_OVERLAY).uv2(j)
+                .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
     }
 
     protected VertexConsumer getVetrexConsumer(MultiBufferSource.BufferSource multibuffersource$buffersource) {
@@ -100,30 +114,11 @@ public class PurpleWitchMagicParticle extends AbstractTrailParticle {
     }
 
     public float getAlpha() {
-        return Mth.clamp( 1F - age / (float) this.lifetime, 0.0F, 1.0F);
+        return Mth.clamp(1F - age / (float) this.lifetime, 0.0F, 1.0F);
     }
 
     public ResourceLocation getTexture() {
         return CENTER_TEXTURE;
-    }
-
-    public void tick() {
-        super.tick();
-        Vec3 travelVec = new Vec3(xTarget - this.x, yTarget - this.y, zTarget - this.z);
-        if(travelVec.length() > 1.0F){
-            travelVec = travelVec.normalize();
-            this.xd = this.xd * 0.5F + travelVec.x * 0.15F + random.nextGaussian() * 0.05F;
-            this.yd = this.yd * 0.5F +  travelVec.y * 0.15F + random.nextGaussian() * 0.05F;
-            this.zd = this.zd * 0.5F + travelVec.z * 0.15F + random.nextGaussian() * 0.05F;
-        }else{
-            this.xd *= 0.4;
-            this.yd *= 0.4;
-            this.zd *= 0.4;
-            this.age = Math.min(this.age + 3, this.lifetime);
-        }
-        float fadeIn = 0.8F * Mth.clamp(age / (float) this.lifetime * 32.0F, 0.0F, 1.0F);
-        float fadeOut = Mth.clamp( 1F - age / (float) this.lifetime, 0.0F, 1.0F);
-        this.trailA = fadeIn * fadeOut;
     }
 
     @Override
@@ -141,9 +136,34 @@ public class PurpleWitchMagicParticle extends AbstractTrailParticle {
         return 5;
     }
 
+    public void tick() {
+        super.tick();
+        Vec3 travelVec = new Vec3(xTarget - this.x, yTarget - this.y, zTarget - this.z);
+        if (travelVec.length() > 1.0F) {
+            travelVec = travelVec.normalize();
+            this.xd = this.xd * 0.5F + travelVec.x * 0.15F + random.nextGaussian() * 0.05F;
+            this.yd = this.yd * 0.5F + travelVec.y * 0.15F + random.nextGaussian() * 0.05F;
+            this.zd = this.zd * 0.5F + travelVec.z * 0.15F + random.nextGaussian() * 0.05F;
+        } else {
+            this.xd *= 0.4;
+            this.yd *= 0.4;
+            this.zd *= 0.4;
+            this.age = Math.min(this.age + 3, this.lifetime);
+        }
+        float fadeIn = 0.8F * Mth.clamp(age / (float) this.lifetime * 32.0F, 0.0F, 1.0F);
+        float fadeOut = Mth.clamp(1F - age / (float) this.lifetime, 0.0F, 1.0F);
+        this.trailA = fadeIn * fadeOut;
+    }
+
+    @Override
+    public ParticleRenderType getRenderType() {
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
+    }
+
     public static class Factory implements ParticleProvider<SimpleParticleType> {
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             PurpleWitchMagicParticle particle = new PurpleWitchMagicParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
             particle.trailR = 1.0F;
             particle.trailG = 0.0F;

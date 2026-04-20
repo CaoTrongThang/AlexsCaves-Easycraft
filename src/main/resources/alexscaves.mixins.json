@@ -9,6 +9,7 @@
     "AbstractMinecartMixin",
     "BiomeSourceMixin",
     "ChunkStatusMixin",
+    "ClipContextMixin",
     "CoralFeatureMixin",
     "EnchantRandomlyFunctionMixin",
     "EntityMixin",

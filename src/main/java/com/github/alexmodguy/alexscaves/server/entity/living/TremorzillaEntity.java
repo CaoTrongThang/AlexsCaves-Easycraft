@@ -74,14 +74,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMount, IAnimatedEntity, ShakesScreen, KaijuMob, ActivatesSirens, ITallWalker {
-    private static EntityDataAccessor<Optional<Vec3>> BEAM_END_POSITION = SynchedEntityData.defineId(TremorzillaEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
-    private static final EntityDataAccessor<Boolean> SWIMMING = SynchedEntityData.defineId(TremorzillaEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> CHARGE = SynchedEntityData.defineId(TremorzillaEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> MAX_BEAM_BREAK_LENGTH = SynchedEntityData.defineId(TremorzillaEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> SPIKES_DOWN_PROGRESS = SynchedEntityData.defineId(TremorzillaEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> FIRING = SynchedEntityData.defineId(TremorzillaEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> TAME_ATTEMPTS = SynchedEntityData.defineId(TremorzillaEntity.class, EntityDataSerializers.INT);
+public class TremorzillaEntity extends DinosaurEntity
+        implements KeybindUsingMount, IAnimatedEntity, ShakesScreen, KaijuMob, ActivatesSirens, ITallWalker {
+    private static EntityDataAccessor<Optional<Vec3>> BEAM_END_POSITION = SynchedEntityData
+            .defineId(TremorzillaEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
+    private static final EntityDataAccessor<Boolean> SWIMMING = SynchedEntityData.defineId(TremorzillaEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> CHARGE = SynchedEntityData.defineId(TremorzillaEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> MAX_BEAM_BREAK_LENGTH = SynchedEntityData
+            .defineId(TremorzillaEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SPIKES_DOWN_PROGRESS = SynchedEntityData
+            .defineId(TremorzillaEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> FIRING = SynchedEntityData.defineId(TremorzillaEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> TAME_ATTEMPTS = SynchedEntityData.defineId(TremorzillaEntity.class,
+            EntityDataSerializers.INT);
     public static final Animation ANIMATION_SPEAK = Animation.create(20);
     public static final Animation ANIMATION_ROAR_1 = Animation.create(60);
     public static final Animation ANIMATION_ROAR_2 = Animation.create(60);
@@ -156,7 +164,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         this.tailPart3 = new TremorzillaPartEntity(this, tailPart2, 2.5F, 1.5F);
         this.tailPart4 = new TremorzillaPartEntity(this, tailPart3, 2.5F, 1.5F);
         this.tailPart5 = new TremorzillaPartEntity(this, tailPart4, 2F, 1F);
-        this.allParts = new TremorzillaPartEntity[]{tailPart1, tailPart2, tailPart3, tailPart4, tailPart5};
+        this.allParts = new TremorzillaPartEntity[] { tailPart1, tailPart2, tailPart3, tailPart4, tailPart5 };
         this.setPathfindingMalus(BlockPathTypes.UNPASSABLE_RAIL, 0.0F);
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, 8.0F);
         this.setPathfindingMalus(BlockPathTypes.POWDER_SNOW, 8.0F);
@@ -207,7 +215,9 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.3D).add(Attributes.MAX_HEALTH, 500.0D).add(Attributes.ARMOR, 10.0D).add(Attributes.FOLLOW_RANGE, 128.0D).add(Attributes.ATTACK_DAMAGE, 30.0D).add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.3D)
+                .add(Attributes.MAX_HEALTH, 22500.0D).add(Attributes.ARMOR, 20.0D).add(Attributes.FOLLOW_RANGE, 128.0D)
+                .add(Attributes.ATTACK_DAMAGE, 60.0D).add(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
     }
 
     protected void registerGoals() {
@@ -216,7 +226,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         this.goalSelector.addGoal(2, new TremorzillaFollowOwnerGoal(this, 1.0D, 14.0F, 6.0F));
         this.goalSelector.addGoal(3, new AnimalBreedEggsGoal(this, 1));
         this.goalSelector.addGoal(4, new AnimalLayEggGoal(this, 100, 1));
-        this.goalSelector.addGoal(5, new TemptGoal(this, 1.1D, Ingredient.of(ACBlockRegistry.WASTE_DRUM.get(), ACBlockRegistry.NUCLEAR_BOMB.get()), false));
+        this.goalSelector.addGoal(5, new TemptGoal(this, 1.1D,
+                Ingredient.of(ACBlockRegistry.WASTE_DRUM.get(), ACBlockRegistry.NUCLEAR_BOMB.get()), false));
         this.goalSelector.addGoal(6, new TremorzillaWanderGoal(this));
         this.goalSelector.addGoal(7, new LookAtLargeMobsGoal(this, 3.0F, 30.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
@@ -303,7 +314,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.15F);
         }
-        if (this.onGround() && !com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this) && this.walkAnimation.speed() > 0.1F && !this.isBaby() && !this.isNoAi() && this.isAlive()) {
+        if (this.onGround() && !com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this)
+                && this.walkAnimation.speed() > 0.1F && !this.isBaby() && !this.isNoAi() && this.isAlive()) {
             float f = (float) Math.cos(this.walkAnimation.position() * 0.25F - 1.5F);
             float f1 = (float) Math.cos(this.walkAnimation.position() * 0.25F - 1.0F);
             float f2 = (float) Math.sin(this.walkAnimation.position() * 0.25F - 1.0F);
@@ -335,7 +347,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 if (AlexsCaves.PROXY.isKeyDown(2) && getMeterAmount() >= 1.0F) {
                     AlexsCaves.sendMSGToServer(new MountedEntityKeyMessage(this.getId(), player.getId(), 2));
                 }
-                if (AlexsCaves.PROXY.isKeyDown(3) && (this.getAnimation() == NO_ANIMATION || this.getAnimation() == null)) {
+                if (AlexsCaves.PROXY.isKeyDown(3)
+                        && (this.getAnimation() == NO_ANIMATION || this.getAnimation() == null)) {
                     AlexsCaves.sendMSGToServer(new MountedEntityKeyMessage(this.getId(), player.getId(), 3));
                 }
             }
@@ -360,26 +373,30 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
             if (this.isFiring()) {
                 tickBreath();
             } else if (steamFromMouthFor > 0 && level().isClientSide) {
-                level().addAlwaysVisibleParticle(ACParticleRegistry.TREMORZILLA_STEAM.get(), true, this.getX(), this.getEyeY(), this.getZ(), this.getId(), 0, 0);
+                level().addAlwaysVisibleParticle(ACParticleRegistry.TREMORZILLA_STEAM.get(), true, this.getX(),
+                        this.getEyeY(), this.getZ(), this.getId(), 0, 0);
             }
-            if(!this.isFiring() && killCountFromBeam > 0){
-                if(killCountFromBeam > 20 && !this.level().isClientSide){
-                    if(this.isVehicle()){
-                        for(Entity passenger : this.getPassengers()){
+            if (!this.isFiring() && killCountFromBeam > 0) {
+                if (killCountFromBeam > 20 && !this.level().isClientSide) {
+                    if (this.isVehicle()) {
+                        for (Entity passenger : this.getPassengers()) {
                             ACAdvancementTriggerRegistry.TREMORZILLA_KILL_BEAM.triggerForEntity(passenger);
                         }
                     }
                 }
                 killCountFromBeam = 0;
             }
-            if ((this.getAnimation() == ANIMATION_RIGHT_SCRATCH || this.getAnimation() == ANIMATION_LEFT_SCRATCH) && this.getAnimationTick() == 18) {
-                Vec3 center = new Vec3(0, 5 * this.getScale(), 6 * this.getScale()).yRot(-this.yBodyRot * ((float) Math.PI / 180F)).add(position());
+            if ((this.getAnimation() == ANIMATION_RIGHT_SCRATCH || this.getAnimation() == ANIMATION_LEFT_SCRATCH)
+                    && this.getAnimationTick() == 18) {
+                Vec3 center = new Vec3(0, 5 * this.getScale(), 6 * this.getScale())
+                        .yRot(-this.yBodyRot * ((float) Math.PI / 180F)).add(position());
                 this.hurtEntitiesAround(center, 6.0F, 10.0F, 2.0F, false, true, true);
                 if (!level().isClientSide) {
                     this.breakBlocksAround(center, 3.0F, false, false, 0.6F);
                 }
             }
-            if ((this.getAnimation() == ANIMATION_RIGHT_TAIL || this.getAnimation() == ANIMATION_LEFT_TAIL) && this.getAnimationTick() >= 10 && this.getAnimationTick() < 25) {
+            if ((this.getAnimation() == ANIMATION_RIGHT_TAIL || this.getAnimation() == ANIMATION_LEFT_TAIL)
+                    && this.getAnimationTick() >= 10 && this.getAnimationTick() < 25) {
                 this.hurtEntitiesAround(tailPart1.centeredPosition(), 4.0F, 10.0F, 2.0F, false, true, true);
                 this.hurtEntitiesAround(tailPart2.centeredPosition(), 4.0F, 10.0F, 2.0F, false, true, true);
                 this.hurtEntitiesAround(tailPart3.centeredPosition(), 4.0F, 10.0F, 2.0F, false, true, true);
@@ -393,18 +410,22 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                     this.breakBlocksAround(tailPart5.centeredPosition(), 1.0F, false, false, 0.6F);
                 }
             }
-            if ((this.getAnimation() == ANIMATION_LEFT_STOMP || this.getAnimation() == ANIMATION_RIGHT_STOMP) && this.getAnimationTick() == 18) {
+            if ((this.getAnimation() == ANIMATION_LEFT_STOMP || this.getAnimation() == ANIMATION_RIGHT_STOMP)
+                    && this.getAnimationTick() == 18) {
                 this.stompEffect(this.getAnimation() == ANIMATION_LEFT_STOMP, 2.0F, 5F, 1.2F, 10F);
                 screenShakeAmount = 4.0F;
             }
             if (this.getAnimation() == ANIMATION_BITE && this.getAnimationTick() == 10) {
-                Vec3 center = new Vec3(0, 7 * this.getScale(), 5 * this.getScale()).yRot(-this.yBodyRot * ((float) Math.PI / 180F)).add(position());
+                Vec3 center = new Vec3(0, 7 * this.getScale(), 5 * this.getScale())
+                        .yRot(-this.yBodyRot * ((float) Math.PI / 180F)).add(position());
                 this.hurtEntitiesAround(center, 7.5F, 10.0F, 2.0F, false, true, true);
                 if (!level().isClientSide) {
                     this.breakBlocksAround(center, 4.0F, false, false, 0.6F);
                 }
             }
-            if (this.getAnimation() == ANIMATION_ROAR_1 && this.getAnimationTick() > 10 && this.getAnimationTick() < 50 || this.getAnimation() == ANIMATION_ROAR_2 && this.getAnimationTick() > 15 && this.getAnimationTick() < 50) {
+            if (this.getAnimation() == ANIMATION_ROAR_1 && this.getAnimationTick() > 10 && this.getAnimationTick() < 50
+                    || this.getAnimation() == ANIMATION_ROAR_2 && this.getAnimationTick() > 15
+                            && this.getAnimationTick() < 50) {
                 screenShakeAmount = 8.0F;
                 if (!level().isClientSide) {
                     scareMobs();
@@ -450,14 +471,16 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 }
             } else if (wantsToUseBeamFromServer && this.isPowered()) {
                 float spikesThreshold = 0.95F;
-                if (this.getAnimation() == ANIMATION_PREPARE_BREATH && this.getSpikesDownAmount() >= spikesThreshold && this.getAnimationTick() > 15 && !this.isFiring()) {
+                if (this.getAnimation() == ANIMATION_PREPARE_BREATH && this.getSpikesDownAmount() >= spikesThreshold
+                        && this.getAnimationTick() > 15 && !this.isFiring()) {
                     this.maxBeamTime = 100 + random.nextInt(150);
                     this.beamServerTarget = createInitialBeamVec();
                     this.lookAt(EntityAnchorArgument.Anchor.EYES, beamServerTarget);
                     this.setFiring(true);
                     this.setMaxBeamBreakLength(100F);
                 }
-                if (this.getSpikesDownAmount() >= spikesThreshold && this.getAnimation() == NO_ANIMATION && !isStunned()) {
+                if (this.getSpikesDownAmount() >= spikesThreshold && this.getAnimation() == NO_ANIMATION
+                        && !isStunned()) {
                     this.setAnimation(ANIMATION_PREPARE_BREATH);
                     this.playSound(ACSoundRegistry.TREMORZILLA_BEAM_START.get(), 8.0F, 1.0F);
                 }
@@ -468,7 +491,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 float f = calculateSpikesDownAmount(this.getSpikesDownAmount(), 6F);
                 if (Math.floor(f - 0.005F) != Math.floor(f) && chargeSoundCooldown <= 0 && f <= 5) {
                     float pitch = 0.7F + this.getSpikesDownAmount() * 0.7F;
-                    this.playSound(f > 4 ? ACSoundRegistry.TREMORZILLA_CHARGE_COMPLETE.get() : ACSoundRegistry.TREMORZILLA_CHARGE_NORMAL.get(), 8.0F, pitch);
+                    this.playSound(f > 4 ? ACSoundRegistry.TREMORZILLA_CHARGE_COMPLETE.get()
+                            : ACSoundRegistry.TREMORZILLA_CHARGE_NORMAL.get(), 8.0F, pitch);
                     chargeSoundCooldown = 19;
                 }
                 if (chargeSoundCooldown > 0) {
@@ -476,7 +500,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 }
             } else {
                 this.setSpikesDownAmount(Math.max(this.getSpikesDownAmount() - 0.05F, 0F));
-                if (this.getDeltaMovement().horizontalDistance() < 0.05 && this.getAnimation() == NO_ANIMATION && !this.isDancing() && !this.isInSittingPose() && !this.isNoAi()) {
+                if (this.getDeltaMovement().horizontalDistance() < 0.05 && this.getAnimation() == NO_ANIMATION
+                        && !this.isDancing() && !this.isInSittingPose() && !this.isNoAi()) {
                     if (random.nextInt(800) == 0 && !this.isVehicle()) {
                         this.tryRoar();
                     }
@@ -519,28 +544,39 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (this.getAnimation() == ANIMATION_BITE && this.getAnimationTick() == 2) {
             this.playSound(ACSoundRegistry.TREMORZILLA_BITE.get(), 4.0F, this.getVoicePitch());
         }
-        if ((this.getAnimation() == ANIMATION_RIGHT_SCRATCH || this.getAnimation() == ANIMATION_LEFT_SCRATCH) && this.getAnimationTick() == 2) {
+        if ((this.getAnimation() == ANIMATION_RIGHT_SCRATCH || this.getAnimation() == ANIMATION_LEFT_SCRATCH)
+                && this.getAnimationTick() == 2) {
             this.playSound(ACSoundRegistry.TREMORZILLA_SCRATCH_ATTACK.get(), 4.0F, this.getVoicePitch());
         }
-        if ((this.getAnimation() == ANIMATION_RIGHT_STOMP || this.getAnimation() == ANIMATION_LEFT_STOMP) && this.getAnimationTick() == 2) {
+        if ((this.getAnimation() == ANIMATION_RIGHT_STOMP || this.getAnimation() == ANIMATION_LEFT_STOMP)
+                && this.getAnimationTick() == 2) {
             this.playSound(ACSoundRegistry.TREMORZILLA_STOMP_ATTACK.get(), 4.0F, this.getVoicePitch());
         }
-        if ((this.getAnimation() == ANIMATION_RIGHT_TAIL || this.getAnimation() == ANIMATION_LEFT_TAIL) && this.getAnimationTick() == 2) {
+        if ((this.getAnimation() == ANIMATION_RIGHT_TAIL || this.getAnimation() == ANIMATION_LEFT_TAIL)
+                && this.getAnimationTick() == 2) {
             this.playSound(ACSoundRegistry.TREMORZILLA_TAIL_ATTACK.get(), 4.0F, this.getVoicePitch());
         }
-        if(this.getAnimation() == ANIMATION_CHEW && this.getAnimationTick() % 6 == 0 && this.getAnimationTick() <= 30){
+        if (this.getAnimation() == ANIMATION_CHEW && this.getAnimationTick() % 6 == 0
+                && this.getAnimationTick() <= 30) {
             this.playSound(ACSoundRegistry.TREMORZILLA_EAT.get(), 4.0F, this.getVoicePitch());
-            if(level().isClientSide){
-                BlockParticleOption particleOption1 = new BlockParticleOption(ParticleTypes.BLOCK, ACBlockRegistry.BLOCK_OF_URANIUM.get().defaultBlockState());
-                BlockParticleOption particleOption2 = new BlockParticleOption(ParticleTypes.BLOCK, ACBlockRegistry.WASTE_DRUM.get().defaultBlockState());
-                for(int i = 0; i < 8; i++){
-                    Vec3 particlesPos = this.getBeamShootFrom(1.0F).add(new Vec3(random.nextBoolean() ? -0.8F : 0.8F, 2, 2.5F + random.nextFloat()).scale(getScale()).xRot((float) Math.toRadians(-this.getXRot())).yRot((float) Math.toRadians(-this.getYHeadRot())));
-                    level().addAlwaysVisibleParticle(random.nextInt(3) == 0 ? particleOption2 : particleOption1, true, particlesPos.x, particlesPos.y, particlesPos.z, 0, 0, 0);
+            if (level().isClientSide) {
+                BlockParticleOption particleOption1 = new BlockParticleOption(ParticleTypes.BLOCK,
+                        ACBlockRegistry.BLOCK_OF_URANIUM.get().defaultBlockState());
+                BlockParticleOption particleOption2 = new BlockParticleOption(ParticleTypes.BLOCK,
+                        ACBlockRegistry.WASTE_DRUM.get().defaultBlockState());
+                for (int i = 0; i < 8; i++) {
+                    Vec3 particlesPos = this.getBeamShootFrom(1.0F)
+                            .add(new Vec3(random.nextBoolean() ? -0.8F : 0.8F, 2, 2.5F + random.nextFloat())
+                                    .scale(getScale()).xRot((float) Math.toRadians(-this.getXRot()))
+                                    .yRot((float) Math.toRadians(-this.getYHeadRot())));
+                    level().addAlwaysVisibleParticle(random.nextInt(3) == 0 ? particleOption2 : particleOption1, true,
+                            particlesPos.x, particlesPos.y, particlesPos.z, 0, 0, 0);
                 }
             }
         }
-        if(!level().isClientSide && this.getAnimation() == ANIMATION_CHEW && this.getAnimationTick() == 34 && lastFedPlayer != null){
-            if(!this.isTame()){
+        if (!level().isClientSide && this.getAnimation() == ANIMATION_CHEW && this.getAnimationTick() == 34
+                && lastFedPlayer != null) {
+            if (!this.isTame()) {
                 this.setTameAttempts(this.getTameAttempts() + 1);
                 if (this.getTameAttempts() >= 4 && getRandom().nextInt(3) == 0) {
                     this.tame(lastFedPlayer);
@@ -558,9 +594,10 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     private double getMaxFluidHeight() {
         return Math.max(
-                com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.WATER_TYPE.get()),
-                com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.LAVA_TYPE.get())
-        );
+                com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this,
+                        ForgeMod.WATER_TYPE.get()),
+                com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this,
+                        ForgeMod.LAVA_TYPE.get()));
     }
 
     private void healEveryTick(int i, float health) {
@@ -581,11 +618,13 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
             float time = (float) beamTime / maxBeamTime;
             float accuracy = 1F - (Math.min(0.75F, time) / 0.75F);
             Vec3 position = target.position();
-            Vec3 swingVec = new Vec3(Math.sin(tickCount * 0.2F) * 6, 0, Math.cos(tickCount * 0.2F) * -6).yRot((float) Math.toRadians(-this.yBodyRot)).scale(accuracy);
+            Vec3 swingVec = new Vec3(Math.sin(tickCount * 0.2F) * 6, 0, Math.cos(tickCount * 0.2F) * -6)
+                    .yRot((float) Math.toRadians(-this.yBodyRot)).scale(accuracy);
             Vec3 approach = position.add(swingVec).subtract(vec3).scale(0.1F).add(vec3);
             beamServerTarget = approach;
         } else {
-            Vec3 newTarget = new Vec3(Math.sin(tickCount * 0.1F) * 10, beamServerTarget.y - shootFrom.y, 6).yRot((float) Math.toRadians(-this.yBodyRot));
+            Vec3 newTarget = new Vec3(Math.sin(tickCount * 0.1F) * 10, beamServerTarget.y - shootFrom.y, 6)
+                    .yRot((float) Math.toRadians(-this.yBodyRot));
             Vec3 approach = shootFrom.add(newTarget).subtract(vec3).scale(0.1F).add(vec3);
             beamServerTarget = approach;
         }
@@ -594,7 +633,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     private Vec3 createInitialBeamVec() {
         LivingEntity target = this.getTarget();
         if (target != null && target.isAlive()) {
-            Vec3 randomRot = new Vec3(-100 + random.nextFloat() * 200F, 0, 15 + 15 * random.nextFloat()).yRot((float) Math.toRadians(-this.yBodyRot + 50 - random.nextFloat() * 100));
+            Vec3 randomRot = new Vec3(-100 + random.nextFloat() * 200F, 0, 15 + 15 * random.nextFloat())
+                    .yRot((float) Math.toRadians(-this.yBodyRot + 50 - random.nextFloat() * 100));
             Vec3 position = target instanceof KaijuMob ? target.getEyePosition() : target.position();
             return position.add(randomRot);
         } else if (this.isVehicle()) {
@@ -607,10 +647,13 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public void travel(Vec3 vec3d) {
-        if (this.getAnimation() == ANIMATION_LEFT_STOMP || this.getAnimation() == ANIMATION_RIGHT_STOMP || this.getAnimation() == ANIMATION_LEFT_TAIL || this.getAnimation() == ANIMATION_RIGHT_TAIL || this.isFiring() && !this.isVehicle()) {
+        if (this.getAnimation() == ANIMATION_LEFT_STOMP || this.getAnimation() == ANIMATION_RIGHT_STOMP
+                || this.getAnimation() == ANIMATION_LEFT_TAIL || this.getAnimation() == ANIMATION_RIGHT_TAIL
+                || this.isFiring() && !this.isVehicle()) {
             vec3d = Vec3.ZERO;
             super.travel(vec3d);
-        } else if (com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this) && (this.isEffectiveAi() || this.isVehicle())) {
+        } else if (com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this)
+                && (this.isEffectiveAi() || this.isVehicle())) {
             this.moveRelative(this.getSpeed(), vec3d);
             Vec3 delta = this.getDeltaMovement();
             this.move(MoverType.SELF, delta);
@@ -643,7 +686,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     public void aiStep() {
         super.aiStep();
         if (!this.level().isClientSide) {
-            if (com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) && blockBreakCounter <= 0) {
+            if (com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(),
+                    this) && blockBreakCounter <= 0) {
                 this.breakBlocksInBoundingBox(0.1F);
                 blockBreakCounter = 10;
             }
@@ -693,11 +737,20 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         Vec3 center = this.position().add(0, this.getBbHeight() * 0.5F - getLegSolverBodyOffset(), 0);
         float tailXStep = tailXRot / 5F;
         float tailYStep = tailYRot / 5F;
-        this.tailPart1.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, isTremorzillaSwimming() ? 0F : -4F, -3.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep)).add(center));
-        this.tailPart2.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, -0.25F, -3.25F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 2F)).add(this.tailPart1.centeredPosition()));
-        this.tailPart3.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, -2.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 3F)).add(this.tailPart2.centeredPosition()));
-        this.tailPart4.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, -2.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 4F)).add(this.tailPart3.centeredPosition()));
-        this.tailPart5.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, -2F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 5F)).add(this.tailPart4.centeredPosition()));
+        this.tailPart1.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(0, isTremorzillaSwimming() ? 0F : -4F, -3.5F).scale(this.getScale()),
+                        tailXStep, (yBodyRot + tailYStep)).add(center));
+        this.tailPart2.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, -0.25F, -3.25F).scale(this.getScale()),
+                tailXStep, (yBodyRot + tailYStep * 2F)).add(this.tailPart1.centeredPosition()));
+        this.tailPart3.setPosCenteredY(this
+                .rotateOffsetVec(new Vec3(0, 0, -2.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 3F))
+                .add(this.tailPart2.centeredPosition()));
+        this.tailPart4.setPosCenteredY(this
+                .rotateOffsetVec(new Vec3(0, 0, -2.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 4F))
+                .add(this.tailPart3.centeredPosition()));
+        this.tailPart5.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(0, 0, -2F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 5F))
+                        .add(this.tailPart4.centeredPosition()));
 
         for (int l = 0; l < this.allParts.length; ++l) {
             this.allParts[l].xo = avector3d[l].x;
@@ -753,7 +806,6 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         this.setTameAttempts(compound.getInt("TameAttempts"));
     }
 
-
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Charge", this.getCharge());
@@ -767,18 +819,33 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (level().isClientSide) {
             endBeamPos = this.getClientBeamEndPosition(1.0F);
             if (endBeamPos != null) {
-                Vec3 particleVec = endBeamPos.add((random.nextFloat() - 0.5F) * 3F, (random.nextFloat() - 0.5F) * 3F, (random.nextFloat() - 0.5F) * 3F);
-                level().addAlwaysVisibleParticle(this.getAltSkin() == 2 ? ACParticleRegistry.TREMORZILLA_TECTONIC_EXPLOSION.get() : this.getAltSkin() == 1 ? ACParticleRegistry.TREMORZILLA_RETRO_EXPLOSION.get() : ACParticleRegistry.TREMORZILLA_EXPLOSION.get(), true, particleVec.x, particleVec.y, particleVec.z, 0, 0, 0);
-                level().addAlwaysVisibleParticle(this.getAltSkin() == 2 ? ACParticleRegistry.TREMORZILLA_TECTONIC_LIGHTNING.get() : this.getAltSkin() == 1 ? ACParticleRegistry.TREMORZILLA_RETRO_LIGHTNING.get() : ACParticleRegistry.TREMORZILLA_LIGHTNING.get(), true, this.getX(), this.getEyeY(), this.getZ(), this.getId(), 0, 0);
+                Vec3 particleVec = endBeamPos.add((random.nextFloat() - 0.5F) * 3F, (random.nextFloat() - 0.5F) * 3F,
+                        (random.nextFloat() - 0.5F) * 3F);
+                level().addAlwaysVisibleParticle(
+                        this.getAltSkin() == 2 ? ACParticleRegistry.TREMORZILLA_TECTONIC_EXPLOSION.get()
+                                : this.getAltSkin() == 1 ? ACParticleRegistry.TREMORZILLA_RETRO_EXPLOSION.get()
+                                        : ACParticleRegistry.TREMORZILLA_EXPLOSION.get(),
+                        true, particleVec.x, particleVec.y, particleVec.z, 0, 0, 0);
+                level().addAlwaysVisibleParticle(
+                        this.getAltSkin() == 2 ? ACParticleRegistry.TREMORZILLA_TECTONIC_LIGHTNING.get()
+                                : this.getAltSkin() == 1 ? ACParticleRegistry.TREMORZILLA_RETRO_LIGHTNING.get()
+                                        : ACParticleRegistry.TREMORZILLA_LIGHTNING.get(),
+                        true, this.getX(), this.getEyeY(), this.getZ(), this.getId(), 0, 0);
                 if (this.getRandom().nextFloat() < 0.3F) {
-                    level().addAlwaysVisibleParticle(this.getAltSkin() == 2 ? ACParticleRegistry.TREMORZILLA_TECTONIC_PROTON.get() : this.getAltSkin() == 1 ? ACParticleRegistry.TREMORZILLA_RETRO_PROTON.get() : ACParticleRegistry.TREMORZILLA_PROTON.get(), true, this.getX(), this.getEyeY(), this.getZ(), this.getId(), 0, 0);
+                    level().addAlwaysVisibleParticle(
+                            this.getAltSkin() == 2 ? ACParticleRegistry.TREMORZILLA_TECTONIC_PROTON.get()
+                                    : this.getAltSkin() == 1 ? ACParticleRegistry.TREMORZILLA_RETRO_PROTON.get()
+                                            : ACParticleRegistry.TREMORZILLA_PROTON.get(),
+                            true, this.getX(), this.getEyeY(), this.getZ(), this.getId(), 0, 0);
                 }
             }
         } else {
             if (beamServerTarget != null) {
                 Vec3 from = this.getBeamShootFrom(1.0F);
                 Vec3 normalized = from.add(beamServerTarget.subtract(from).normalize().scale(100F));
-                this.setBeamEndPosition(this.level().clip(new ClipContext(from, normalized, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getLocation());
+                this.setBeamEndPosition(this.level().clip(
+                        new ClipContext(from, normalized, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this))
+                        .getLocation());
             }
             endBeamPos = this.getBeamEndPosition();
             boolean brokenClosestBlocks = false;
@@ -792,7 +859,10 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 while (walkThroughBeam < this.getMaxBeamBreakLength()) {
                     startClip = startClip.add(viewVec.scale(destructionScale * 1.5F));
                     if (!brokenClosestBlocks) {
-                        brokenClosestBlocks = this.breakBlocksAround(startClip, AlexsCaves.COMMON_CONFIG.devastatingTremorzillaBeam.get() ? destructionScale : destructionScale * 0.75F, false, true, 0.08F);
+                        brokenClosestBlocks = this.breakBlocksAround(startClip,
+                                AlexsCaves.COMMON_CONFIG.devastatingTremorzillaBeam.get() ? destructionScale
+                                        : destructionScale * 0.75F,
+                                false, true, 0.08F);
                         furthestBlockDist = (float) startClip.distanceTo(start);
                     }
                     this.hurtEntitiesAround(startClip, destructionScale + 1, 20.0F, 1.0F, true, true, false);
@@ -819,7 +889,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     private void stompEffect(boolean left, float size, float hurtSize, float forwards, float damage) {
         float particleRadius = 0.3F + size * this.getScale();
-        Vec3 center = this.position().add(new Vec3(left ? 2.2F : -2.2F, 0, forwards).yRot(-this.yBodyRot * ((float) Math.PI / 180F)));
+        Vec3 center = this.position()
+                .add(new Vec3(left ? 2.2F : -2.2F, 0, forwards).yRot(-this.yBodyRot * ((float) Math.PI / 180F)));
         if (level().isClientSide) {
             for (int i = 0; i < 4; i++) {
                 for (int i1 = 0; i1 < 10 + random.nextInt(10); i1++) {
@@ -830,11 +901,14 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                     double extraX = particleRadius * Mth.sin((float) (Math.PI + angle));
                     double extraY = 1.0F;
                     double extraZ = particleRadius * Mth.cos(angle);
-                    Vec3 groundedVec = ACMath.getGroundBelowPosition(level(), new Vec3(Mth.floor(center.x + extraX), Mth.floor(center.y + extraY) - 1, Mth.floor(center.z + extraZ)));
+                    Vec3 groundedVec = ACMath.getGroundBelowPosition(level(), new Vec3(Mth.floor(center.x + extraX),
+                            Mth.floor(center.y + extraY) - 1, Mth.floor(center.z + extraZ)));
                     BlockPos ground = BlockPos.containing(groundedVec.subtract(0, 0.5F, 0));
                     BlockState state = this.level().getBlockState(ground);
                     if (state.isSolid()) {
-                        level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), true, center.x + extraX, ground.getY() + extraY, center.z + extraZ, motionX, motionY, motionZ);
+                        level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), true,
+                                center.x + extraX, ground.getY() + extraY, center.z + extraZ, motionX, motionY,
+                                motionZ);
                     }
                 }
             }
@@ -842,21 +916,29 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         hurtEntitiesAround(center, particleRadius + hurtSize, damage, 0.5F, false, false, false);
     }
 
-    public boolean hurtEntitiesAround(Vec3 center, float radius, float damageAmount, float knockbackAmount, boolean radioactive, boolean hurtsOtherKaiju, boolean stretchY) {
+    public boolean hurtEntitiesAround(Vec3 center, float radius, float damageAmount, float knockbackAmount,
+            boolean radioactive, boolean hurtsOtherKaiju, boolean stretchY) {
         AABB aabb = new AABB(center.subtract(radius, radius, radius), center.add(radius, radius, radius));
         if (stretchY) {
             aabb.setMinY(this.getY() - 1);
             aabb.setMaxY(this.getEyeY() + 3);
         }
         boolean flag = false;
-        DamageSource damageSource = radioactive ? ACDamageTypes.causeTremorzillaBeamDamage(level().registryAccess(), this) : this.damageSources().mobAttack(this);
-        for (LivingEntity living : level().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-            if (!living.is(this) && !this.isAlliedTo(living) && living.getType() != this.getType() && living.distanceToSqr(center.x, stretchY ? living.getY() : center.y, center.z) <= radius * radius && (!radioactive || canEntityBeHurtByBeam(living, center)) && (hurtsOtherKaiju || !(living instanceof KaijuMob))) {
+        DamageSource damageSource = radioactive
+                ? ACDamageTypes.causeTremorzillaBeamDamage(level().registryAccess(), this)
+                : this.damageSources().mobAttack(this);
+        for (LivingEntity living : level().getEntitiesOfClass(LivingEntity.class, aabb,
+                EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
+            if (!living.is(this) && !this.isAlliedTo(living) && living.getType() != this.getType()
+                    && living.distanceToSqr(center.x, stretchY ? living.getY() : center.y, center.z) <= radius * radius
+                    && (!radioactive || canEntityBeHurtByBeam(living, center))
+                    && (hurtsOtherKaiju || !(living instanceof KaijuMob))) {
                 if (living.hurt(damageSource, damageAmount)) {
                     flag = true;
-                    knockbackTarget(living, knockbackAmount, this.getX() - living.getX(), this.getZ() - living.getZ(), !(living instanceof KaijuMob));
+                    knockbackTarget(living, knockbackAmount, this.getX() - living.getX(), this.getZ() - living.getZ(),
+                            !(living instanceof KaijuMob));
                     if (radioactive) {
-                        if(living.getHealth() <= 0.0F && living instanceof Enemy){
+                        if (living.getHealth() <= 0.0F && living instanceof Enemy) {
                             killCountFromBeam++;
                         }
                         living.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(), 6000, 2));
@@ -868,12 +950,15 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     private boolean canEntityBeHurtByBeam(LivingEntity living, Vec3 center) {
-        return this.level().clip(new ClipContext(center, living.position().add(0, living.getBbHeight() * 0.5, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() == HitResult.Type.MISS;
+        return this.level().clip(new ClipContext(center, living.position().add(0, living.getBbHeight() * 0.5, 0),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() == HitResult.Type.MISS;
     }
 
     public void knockbackTarget(Entity target, double strength, double x, double z, boolean ignoreResistance) {
-        com.github.alexmodguy.alexscaves.forge_shim.event.entity.living.LivingKnockBackEvent event = com.github.alexmodguy.alexscaves.forge_shim.common.ForgeHooks.onLivingKnockBack(this, (float) strength, x, z);
-        if (event.isCanceled()) return;
+        com.github.alexmodguy.alexscaves.forge_shim.event.entity.living.LivingKnockBackEvent event = com.github.alexmodguy.alexscaves.forge_shim.common.ForgeHooks
+                .onLivingKnockBack(this, (float) strength, x, z);
+        if (event.isCanceled())
+            return;
         strength = event.getStrength();
         x = event.getRatioX();
         z = event.getRatioZ();
@@ -884,19 +969,26 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
             this.hasImpulse = true;
             Vec3 vec3 = this.getDeltaMovement();
             Vec3 vec31 = (new Vec3(x, 0.0D, z)).normalize().scale(strength);
-            target.setDeltaMovement(vec3.x / 2.0D - vec31.x, this.onGround() ? Math.min(0.4D, vec3.y / 2.0D + strength) : vec3.y, vec3.z / 2.0D - vec31.z);
+            target.setDeltaMovement(vec3.x / 2.0D - vec31.x,
+                    this.onGround() ? Math.min(0.4D, vec3.y / 2.0D + strength) : vec3.y, vec3.z / 2.0D - vec31.z);
         }
     }
 
-    public boolean breakBlocksAround(Vec3 center, float radius, boolean square, boolean triggerExplosions, float dropChance) {
-        if (this.isBaby() || !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || level().isClientSide) {
+    public boolean breakBlocksAround(Vec3 center, float radius, boolean square, boolean triggerExplosions,
+            float dropChance) {
+        if (this.isBaby() || !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                .getMobGriefingEvent(this.level(), this) || level().isClientSide) {
             return false;
         }
         boolean flag = false;
-        for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(center.x - radius), Mth.floor(center.y - radius), Mth.floor(center.z - radius), Mth.floor(center.x + radius), Mth.floor(center.y + radius), Mth.floor(center.z + radius))) {
+        for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(center.x - radius), Mth.floor(center.y - radius),
+                Mth.floor(center.z - radius), Mth.floor(center.x + radius), Mth.floor(center.y + radius),
+                Mth.floor(center.z + radius))) {
             BlockState blockstate = this.level().getBlockState(blockpos);
             boolean nuke = blockstate.is(ACBlockRegistry.NUCLEAR_BOMB.get());
-            if (!blockstate.is(ACTagRegistry.NUKE_PROOF) && blockstate.blocksMotion() && (blockstate.getBlock().getExplosionResistance() <= 15 || nuke) && (square || blockpos.distToCenterSqr(center.x, center.y, center.z) < radius * radius)) {
+            if (!blockstate.is(ACTagRegistry.NUKE_PROOF) && blockstate.blocksMotion()
+                    && (blockstate.getBlock().getExplosionResistance() <= 15 || nuke)
+                    && (square || blockpos.distToCenterSqr(center.x, center.y, center.z) < radius * radius)) {
                 if (random.nextFloat() <= dropChance && !nuke) {
                     level().destroyBlock(blockpos, true);
                 } else {
@@ -905,7 +997,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 if (triggerExplosions) {
                     if (nuke) {
                         NuclearBombEntity bomb = ACEntityRegistry.NUCLEAR_BOMB.get().create(level());
-                        bomb.setPos((double) blockpos.getX() + 0.5D, (double) blockpos.getY(), (double) blockpos.getZ() + 0.5D);
+                        bomb.setPos((double) blockpos.getX() + 0.5D, (double) blockpos.getY(),
+                                (double) blockpos.getZ() + 0.5D);
                         bomb.setTime(NuclearBombEntity.MAX_TIME);
                         level().addFreshEntity(bomb);
                     }
@@ -917,19 +1010,25 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public boolean breakBlocksInBoundingBox(float dropChance) {
-        if (this.isBaby() || !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || level().isClientSide) {
+        if (this.isBaby() || !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                .getMobGriefingEvent(this.level(), this) || level().isClientSide) {
             return false;
         }
         boolean flag = false;
         AABB boundingBox = this.getBoundingBox().inflate(2.0D);
         int swimUp = this.isTremorzillaSwimming() ? 3 : 1 - (int) this.getLegSolverBodyOffset();
-        for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(boundingBox.minX), Mth.floor(boundingBox.minY + swimUp), Mth.floor(boundingBox.minZ), Mth.floor(boundingBox.maxX), Mth.floor(boundingBox.maxY), Mth.floor(boundingBox.maxZ))) {
+        for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(boundingBox.minX),
+                Mth.floor(boundingBox.minY + swimUp), Mth.floor(boundingBox.minZ), Mth.floor(boundingBox.maxX),
+                Mth.floor(boundingBox.maxY), Mth.floor(boundingBox.maxZ))) {
             BlockState blockstate = this.level().getBlockState(blockpos);
             if (blockstate.isAir()) {
                 continue;
             }
 
-            if (!blockstate.is(ACTagRegistry.NUKE_PROOF) && !blockstate.isAir() && (blockstate.is(BlockTags.LEAVES) || blockpos.getY() > this.getBlockY()) && blockstate.getBlock().getExplosionResistance() <= 15 && (blockstate.is(Blocks.COBWEB) || !blockstate.getCollisionShape(level(), blockpos).isEmpty())) {
+            if (!blockstate.is(ACTagRegistry.NUKE_PROOF) && !blockstate.isAir()
+                    && (blockstate.is(BlockTags.LEAVES) || blockpos.getY() > this.getBlockY())
+                    && blockstate.getBlock().getExplosionResistance() <= 15
+                    && (blockstate.is(Blocks.COBWEB) || !blockstate.getCollisionShape(level(), blockpos).isEmpty())) {
                 if (random.nextFloat() <= dropChance) {
                     level().destroyBlock(blockpos, true);
                 } else {
@@ -942,7 +1041,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public void tryRoar() {
-        if (roarCooldown == 0 && this.getAnimation() == NO_ANIMATION && !this.isFiring() && !this.isStunned() && !this.isBaby()) {
+        if (roarCooldown == 0 && this.getAnimation() == NO_ANIMATION && !this.isFiring() && !this.isStunned()
+                && !this.isBaby()) {
             this.setAnimation(random.nextBoolean() ? ANIMATION_ROAR_2 : ANIMATION_ROAR_1);
             this.playSound(ACSoundRegistry.TREMORZILLA_ROAR.get(), 8.0F, 1.0F);
             this.roarCooldown = 300 + random.nextInt(400);
@@ -964,14 +1064,17 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         if (this.tickCount - lastScareTimestamp > 5) {
             lastScareTimestamp = this.tickCount;
         }
-        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(64, 20, 64));
+        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
+                this.getBoundingBox().inflate(64, 20, 64));
         for (LivingEntity e : list) {
             if (!e.getType().is(ACTagRegistry.RESISTS_TREMORSAURUS_ROAR) && !isAlliedTo(e)) {
-                if (e instanceof PathfinderMob mob && (!(mob instanceof TamableAnimal) || !((TamableAnimal) mob).isInSittingPose())) {
+                if (e instanceof PathfinderMob mob
+                        && (!(mob instanceof TamableAnimal) || !((TamableAnimal) mob).isInSittingPose())) {
                     mob.setTarget(null);
                     mob.setLastHurtByMob(null);
                     if (mob.onGround()) {
-                        Vec3 randomShake = new Vec3(random.nextFloat() - 0.5F, 0, random.nextFloat() - 0.5F).scale(0.1F);
+                        Vec3 randomShake = new Vec3(random.nextFloat() - 0.5F, 0, random.nextFloat() - 0.5F)
+                                .scale(0.1F);
                         mob.setDeltaMovement(mob.getDeltaMovement().multiply(0.7F, 1, 0.7F).add(randomShake));
                     }
                     if (lastScareTimestamp == tickCount) {
@@ -1015,7 +1118,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                 double d0 = entity.getX() - this.getX();
                 double d1 = entity.getZ() - this.getZ();
                 double d2 = Mth.absMax(d0, d1);
-                if (d2 >= (double)0.01F) {
+                if (d2 >= (double) 0.01F) {
                     d2 = Math.sqrt(d2);
                     d0 /= d2;
                     d1 /= d2;
@@ -1026,8 +1129,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
                     d0 *= d3;
                     d1 *= d3;
-                    d0 *= (double)0.05F;
-                    d1 *= (double)0.05F;
+                    d0 *= (double) 0.05F;
+                    d1 *= (double) 0.05F;
                     if (!entity.isVehicle() && (entity.isPushable() || entity instanceof KaijuMob)) {
                         entity.push(d0, 0.0D, d1);
                     }
@@ -1035,7 +1138,6 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
             }
         }
     }
-
 
     @Override
     public void lerpTo(double x, double y, double z, float yr, float xr, int steps, boolean b) {
@@ -1097,7 +1199,9 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     public void onKeyPacket(Entity keyPresser, int type) {
         if (keyPresser.isPassengerOfSameVehicle(this)) {
             if (type == 2) {
-                if (this.getMeterAmount() >= 1.0F && (this.getAnimation() == NO_ANIMATION || this.getAnimation() == null) && !wantsToUseBeamFromServer) {
+                if (this.getMeterAmount() >= 1.0F
+                        && (this.getAnimation() == NO_ANIMATION || this.getAnimation() == null)
+                        && !wantsToUseBeamFromServer) {
                     this.yBodyRot = keyPresser.getYHeadRot();
                     this.setYRot(keyPresser.getYHeadRot());
                     wantsToUseBeamFromServer = true;
@@ -1110,9 +1214,11 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
                     this.setXRot(keyPresser.getXRot());
                     float decision = this.getRandom().nextFloat();
                     if (decision < 0.33F) {
-                        this.setAnimation(this.getRandom().nextBoolean() ? TremorzillaEntity.ANIMATION_LEFT_SCRATCH : TremorzillaEntity.ANIMATION_RIGHT_SCRATCH);
+                        this.setAnimation(this.getRandom().nextBoolean() ? TremorzillaEntity.ANIMATION_LEFT_SCRATCH
+                                : TremorzillaEntity.ANIMATION_RIGHT_SCRATCH);
                     } else if (decision < 0.66F && !this.isSwimming()) {
-                        this.setAnimation(this.getRandom().nextBoolean() ? TremorzillaEntity.ANIMATION_LEFT_STOMP : TremorzillaEntity.ANIMATION_RIGHT_STOMP);
+                        this.setAnimation(this.getRandom().nextBoolean() ? TremorzillaEntity.ANIMATION_LEFT_STOMP
+                                : TremorzillaEntity.ANIMATION_RIGHT_STOMP);
                     } else {
                         this.setAnimation(TremorzillaEntity.ANIMATION_BITE);
                     }
@@ -1127,7 +1233,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     private Stream<BlockPos> getNearbySirens(ServerLevel world, int range) {
         PoiManager pointofinterestmanager = world.getPoiManager();
-        return pointofinterestmanager.findAll(poiTypeHolder -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey()), Predicates.alwaysTrue(), this.blockPosition(), range, PoiManager.Occupancy.ANY);
+        return pointofinterestmanager.findAll(poiTypeHolder -> poiTypeHolder.is(ACPOIRegistry.NUCLEAR_SIREN.getKey()),
+                Predicates.alwaysTrue(), this.blockPosition(), range, PoiManager.Occupancy.ANY);
     }
 
     private void activateSiren(BlockPos pos) {
@@ -1146,7 +1253,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
         InteractionResult prev = super.mobInteract(player, hand);
         if (prev != InteractionResult.SUCCESS) {
             ItemStack itemStack = player.getItemInHand(hand);
-            if (!this.isTame() && (itemStack.is(ACBlockRegistry.WASTE_DRUM.get().asItem())) && this.getAnimation() == NO_ANIMATION) {
+            if (!this.isTame() && (itemStack.is(ACBlockRegistry.WASTE_DRUM.get().asItem()))
+                    && this.getAnimation() == NO_ANIMATION) {
                 this.usePlayerItem(player, hand, itemStack);
                 this.setAnimation(ANIMATION_CHEW);
                 lastFedPlayer = player;
@@ -1224,17 +1332,23 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public void positionRider(Entity passenger, MoveFunction moveFunction) {
-        if (this.isPassengerOfSameVehicle(passenger) && passenger instanceof LivingEntity living && !this.touchingUnloadedChunk()) {
+        if (this.isPassengerOfSameVehicle(passenger) && passenger instanceof LivingEntity living
+                && !this.touchingUnloadedChunk()) {
             float swimAmount = this.getSwimAmount(1.0F);
-            float walkSwing = (float) (Math.cos(this.walkAnimation.position() * 0.25F + 1F) * 0.75F * this.walkAnimation.speed() - 1.5F * this.walkAnimation.speed()) * (1F - swimAmount);
+            float walkSwing = (float) (Math.cos(this.walkAnimation.position() * 0.25F + 1F) * 0.75F
+                    * this.walkAnimation.speed() - 1.5F * this.walkAnimation.speed()) * (1F - swimAmount);
             float animationExtraBack = 0;
             if (this.getAnimation() == ANIMATION_ROAR_2) {
-                animationExtraBack = 4 * ACMath.cullAnimationTick(this.getAnimationTick(), 1, this.getAnimation(), 1.0F, 10, 60);
+                animationExtraBack = 4
+                        * ACMath.cullAnimationTick(this.getAnimationTick(), 1, this.getAnimation(), 1.0F, 10, 60);
             }
             if (this.getAnimation() == ANIMATION_PREPARE_BREATH) {
-                animationExtraBack = 4 * ACMath.cullAnimationTick(this.getAnimationTick(), 1, this.getAnimation(), 1.0F, 0, 20);
+                animationExtraBack = 4
+                        * ACMath.cullAnimationTick(this.getAnimationTick(), 1, this.getAnimation(), 1.0F, 0, 20);
             }
-            Vec3 seatOffset = new Vec3(0F, 2F - 6.5D * swimAmount, 1.0F + 6 * swimAmount - walkSwing - animationExtraBack).yRot((float) Math.toRadians(-this.yBodyRot));
+            Vec3 seatOffset = new Vec3(0F, 2F - 6.5D * swimAmount,
+                    1.0F + 6 * swimAmount - walkSwing - animationExtraBack)
+                    .yRot((float) Math.toRadians(-this.yBodyRot));
             passenger.setYBodyRot(this.yBodyRot);
             passenger.fallDistance = 0.0F;
             if (!this.isFiring()) {
@@ -1242,8 +1356,11 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
             }
             float heightBackLeft = legSolver.legs[0].getHeight(1.0F);
             float heightBackRight = legSolver.legs[1].getHeight(1.0F);
-            float maxLegSolverHeight = (1F - ACMath.smin(1F - heightBackLeft, 1F - heightBackRight, 0.1F)) * 0.8F * (1F - swimAmount);
-            moveFunction.accept(passenger, this.getX() + seatOffset.x, this.getY() + seatOffset.y + this.getPassengersRidingOffset() - maxLegSolverHeight, this.getZ() + seatOffset.z);
+            float maxLegSolverHeight = (1F - ACMath.smin(1F - heightBackLeft, 1F - heightBackRight, 0.1F)) * 0.8F
+                    * (1F - swimAmount);
+            moveFunction.accept(passenger, this.getX() + seatOffset.x,
+                    this.getY() + seatOffset.y + this.getPassengersRidingOffset() - maxLegSolverHeight,
+                    this.getZ() + seatOffset.z);
         } else {
             super.positionRider(passenger, moveFunction);
         }
@@ -1295,7 +1412,9 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{ANIMATION_SPEAK, ANIMATION_ROAR_1, ANIMATION_ROAR_2, ANIMATION_RIGHT_SCRATCH, ANIMATION_LEFT_SCRATCH, ANIMATION_RIGHT_TAIL, ANIMATION_LEFT_TAIL, ANIMATION_RIGHT_STOMP, ANIMATION_LEFT_STOMP, ANIMATION_BITE, ANIMATION_PREPARE_BREATH, ANIMATION_CHEW};
+        return new Animation[] { ANIMATION_SPEAK, ANIMATION_ROAR_1, ANIMATION_ROAR_2, ANIMATION_RIGHT_SCRATCH,
+                ANIMATION_LEFT_SCRATCH, ANIMATION_RIGHT_TAIL, ANIMATION_LEFT_TAIL, ANIMATION_RIGHT_STOMP,
+                ANIMATION_LEFT_STOMP, ANIMATION_BITE, ANIMATION_PREPARE_BREATH, ANIMATION_CHEW };
     }
 
     public boolean isVisuallySwimming() {
@@ -1382,7 +1501,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     @Nullable
     public Vec3 getClientBeamEndPosition(float partialTicks) {
         if (clientBeamEndPosition != null && prevClientBeamEndPosition != null) {
-            return prevClientBeamEndPosition.add(clientBeamEndPosition.subtract(prevClientBeamEndPosition).scale(partialTicks));
+            return prevClientBeamEndPosition
+                    .add(clientBeamEndPosition.subtract(prevClientBeamEndPosition).scale(partialTicks));
         } else {
             return null;
         }
@@ -1397,7 +1517,8 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public Vec3 getBodyRotViewVector(float partialTicks) {
-        return this.calculateViewVector(this.getViewXRot(partialTicks), this.yBodyRotO + (this.yBodyRot - this.yBodyRotO) * partialTicks);
+        return this.calculateViewVector(this.getViewXRot(partialTicks),
+                this.yBodyRotO + (this.yBodyRot - this.yBodyRotO) * partialTicks);
     }
 
     public void setMaxBeamBreakLength(float f) {

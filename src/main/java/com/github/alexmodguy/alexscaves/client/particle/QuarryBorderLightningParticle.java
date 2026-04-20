@@ -23,7 +23,8 @@ public class QuarryBorderLightningParticle extends Particle {
     private LightningRender lightningRender = new LightningRender();
     private static final Vector4f LIGHTNING_COLOR = new Vector4f(0.71F, 0.76F, 0.95F, 0.3F);
 
-    public QuarryBorderLightningParticle(ClientLevel world, double x, double y, double z, double xd, double yd, double zd) {
+    public QuarryBorderLightningParticle(ClientLevel world, double x, double y, double z, double xd, double yd,
+            double zd) {
         super(world, x, y, z);
         this.setSize(6.0F, 6.0F);
         this.x = x;
@@ -32,7 +33,8 @@ public class QuarryBorderLightningParticle extends Particle {
         Vec3 lightningTo = new Vec3(xd - x, yd - y, zd - z);
         this.lifetime = 5;
         int sections = (int) (4 * lightningTo.length());
-        LightningBoltData.BoltRenderInfo boltData = new LightningBoltData.BoltRenderInfo(0.015F, 0.025F, 0.0F, 0.0F, LIGHTNING_COLOR, 0.7F);
+        LightningBoltData.BoltRenderInfo boltData = new LightningBoltData.BoltRenderInfo(0.015F, 0.025F, 0.0F, 0.0F,
+                LIGHTNING_COLOR, 0.7F);
         LightningBoltData bolt = new LightningBoltData(boltData, Vec3.ZERO, lightningTo, sections)
                 .size(0.1F + random.nextFloat() * 0.1F)
                 .lifespan(this.lifetime)
@@ -43,7 +45,6 @@ public class QuarryBorderLightningParticle extends Particle {
     public boolean shouldCull() {
         return false;
     }
-
 
     public void tick() {
         this.xo = this.x;
@@ -60,9 +61,9 @@ public class QuarryBorderLightningParticle extends Particle {
         }
     }
 
-
     public void render(VertexConsumer consumer, Camera camera, float partialTick) {
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         Vec3 cameraPos = camera.getPosition();
         float x = (float) (Mth.lerp((double) partialTick, this.xo, this.x));
         float y = (float) (Mth.lerp((double) partialTick, this.yo, this.y));
@@ -72,13 +73,12 @@ public class QuarryBorderLightningParticle extends Particle {
         posestack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
         posestack.translate(x, y, z);
         lightningRender.render(partialTick, posestack, multibuffersource$buffersource);
-        multibuffersource$buffersource.endBatch();
         posestack.popPose();
     }
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return MagnetLightningParticle.DEFERRED_RENDER_TYPE;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -87,7 +87,8 @@ public class QuarryBorderLightningParticle extends Particle {
         public Factory() {
         }
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new QuarryBorderLightningParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed);
         }
     }

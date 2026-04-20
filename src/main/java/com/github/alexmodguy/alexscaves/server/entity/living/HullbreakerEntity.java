@@ -67,10 +67,13 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
     public static final Animation ANIMATION_BASH = Animation.create(25);
     public static final Animation ANIMATION_DIE = Animation.create(50);
 
-    private static final EntityDataAccessor<Integer> INTEREST_LEVEL = SynchedEntityData.defineId(HullbreakerEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> INTEREST_LEVEL = SynchedEntityData
+            .defineId(HullbreakerEntity.class, EntityDataSerializers.INT);
 
     public static final Predicate<LivingEntity> GLOWING_TARGET = (mob) -> {
-        return mob.isInWaterOrBubble() && (mob.hasEffect(MobEffects.GLOWING) || mob.getType().is(ACTagRegistry.GLOWING_ENTITIES) || mob.isPassenger() && mob.getVehicle() instanceof SubmarineEntity sub && sub.areLightsOn());
+        return mob.isInWaterOrBubble()
+                && (mob.hasEffect(MobEffects.GLOWING) || mob.getType().is(ACTagRegistry.GLOWING_ENTITIES)
+                        || mob.isPassenger() && mob.getVehicle() instanceof SubmarineEntity sub && sub.areLightsOn());
     };
     public final HullbreakerPartEntity headPart;
     public final HullbreakerPartEntity tail1Part;
@@ -101,7 +104,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         tail2Part = new HullbreakerPartEntity(this, tail1Part, 2, 1.5F);
         tail3Part = new HullbreakerPartEntity(this, tail2Part, 2.5F, 1.5F);
         tail4Part = new HullbreakerPartEntity(this, tail3Part, 1.5F, 1F);
-        allParts = new HullbreakerPartEntity[]{headPart, tail1Part, tail2Part, tail3Part, tail4Part};
+        allParts = new HullbreakerPartEntity[] { headPart, tail1Part, tail2Part, tail3Part, tail4Part };
         this.moveControl = new VerticalSwimmingMoveControl(this, 0.7F, 30);
         this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
     }
@@ -112,7 +115,8 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         this.entityData.define(INTEREST_LEVEL, 0);
     }
 
-    public static boolean checkHullbreakerSpawnRules(EntityType<? extends LivingEntity> type, ServerLevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
+    public static boolean checkHullbreakerSpawnRules(EntityType<? extends LivingEntity> type, ServerLevelAccessor level,
+            MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
         return level.getFluidState(pos).is(FluidTags.WATER) && pos.getY() < level.getSeaLevel() - 25;
     }
 
@@ -152,16 +156,18 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
 
     }
 
-
     @Override
     public ItemEntity spawnAtLocation(ItemStack stack) {
-        ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double)1, this.getZ(), stack);
+        ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double) 1, this.getZ(), stack);
         if (itementity != null) {
-            if(this.headPart != null){
+            if (this.headPart != null) {
                 Vec3 yOnlyViewVector = new Vec3(this.getViewVector(1.0F).x, 0, this.getViewVector(1.0F).z);
                 Vec3 mouth = this.headPart.position().add(yOnlyViewVector.scale(-0.5F)).add(0, 0.5F, 0);
                 itementity.setPos(mouth);
-                itementity.setDeltaMovement(yOnlyViewVector.add(random.nextFloat() * 0.2F - 0.1F, random.nextFloat() * 0.2F - 0.1F, random.nextFloat() * 0.2F - 0.1F).normalize().scale(0.8F + level().random.nextFloat() * 0.3F));
+                itementity.setDeltaMovement(yOnlyViewVector
+                        .add(random.nextFloat() * 0.2F - 0.1F, random.nextFloat() * 0.2F - 0.1F,
+                                random.nextFloat() * 0.2F - 0.1F)
+                        .normalize().scale(0.8F + level().random.nextFloat() * 0.3F));
             }
             itementity.setGlowingTag(true);
             itementity.setDefaultPickUpDelay();
@@ -175,31 +181,40 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         this.setAnimation(ANIMATION_DIE);
         this.setXRot(0.0F);
         this.setYHeadRot(this.getYRot());
-        if(!level().isClientSide){
-            if(!collectedLoot){
+        if (!level().isClientSide) {
+            if (!collectedLoot) {
                 populateDeathLootForHullbreaker();
             }
-            if(this.getAnimation() == ANIMATION_DIE && this.getAnimationTick() > 10 && this.getAnimationTick() % 7 == 0 && collectedLoot && !deathItems.isEmpty()){
+            if (this.getAnimation() == ANIMATION_DIE && this.getAnimationTick() > 10 && this.getAnimationTick() % 7 == 0
+                    && collectedLoot && !deathItems.isEmpty()) {
                 ItemStack randomItem = Util.getRandom(deathItems, getRandom());
                 spawnAtLocation(randomItem.copy());
                 deathItems.remove(randomItem);
             }
         }
-        if (this.getAnimation() == ANIMATION_DIE && this.getAnimationTick() > 45 && !this.level().isClientSide() && !this.isRemoved()) {
-            this.level().broadcastEntityEvent(this, (byte)60);
+        if (this.getAnimation() == ANIMATION_DIE && this.getAnimationTick() > 45 && !this.level().isClientSide()
+                && !this.isRemoved()) {
+            this.level().broadcastEntityEvent(this, (byte) 60);
             this.remove(Entity.RemovalReason.KILLED);
         }
 
     }
 
-    private void populateDeathLootForHullbreaker(){
+    private void populateDeathLootForHullbreaker() {
         ResourceLocation resourcelocation = this.getLootTable();
         DamageSource damageSource = getLastDamageSource();
-        if(damageSource != null){
+        if (damageSource != null) {
             LootTable loottable = this.level().getServer().getLootData().getLootTable(resourcelocation);
-            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel)this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, damageSource).withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity());
+            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level()))
+                    .withParameter(LootContextParams.THIS_ENTITY, this)
+                    .withParameter(LootContextParams.ORIGIN, this.position())
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
+                    .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
+                    .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity());
             if (this.lastHurtByPlayer != null) {
-                lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer).withLuck(this.lastHurtByPlayer.getLuck());
+                lootparams$builder = lootparams$builder
+                        .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
+                        .withLuck(this.lastHurtByPlayer.getLuck());
             }
             LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
             loottable.getRandomItems(lootparams, this.getLootTableSeed(), deathItems::add);
@@ -216,13 +231,13 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         return 0.45F * dimensions.height;
     }
 
-
     protected SoundEvent getSwimSound() {
         return SoundEvents.FISH_SWIM;
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.3D).add(Attributes.MAX_HEALTH, 400.0D).add(Attributes.ATTACK_DAMAGE, 16.0D);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.3D)
+                .add(Attributes.MAX_HEALTH, 8500.0D).add(Attributes.ATTACK_DAMAGE, 50.0D).add(Attributes.ARMOR, 15.0D);
     }
 
     public void remove(Entity.RemovalReason removalReason) {
@@ -241,8 +256,9 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         prevLandProgress = landProgress;
         prevFishPitch = fishPitch;
         prevPulseAmount = pulseAmount;
-        float targetFishPitch = Mth.clamp((float) this.getDeltaMovement().y * 2F, -1.4F, 1.4F) * -(float) (180F / (float) Math.PI);
-        if(!isAlive()){
+        float targetFishPitch = Mth.clamp((float) this.getDeltaMovement().y * 2F, -1.4F, 1.4F)
+                * -(float) (180F / (float) Math.PI);
+        if (!isAlive()) {
             targetFishPitch = 0.0F;
         }
         fishPitch = Mth.approachDegrees(fishPitch, targetFishPitch, 2.5F);
@@ -256,12 +272,14 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         float pulseBy = getInterestLevel() * 0.45F;
         pulseAmount += pulseBy;
         if (!level().isClientSide) {
-            double waterHeight = com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.WATER_TYPE.get());
+            double waterHeight = com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this,
+                    ForgeMod.WATER_TYPE.get());
             if (waterHeight > 0 && waterHeight < this.getBbHeight() - 1.0F) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.05, 0));
             }
         }
-        if (this.getAnimation() == HullbreakerEntity.ANIMATION_BASH && this.getAnimationTick() > 10 && this.getAnimationTick() <= 20) {
+        if (this.getAnimation() == HullbreakerEntity.ANIMATION_BASH && this.getAnimationTick() > 10
+                && this.getAnimationTick() <= 20) {
             breakBlock();
         }
         if (blockBreakCooldown > 0) {
@@ -299,14 +317,19 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
             return;
         }
         boolean flag = false;
-        AABB damageBox = this.headPart.getBoundingBox().inflate(1.2F).move(this.calculateViewVector(this.getXRot(), this.getYRot()));
-        if (!level().isClientSide && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(level(), this) && this.getTarget() instanceof Player) {
+        AABB damageBox = this.headPart.getBoundingBox().inflate(1.2F)
+                .move(this.calculateViewVector(this.getXRot(), this.getYRot()));
+        if (!level().isClientSide && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                .getMobGriefingEvent(level(), this) && this.getTarget() instanceof Player) {
             for (int a = (int) Math.round(damageBox.minX); a <= (int) Math.round(damageBox.maxX); a++) {
-                for (int b = (int) Math.round(damageBox.minY) - 1; (b <= (int) Math.round(damageBox.maxY) + 1) && (b <= 127); b++) {
+                for (int b = (int) Math.round(damageBox.minY) - 1; (b <= (int) Math.round(damageBox.maxY) + 1)
+                        && (b <= 127); b++) {
                     for (int c = (int) Math.round(damageBox.minZ); c <= (int) Math.round(damageBox.maxZ); c++) {
                         final BlockPos pos = new BlockPos(a, b, c);
                         final BlockState state = level().getBlockState(pos);
-                        if (!state.isAir() && !state.getShape(level(), pos).isEmpty() && !state.is(ACTagRegistry.UNMOVEABLE) && state.getBlock().getExplosionResistance() <= 15) {
+                        if (!state.isAir() && !state.getShape(level(), pos).isEmpty()
+                                && !state.is(ACTagRegistry.UNMOVEABLE)
+                                && state.getBlock().getExplosionResistance() <= 15) {
                             final Block block = state.getBlock();
                             if (block != Blocks.AIR) {
                                 this.setDeltaMovement(this.getDeltaMovement().multiply(0.6F, 1, 0.6F));
@@ -342,11 +365,20 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
             avector3d[j] = new Vec3(this.allParts[j].getX(), this.allParts[j].getY(), this.allParts[j].getZ());
         }
         Vec3 center = this.position().add(0, this.getBbHeight() * 0.5F, 0);
-        this.headPart.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, 3.5F), fishPitch + this.getXRot(), this.getYHeadRot()).add(center));
-        this.tail1Part.setPosCenteredY(this.rotateOffsetVec(new Vec3(swimDegree(1F, 4), 0, -3.5F), fishPitch, this.getYawFromBuffer(2, 1.0F)).add(center));
-        this.tail2Part.setPosCenteredY(this.rotateOffsetVec(new Vec3(swimDegree(1F, 3), 0, -2), fishPitch, this.getYawFromBuffer(4, 1.0F)).add(this.tail1Part.centeredPosition()));
-        this.tail3Part.setPosCenteredY(this.rotateOffsetVec(new Vec3(swimDegree(2F, 2), 0, -2.65F), fishPitch, this.getYawFromBuffer(6, 1.0F)).add(this.tail2Part.centeredPosition()));
-        this.tail4Part.setPosCenteredY(this.rotateOffsetVec(new Vec3(swimDegree(1.5F, 1), 0, -3), fishPitch, this.getYawFromBuffer(8, 1.0F)).add(this.tail3Part.centeredPosition()));
+        this.headPart.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(0, 0, 3.5F), fishPitch + this.getXRot(), this.getYHeadRot()).add(center));
+        this.tail1Part.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(swimDegree(1F, 4), 0, -3.5F), fishPitch, this.getYawFromBuffer(2, 1.0F))
+                        .add(center));
+        this.tail2Part.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(swimDegree(1F, 3), 0, -2), fishPitch, this.getYawFromBuffer(4, 1.0F))
+                        .add(this.tail1Part.centeredPosition()));
+        this.tail3Part.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(swimDegree(2F, 2), 0, -2.65F), fishPitch, this.getYawFromBuffer(6, 1.0F))
+                        .add(this.tail2Part.centeredPosition()));
+        this.tail4Part.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(swimDegree(1.5F, 1), 0, -3), fishPitch, this.getYawFromBuffer(8, 1.0F))
+                        .add(this.tail3Part.centeredPosition()));
         for (int l = 0; l < this.allParts.length; ++l) {
             this.allParts[l].xo = avector3d[l].x;
             this.allParts[l].yo = avector3d[l].y;
@@ -358,9 +390,11 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
     }
 
     private double swimDegree(float width, float sinOffset) {
-        double move = Math.cos(this.walkAnimation.position() * 0.33F + sinOffset) * this.walkAnimation.speed() * width * 0.8F;
+        double move = Math.cos(this.walkAnimation.position() * 0.33F + sinOffset) * this.walkAnimation.speed() * width
+                * 0.8F;
         double idle = Math.sin((tickCount + AlexsCaves.PROXY.getPartialTicks()) * 0.05F + sinOffset) * width * 0.5F;
-        return (move + idle * (1 - this.walkAnimation.speed())) * (1 - getLandProgress(AlexsCaves.PROXY.getPartialTicks()));
+        return (move + idle * (1 - this.walkAnimation.speed()))
+                * (1 - getLandProgress(AlexsCaves.PROXY.getPartialTicks()));
     }
 
     private Vec3 rotateOffsetVec(Vec3 offset, float xRot, float yRot) {
@@ -419,19 +453,22 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{ANIMATION_PUZZLE, ANIMATION_BITE, ANIMATION_BASH, ANIMATION_DIE};
+        return new Animation[] { ANIMATION_PUZZLE, ANIMATION_BITE, ANIMATION_BASH, ANIMATION_DIE };
     }
 
     protected SoundEvent getAmbientSound() {
-        return isInWaterOrBubble() ? ACSoundRegistry.HULLBREAKER_IDLE.get() : ACSoundRegistry.HULLBREAKER_LAND_IDLE.get();
+        return isInWaterOrBubble() ? ACSoundRegistry.HULLBREAKER_IDLE.get()
+                : ACSoundRegistry.HULLBREAKER_LAND_IDLE.get();
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return isInWaterOrBubble() ? ACSoundRegistry.HULLBREAKER_HURT.get() : ACSoundRegistry.HULLBREAKER_LAND_HURT.get();
+        return isInWaterOrBubble() ? ACSoundRegistry.HULLBREAKER_HURT.get()
+                : ACSoundRegistry.HULLBREAKER_LAND_HURT.get();
     }
 
     protected SoundEvent getDeathSound() {
-        return isInWaterOrBubble() ? ACSoundRegistry.HULLBREAKER_DEATH.get() : ACSoundRegistry.HULLBREAKER_LAND_DEATH.get();
+        return isInWaterOrBubble() ? ACSoundRegistry.HULLBREAKER_DEATH.get()
+                : ACSoundRegistry.HULLBREAKER_LAND_DEATH.get();
     }
 
     protected float getSoundVolume() {

@@ -67,7 +67,8 @@ public abstract class AbstractTrailParticle extends Particle {
 
     public void render(VertexConsumer consumer, Camera camera, float partialTick) {
         if (trailPointer > -1) {
-            MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+            MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                    .bufferSource();
             VertexConsumer vertexconsumer = getVetrexConsumer(multibuffersource$buffersource);
 
             Vec3 cameraPos = camera.getPosition();
@@ -95,14 +96,29 @@ public abstract class AbstractTrailParticle extends Particle {
                 PoseStack.Pose posestack$pose = posestack.last();
                 Matrix4f matrix4f = posestack$pose.pose();
                 Matrix3f matrix3f = posestack$pose.normal();
-                vertexconsumer.vertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x, (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z).color(trailR, trailG, trailB, trailA).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-                vertexconsumer.vertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x, (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z).color(trailR, trailG, trailB, trailA).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-                vertexconsumer.vertex(matrix4f, (float) draw2.x + (float) topAngleVec.x, (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z).color(trailR, trailG, trailB, trailA).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-                vertexconsumer.vertex(matrix4f, (float) draw1.x + (float) topAngleVec.x, (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z).color(trailR, trailG, trailB, trailA).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+                vertexconsumer
+                        .vertex(matrix4f, (float) draw1.x + (float) bottomAngleVec.x,
+                                (float) draw1.y + (float) bottomAngleVec.y, (float) draw1.z + (float) bottomAngleVec.z)
+                        .color(trailR, trailG, trailB, trailA).uv(u1, 1F).overlayCoords(NO_OVERLAY).uv2(j)
+                        .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+                vertexconsumer
+                        .vertex(matrix4f, (float) draw2.x + (float) bottomAngleVec.x,
+                                (float) draw2.y + (float) bottomAngleVec.y, (float) draw2.z + (float) bottomAngleVec.z)
+                        .color(trailR, trailG, trailB, trailA).uv(u2, 1F).overlayCoords(NO_OVERLAY).uv2(j)
+                        .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+                vertexconsumer
+                        .vertex(matrix4f, (float) draw2.x + (float) topAngleVec.x,
+                                (float) draw2.y + (float) topAngleVec.y, (float) draw2.z + (float) topAngleVec.z)
+                        .color(trailR, trailG, trailB, trailA).uv(u2, 0).overlayCoords(NO_OVERLAY).uv2(j)
+                        .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+                vertexconsumer
+                        .vertex(matrix4f, (float) draw1.x + (float) topAngleVec.x,
+                                (float) draw1.y + (float) topAngleVec.y, (float) draw1.z + (float) topAngleVec.z)
+                        .color(trailR, trailG, trailB, trailA).uv(u1, 0).overlayCoords(NO_OVERLAY).uv2(j)
+                        .normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
                 samples++;
                 drawFrom = sample;
             }
-            multibuffersource$buffersource.endBatch();
             posestack.popPose();
         }
     }
@@ -127,7 +143,6 @@ public abstract class AbstractTrailParticle extends Particle {
         return 1;
     }
 
-
     public Vec3 getTrailPosition(int pointer, float partialTick) {
         if (this.removed) {
             partialTick = 1.0F;
@@ -139,8 +154,25 @@ public abstract class AbstractTrailParticle extends Particle {
         return d0.add(d1.scale(partialTick));
     }
 
+    public static final ParticleRenderType DEFERRED_RENDER_TYPE = new ParticleRenderType() {
+        @Override
+        public void begin(com.mojang.blaze3d.vertex.BufferBuilder builder,
+                net.minecraft.client.renderer.texture.TextureManager textureManager) {
+        }
+
+        @Override
+        public void end(com.mojang.blaze3d.vertex.Tesselator tesselator) {
+            Minecraft.getInstance().renderBuffers().bufferSource().endBatch();
+        }
+
+        @Override
+        public String toString() {
+            return "ALEXSCAVES_DEFERRED_TRAIL";
+        }
+    };
+
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return DEFERRED_RENDER_TYPE;
     }
 }

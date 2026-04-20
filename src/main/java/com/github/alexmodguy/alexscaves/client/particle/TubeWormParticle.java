@@ -28,7 +28,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class TubeWormParticle extends Particle {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/particle/tube_worm.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID,
+            "textures/particle/tube_worm.png");
     private static final TubeWormModel MODEL = new TubeWormModel();
     private BlockPos blockPos;
     private int checkScareCooldown;
@@ -66,7 +67,8 @@ public class TubeWormParticle extends Particle {
         }
         float targetTuckAmount;
         BlockState state = level.getBlockState(blockPos);
-        if (scared || this.age >= this.lifetime - 10 || !state.getFluidState().is(FluidTags.WATER) || !level.getFluidState(blockPos.above()).is(FluidTags.WATER)) {
+        if (scared || this.age >= this.lifetime - 10 || !state.getFluidState().is(FluidTags.WATER)
+                || !level.getFluidState(blockPos.above()).is(FluidTags.WATER)) {
             targetTuckAmount = 1.0F;
         } else {
             targetTuckAmount = 0F;
@@ -81,7 +83,6 @@ public class TubeWormParticle extends Particle {
             this.remove();
         }
     }
-
 
     public void remove() {
         super.remove();
@@ -99,22 +100,24 @@ public class TubeWormParticle extends Particle {
         posestack.pushPose();
         posestack.translate(f, f1 + 1, f2);
         posestack.scale(-scale, -scale, scale);
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         MODEL.animateParticle(age, lerpedTuck, this.animationOffset, this.yRot, partialTick);
         VertexConsumer baseConsumer = multibuffersource$buffersource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
-        MODEL.renderToBuffer(posestack, baseConsumer, getLightColor(partialTick), OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-        multibuffersource$buffersource.endBatch();
+        MODEL.renderToBuffer(posestack, baseConsumer, getLightColor(partialTick), OverlayTexture.NO_OVERLAY, 1.0F, 1.0F,
+                1.0F, 1.0F);
         posestack.popPose();
     }
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
     }
 
     public static class Factory implements ParticleProvider<SimpleParticleType> {
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new TubeWormParticle(worldIn, x, y, z);
         }
     }

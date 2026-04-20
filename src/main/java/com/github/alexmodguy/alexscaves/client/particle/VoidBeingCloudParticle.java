@@ -47,7 +47,8 @@ public class VoidBeingCloudParticle extends Particle {
 
     private boolean spawnedExtras = false;
 
-    public VoidBeingCloudParticle(ClientLevel world, double x, double y, double z, int size, int target, int totalTendrils) {
+    public VoidBeingCloudParticle(ClientLevel world, double x, double y, double z, int size, int target,
+            int totalTendrils) {
         super(world, x, y, z);
         this.gravity = 0.0F;
         this.x = x;
@@ -62,7 +63,8 @@ public class VoidBeingCloudParticle extends Particle {
         textureSize = 32 + (int) size * 32;
         dynamicTexture = new DynamicTexture(textureSize, textureSize, true);
         id = currentlyUsedTextures;
-        ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register("alexscavesvoid_particle/void_cloud_" + id, dynamicTexture);
+        ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager()
+                .register("alexscavesvoid_particle/void_cloud_" + id, dynamicTexture);
         currentlyUsedTextures++;
         this.renderType = ACRenderTypes.getVoidBeingCloud(resourcelocation);
         this.targetId = target;
@@ -79,33 +81,40 @@ public class VoidBeingCloudParticle extends Particle {
         this.yd *= 0.97D;
         this.zd *= 0.97D;
         updateTexture();
-        if(idleSoundTime-- <= 0){
+        if (idleSoundTime-- <= 0) {
             idleSoundTime = 80 + random.nextInt(60);
-            this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_IDLE.get(), SoundSource.BLOCKS, 2.0F, 1.0F, false);
+            this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_IDLE.get(), SoundSource.BLOCKS,
+                    2.0F, 1.0F, false);
         }
-        this.level.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F, random.nextFloat() - 0.5F);
+        this.level.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, random.nextFloat() - 0.5F,
+                random.nextFloat() - 0.5F, random.nextFloat() - 0.5F);
         Entity entity = level.getEntity(this.targetId);
-        if(entity == null || !(entity instanceof UnderzealotSacrifice)){
-            this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_DISAPPEAR.get(), SoundSource.BLOCKS, 2.0F, 1.0F, false);
+        if (entity == null || !(entity instanceof UnderzealotSacrifice)) {
+            this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_DISAPPEAR.get(),
+                    SoundSource.BLOCKS, 2.0F, 1.0F, false);
             this.remove();
         }
-        if(age == this.lifetime - 10){
-            this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_DISAPPEAR.get(), SoundSource.BLOCKS, 2.0F, 1.0F, false);
+        if (age == this.lifetime - 10) {
+            this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_DISAPPEAR.get(),
+                    SoundSource.BLOCKS, 2.0F, 1.0F, false);
         }
     }
 
     private void onSpawn() {
         int circleOffset = random.nextInt(360);
         int eyes = 3 + random.nextInt(2);
-        this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_APPEAR.get(), SoundSource.BLOCKS, 2.0F, 1.0F, false);
+        this.level.playLocalSound(this.x, this.y, this.z, ACSoundRegistry.DARK_CLOUD_APPEAR.get(), SoundSource.BLOCKS,
+                2.0F, 1.0F, false);
         for (int j = 0; j < eyes; j++) {
-            Vec3 vec3 = new Vec3((0.5F + random.nextFloat() * 0.7F) * size * 1.1F, 0, 0).yRot((float) (circleOffset + (j / (float) eyes * 180) * (Math.PI / 180F)));
+            Vec3 vec3 = new Vec3((0.5F + random.nextFloat() * 0.7F) * size * 1.1F, 0, 0)
+                    .yRot((float) (circleOffset + (j / (float) eyes * 180) * (Math.PI / 180F)));
             this.level.addParticle(ACParticleRegistry.VOID_BEING_EYE.get(), this.x, this.y, this.z, vec3.x, vec3.z, 0);
 
         }
         for (int j = 0; j < totalTendrils; j++) {
             int timeBy = 200 / totalTendrils * (j + 1);
-            this.level.addParticle(ACParticleRegistry.VOID_BEING_TENDRIL.get(), this.x, this.y, this.z, this.targetId, timeBy, 0);
+            this.level.addParticle(ACParticleRegistry.VOID_BEING_TENDRIL.get(), this.x, this.y, this.z, this.targetId,
+                    timeBy, 0);
         }
     }
 
@@ -124,7 +133,8 @@ public class VoidBeingCloudParticle extends Particle {
                 if (alpha < 0) {
                     this.dynamicTexture.getPixels().setPixelRGBA(j, i, 0);
                 } else {
-                    this.dynamicTexture.getPixels().setPixelRGBA(j, i, FastColor.ARGB32.color((int) Math.min(alpha * 255, 255), black, black, black));
+                    this.dynamicTexture.getPixels().setPixelRGBA(j, i,
+                            FastColor.ARGB32.color((int) Math.min(alpha * 255, 255), black, black, black));
                 }
             }
         }
@@ -159,7 +169,8 @@ public class VoidBeingCloudParticle extends Particle {
             float f3 = Mth.lerp(partialTick, this.oRoll, this.roll);
             quaternion.mul(Axis.ZP.rotation(f3));
         }
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         VertexConsumer vertexConsumer1 = multibuffersource$buffersource.getBuffer(renderType);
         PoseStack posestack = new PoseStack();
         PoseStack.Pose posestack$pose = posestack.last();
@@ -167,7 +178,9 @@ public class VoidBeingCloudParticle extends Particle {
         float zFightFix = 0;
         Vector3f vector3f1 = new Vector3f(-1.0F, -1.0F, 0.0F);
         vector3f1.rotate(quaternion);
-        Vector3f[] avector3f = new Vector3f[]{new Vector3f(-1.0F, -1.0F, zFightFix), new Vector3f(-1.0F, 1.0F, zFightFix), new Vector3f(1.0F, 1.0F, zFightFix), new Vector3f(1.0F, -1.0F, zFightFix)};
+        Vector3f[] avector3f = new Vector3f[] { new Vector3f(-1.0F, -1.0F, zFightFix),
+                new Vector3f(-1.0F, 1.0F, zFightFix), new Vector3f(1.0F, 1.0F, zFightFix),
+                new Vector3f(1.0F, -1.0F, zFightFix) };
         float f4 = size;
 
         for (int i = 0; i < 4; ++i) {
@@ -181,22 +194,29 @@ public class VoidBeingCloudParticle extends Particle {
         float f5 = 0;
         float f6 = 1;
         int j = 240;
-        vertexConsumer1.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        vertexConsumer1.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        vertexConsumer1.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-        vertexConsumer1.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z()).color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
-
-        multibuffersource$buffersource.endBatch();
+        vertexConsumer1.vertex((double) avector3f[0].x(), (double) avector3f[0].y(), (double) avector3f[0].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f6).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        vertexConsumer1.vertex((double) avector3f[1].x(), (double) avector3f[1].y(), (double) avector3f[1].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f8, f5).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        vertexConsumer1.vertex((double) avector3f[2].x(), (double) avector3f[2].y(), (double) avector3f[2].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f5).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
+        vertexConsumer1.vertex((double) avector3f[3].x(), (double) avector3f[3].y(), (double) avector3f[3].z())
+                .color(this.rCol, this.gCol, this.bCol, this.alpha).uv(f7, f6).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(j).normal(matrix3f, 0.0F, -1.0F, 0.0F).endVertex();
     }
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
     }
 
     @OnlyIn(Dist.CLIENT)
     public static class Factory implements ParticleProvider<SimpleParticleType> {
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new VoidBeingCloudParticle(worldIn, x, y, z, (int) xSpeed, (int) ySpeed, (int) zSpeed);
         }
     }

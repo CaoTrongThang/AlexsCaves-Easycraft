@@ -20,7 +20,8 @@ import net.minecraft.util.Mth;
 import com.github.alexmodguy.alexscaves.forge_shim.client.ForgeRenderTypes;
 
 public class WatcherAppearanceParticle extends Particle {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/watcher_appearance.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/watcher_appearance.png");
     private final WatcherModel model = new WatcherModel();
 
     private WatcherAppearanceParticle(ClientLevel lvl, double x, double y, double z) {
@@ -31,7 +32,7 @@ public class WatcherAppearanceParticle extends Particle {
     }
 
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
     }
 
     public void render(VertexConsumer vertexConsumer, Camera camera, float partialTick) {
@@ -47,16 +48,19 @@ public class WatcherAppearanceParticle extends Particle {
         posestack.mulPose(Axis.XP.rotationDegrees(0F));
         posestack.scale(-scale, -scale, scale);
         posestack.translate(0.0D, 0.5F, 2 + (1F - initalFlip));
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
-        VertexConsumer vertexconsumer = multibuffersource$buffersource.getBuffer(ForgeRenderTypes.getUnlitTranslucent(TEXTURE));
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
+        VertexConsumer vertexconsumer = multibuffersource$buffersource
+                .getBuffer(ForgeRenderTypes.getUnlitTranslucent(TEXTURE));
         this.model.positionForParticle(partialTick, age);
-        this.model.renderToBuffer(posestack, vertexconsumer, 240, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, Mth.clamp(1 - f * f, 0F, 1F));
-        multibuffersource$buffersource.endBatch();
+        this.model.renderToBuffer(posestack, vertexconsumer, 240, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F,
+                Mth.clamp(1 - f * f, 0F, 1F));
         RenderSystem.setShaderFogEnd(fogBefore);
     }
 
     public static class Factory implements ParticleProvider<SimpleParticleType> {
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             return new WatcherAppearanceParticle(worldIn, x, y, z);
         }
     }

@@ -21,8 +21,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 public class BigSplashParticle extends Particle {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/particle/splash.png");
-    private static final ResourceLocation TEXTURE_OVERLAY = new ResourceLocation(AlexsCaves.MODID, "textures/particle/splash_overlay.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID,
+            "textures/particle/splash.png");
+    private static final ResourceLocation TEXTURE_OVERLAY = new ResourceLocation(AlexsCaves.MODID,
+            "textures/particle/splash_overlay.png");
     private static final SplashModel MODEL = new SplashModel();
     private float scale;
     private final int waterColor;
@@ -48,8 +50,11 @@ public class BigSplashParticle extends Particle {
             this.setAlpha(f);
         } else {
             for (int j = 0; j < scale * 2 + 1; j++) {
-                Vec3 sputterFrom = new Vec3((level.random.nextFloat() - 0.5F) * 0.1F * scale, -0.25F, (level.random.nextFloat() - 0.5F) * 0.1F * scale).add(this.x, this.y, this.z);
-                this.level.addParticle(ACParticleRegistry.BIG_SPLASH_EFFECT.get(), sputterFrom.x, sputterFrom.y, sputterFrom.z, (level.random.nextFloat() - 0.5F) * 0.2F, 0.3F + level.random.nextFloat() * 0.2F, (level.random.nextFloat() - 0.5F) * 0.2F);
+                Vec3 sputterFrom = new Vec3((level.random.nextFloat() - 0.5F) * 0.1F * scale, -0.25F,
+                        (level.random.nextFloat() - 0.5F) * 0.1F * scale).add(this.x, this.y, this.z);
+                this.level.addParticle(ACParticleRegistry.BIG_SPLASH_EFFECT.get(), sputterFrom.x, sputterFrom.y,
+                        sputterFrom.z, (level.random.nextFloat() - 0.5F) * 0.2F, 0.3F + level.random.nextFloat() * 0.2F,
+                        (level.random.nextFloat() - 0.5F) * 0.2F);
             }
 
         }
@@ -72,24 +77,28 @@ public class BigSplashParticle extends Particle {
         posestack.pushPose();
         posestack.translate(f, f1 - 0.5F, f2);
         posestack.scale(-scale, -scale, scale);
-        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers()
+                .bufferSource();
         MODEL.setupAnim(null, 0, lifetime, age + partialTick, 0, 0);
         VertexConsumer baseConsumer = multibuffersource$buffersource.getBuffer(RenderType.entityTranslucent(TEXTURE));
-        MODEL.renderToBuffer(posestack, baseConsumer, packedLight, OverlayTexture.NO_OVERLAY, colorR, colorG, colorB, alpha);
-        VertexConsumer overlayconsumer = multibuffersource$buffersource.getBuffer(RenderType.entityTranslucent(TEXTURE_OVERLAY));
-        MODEL.renderToBuffer(posestack, overlayconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, alpha);
-        multibuffersource$buffersource.endBatch();
+        MODEL.renderToBuffer(posestack, baseConsumer, packedLight, OverlayTexture.NO_OVERLAY, colorR, colorG, colorB,
+                alpha);
+        VertexConsumer overlayconsumer = multibuffersource$buffersource
+                .getBuffer(RenderType.entityTranslucent(TEXTURE_OVERLAY));
+        MODEL.renderToBuffer(posestack, overlayconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F,
+                alpha);
         posestack.popPose();
     }
 
     @Override
     public ParticleRenderType getRenderType() {
-        return ParticleRenderType.CUSTOM;
+        return AbstractTrailParticle.DEFERRED_RENDER_TYPE;
     }
 
     public static class Factory implements ParticleProvider<SimpleParticleType> {
 
-        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+        public Particle createParticle(SimpleParticleType typeIn, ClientLevel worldIn, double x, double y, double z,
+                double xSpeed, double ySpeed, double zSpeed) {
             if (xSpeed == 0.0) {
                 xSpeed = 1.0F;
             }

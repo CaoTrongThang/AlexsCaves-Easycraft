@@ -45,12 +45,18 @@ import net.minecraft.world.phys.Vec3;
 import java.util.function.Predicate;
 
 public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesScreen {
-    private static final EntityDataAccessor<Boolean> RUNNING = SynchedEntityData.defineId(ForsakenEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> LEAPING = SynchedEntityData.defineId(ForsakenEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> SONIC_CHARGE = SynchedEntityData.defineId(ForsakenEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> SONAR_ID = SynchedEntityData.defineId(ForsakenEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> HELD_MOB_ID = SynchedEntityData.defineId(ForsakenEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DARKNESS_TIME = SynchedEntityData.defineId(ForsakenEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> RUNNING = SynchedEntityData.defineId(ForsakenEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> LEAPING = SynchedEntityData.defineId(ForsakenEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> SONIC_CHARGE = SynchedEntityData.defineId(ForsakenEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> SONAR_ID = SynchedEntityData.defineId(ForsakenEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> HELD_MOB_ID = SynchedEntityData.defineId(ForsakenEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DARKNESS_TIME = SynchedEntityData.defineId(ForsakenEntity.class,
+            EntityDataSerializers.INT);
     public static final Animation ANIMATION_SUMMON = Animation.create(50);
     public static final Animation ANIMATION_PREPARE_JUMP = Animation.create(15);
     public static final Animation ANIMATION_BITE = Animation.create(15);
@@ -92,7 +98,9 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.MAX_HEALTH, 250.0D).add(Attributes.FOLLOW_RANGE, 64.0D).add(Attributes.ATTACK_DAMAGE, 10.0D).add(Attributes.KNOCKBACK_RESISTANCE, 0.6D);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.30D)
+                .add(Attributes.MAX_HEALTH, 12500.0D).add(Attributes.FOLLOW_RANGE, 64.0D)
+                .add(Attributes.ATTACK_DAMAGE, 50.0D).add(Attributes.KNOCKBACK_RESISTANCE, 0.8D);
     }
 
     @Override
@@ -161,7 +169,8 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         } else {
             timeLeaping = 0;
             this.leapPitch = Mth.approachDegrees(leapPitch, 0, 5);
-            if (this.getAnimation() == ANIMATION_PREPARE_JUMP && this.onGround() && !level().isClientSide && this.getAnimationTick() >= 8 && this.getAnimationTick() <= 10) {
+            if (this.getAnimation() == ANIMATION_PREPARE_JUMP && this.onGround() && !level().isClientSide
+                    && this.getAnimationTick() >= 8 && this.getAnimationTick() <= 10) {
                 this.setLeaping(true);
                 this.playSound(ACSoundRegistry.FORSAKEN_LEAP.get(), this.getSoundVolume(), this.getVoicePitch());
             }
@@ -194,21 +203,25 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         this.legSolver.update(this, this.yBodyRot, this.getScale());
         if (level().isClientSide) {
             if (random.nextInt(6) == 0) {
-                level().addParticle(ACParticleRegistry.FORSAKEN_SPIT.get(), this.getX(), this.getY() + 0.5F, this.getZ(), this.getId(), 0, 0);
+                level().addParticle(ACParticleRegistry.FORSAKEN_SPIT.get(), this.getX(), this.getY() + 0.5F,
+                        this.getZ(), this.getId(), 0, 0);
             }
             if (darknessProgress > 0) {
                 for (int i = 0; i < 1; i++) {
                     if (random.nextBoolean()) {
-                        level().addParticle(ACParticleRegistry.UNDERZEALOT_MAGIC.get(), this.getRandomX(1.0D), this.getRandomY(), this.getRandomZ(1.0D), this.getX(), this.getEyeY(), this.getZ());
+                        level().addParticle(ACParticleRegistry.UNDERZEALOT_MAGIC.get(), this.getRandomX(1.0D),
+                                this.getRandomY(), this.getRandomZ(1.0D), this.getX(), this.getEyeY(), this.getZ());
                     } else {
-                        level().addParticle(ParticleTypes.SMOKE, this.getRandomX(1.0D), this.getRandomY(), this.getRandomZ(1.0D), 0, 0, 0);
+                        level().addParticle(ParticleTypes.SMOKE, this.getRandomX(1.0D), this.getRandomY(),
+                                this.getRandomZ(1.0D), 0, 0, 0);
                     }
                 }
             }
             if (this.getAnimation() == ANIMATION_SONIC_ATTACK) {
                 if (this.getAnimationTick() > 10 && this.getAnimationTick() < 30) {
                     if (this.getAnimationTick() % 4 == 0) {
-                        level().addAlwaysVisibleParticle(ACParticleRegistry.FORSAKEN_SONAR.get(), true, this.getX(), this.getY() + 0.5F, this.getZ(), this.getId(), this.getXRot(), this.getYHeadRot());
+                        level().addAlwaysVisibleParticle(ACParticleRegistry.FORSAKEN_SONAR.get(), true, this.getX(),
+                                this.getY() + 0.5F, this.getZ(), this.getId(), this.getXRot(), this.getYHeadRot());
                     }
                     this.screenShakeAmount = 1F;
                 }
@@ -216,7 +229,8 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
             if (this.getAnimation() == ANIMATION_SONIC_BLAST) {
                 if (this.getAnimationTick() > 10 && this.getAnimationTick() < 30) {
                     if (this.getAnimationTick() % 4 == 0) {
-                        level().addAlwaysVisibleParticle(ACParticleRegistry.FORSAKEN_SONAR_LARGE.get(), true, this.getX(), this.getY() + 0.5F, this.getZ(), this.getId(), 90, 0);
+                        level().addAlwaysVisibleParticle(ACParticleRegistry.FORSAKEN_SONAR_LARGE.get(), true,
+                                this.getX(), this.getY() + 0.5F, this.getZ(), this.getId(), 90, 0);
                     }
                     this.screenShakeAmount = 1F;
                 }
@@ -226,7 +240,8 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
                     this.screenShakeAmount = 1F;
                 }
                 if (this.getAnimationTick() == 12) {
-                    Vec3 smashPos = this.position().add(new Vec3(0, 0, 3.5F).yRot((float) -Math.toRadians(this.yBodyRot)));
+                    Vec3 smashPos = this.position()
+                            .add(new Vec3(0, 0, 3.5F).yRot((float) -Math.toRadians(this.yBodyRot)));
                     float radius = 1.4F;
                     float particleCount = 20 + random.nextInt(12);
                     for (int i1 = 0; i1 < particleCount; i1++) {
@@ -237,11 +252,15 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
                         double extraX = radius * Mth.sin((float) (Math.PI + angle));
                         double extraY = 1.2F;
                         double extraZ = radius * Mth.cos(angle);
-                        BlockPos ground = BlockPos.containing(ACMath.getGroundBelowPosition(level(), new Vec3(Mth.floor(smashPos.x + extraX), Mth.floor(smashPos.y + extraY) + 2, Mth.floor(smashPos.z + extraZ))));
+                        BlockPos ground = BlockPos.containing(
+                                ACMath.getGroundBelowPosition(level(), new Vec3(Mth.floor(smashPos.x + extraX),
+                                        Mth.floor(smashPos.y + extraY) + 2, Mth.floor(smashPos.z + extraZ))));
                         BlockState groundState = this.level().getBlockState(ground);
                         if (groundState.isSolid()) {
                             if (level().isClientSide) {
-                                level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, groundState), true, smashPos.x + extraX, ground.getY() + extraY, smashPos.z + extraZ, motionX, motionY, motionZ);
+                                level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, groundState), true,
+                                        smashPos.x + extraX, ground.getY() + extraY, smashPos.z + extraZ, motionX,
+                                        motionY, motionZ);
                             }
                         }
                     }
@@ -249,8 +268,10 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
             }
         } else {
             LivingEntity target = this.getTarget();
-            if (target != null && target.isAlive() && target.distanceTo(this) < 10 && this.hasLineOfSight(target) && (this.getAnimation() == ANIMATION_RIGHT_PICKUP || this.getAnimation() == ANIMATION_LEFT_PICKUP)) {
-                if(getHeldMobId() == -1){
+            if (target != null && target.isAlive() && target.distanceTo(this) < 10 && this.hasLineOfSight(target)
+                    && (this.getAnimation() == ANIMATION_RIGHT_PICKUP
+                            || this.getAnimation() == ANIMATION_LEFT_PICKUP)) {
+                if (getHeldMobId() == -1) {
                     this.playSound(ACSoundRegistry.FORSAKEN_GRAB.get(), this.getSoundVolume(), this.getVoicePitch());
                 }
                 this.setHeldMobId(target.getId());
@@ -274,9 +295,11 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         Entity grabbedEntity = this.getHeldMob();
         if (grabbedEntity != null && grabbedEntity.isAlive() && grabbedEntity.distanceTo(this) < 10) {
             grabbedEntity.fallDistance = 0;
-            if ((this.getAnimation() == ANIMATION_RIGHT_PICKUP || this.getAnimation() == ANIMATION_LEFT_PICKUP) && this.getAnimationTick() >= 10 && this.getAnimationTick() <= 38) {
+            if ((this.getAnimation() == ANIMATION_RIGHT_PICKUP || this.getAnimation() == ANIMATION_LEFT_PICKUP)
+                    && this.getAnimationTick() >= 10 && this.getAnimationTick() <= 38) {
                 Vec3 grabPos = getPickupPos();
-                Vec3 minus = new Vec3(grabPos.x - grabbedEntity.getX(), grabPos.y - grabbedEntity.getY(), grabPos.z - grabbedEntity.getZ()).scale(0.33F);
+                Vec3 minus = new Vec3(grabPos.x - grabbedEntity.getX(), grabPos.y - grabbedEntity.getY(),
+                        grabPos.z - grabbedEntity.getZ()).scale(0.33F);
                 grabbedEntity.setDeltaMovement(minus);
             }
         }
@@ -285,7 +308,8 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
 
     private int getLightLevel() {
         BlockPos blockPos = this.blockPosition().above();
-        return Math.max(this.level().getBrightness(LightLayer.BLOCK, blockPos), this.level().getMaxLocalRawBrightness(blockPos));
+        return Math.max(this.level().getBrightness(LightLayer.BLOCK, blockPos),
+                this.level().getMaxLocalRawBrightness(blockPos));
     }
 
     private Vec3 getPickupPos() {
@@ -325,18 +349,23 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         return dist > 16384;
     }
 
-    public static boolean checkForsakenSpawnRules(EntityType<? extends Monster> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-        return checkMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource) && randomSource.nextInt(20) == 0;
+    public static boolean checkForsakenSpawnRules(EntityType<? extends Monster> entityType,
+            ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos,
+            RandomSource randomSource) {
+        return checkMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource)
+                && randomSource.nextInt(20) == 0;
     }
 
     private boolean isRaisingArm(boolean left) {
-        if (currentAnimation != NO_ANIMATION && currentAnimation != null && animationTick > currentAnimation.getDuration() - 5) {
+        if (currentAnimation != NO_ANIMATION && currentAnimation != null
+                && animationTick > currentAnimation.getDuration() - 5) {
             return false;
         }
         if (left && (this.currentAnimation == ANIMATION_LEFT_PICKUP || this.currentAnimation == ANIMATION_LEFT_SLASH)) {
             return true;
         }
-        if (!left && (this.currentAnimation == ANIMATION_RIGHT_PICKUP || this.currentAnimation == ANIMATION_RIGHT_SLASH)) {
+        if (!left && (this.currentAnimation == ANIMATION_RIGHT_PICKUP
+                || this.currentAnimation == ANIMATION_RIGHT_SLASH)) {
             return true;
         }
         return this.currentAnimation == ANIMATION_SUMMON || this.currentAnimation == ANIMATION_GROUND_SMASH;
@@ -373,7 +402,6 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
     public void setHeldMobId(int i) {
         this.entityData.set(HELD_MOB_ID, i);
     }
-
 
     public int getHeldMobId() {
         return this.entityData.get(HELD_MOB_ID);
@@ -436,32 +464,38 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
     public float getDarknessAmount(float partialTicks) {
         float animationValue = 0.0F;
         if (this.currentAnimation == ForsakenEntity.ANIMATION_SUMMON) {
-            animationValue = 1.0F - (this.getAnimationTick() + partialTicks) / (float) ForsakenEntity.ANIMATION_SUMMON.getDuration();
+            animationValue = 1.0F
+                    - (this.getAnimationTick() + partialTicks) / (float) ForsakenEntity.ANIMATION_SUMMON.getDuration();
         }
-        return Math.max((prevDarknessProgress + (darknessProgress - prevDarknessProgress) * partialTicks) * 0.2F, animationValue);
+        return Math.max((prevDarknessProgress + (darknessProgress - prevDarknessProgress) * partialTicks) * 0.2F,
+                animationValue);
     }
 
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if(this.isInWall()){
+        if (this.isInWall()) {
             if (this.destroyBlocksTick > 0) {
                 --this.destroyBlocksTick;
-                if (this.destroyBlocksTick == 0 && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+                if (this.destroyBlocksTick == 0 && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                        .getMobGriefingEvent(this.level(), this)) {
                     int j1 = Mth.floor(this.getY());
                     int i2 = Mth.floor(this.getX());
                     int j2 = Mth.floor(this.getZ());
                     boolean flag = false;
 
-                    for(int j = -1; j <= 1; ++j) {
-                        for(int k2 = -1; k2 <= 1; ++k2) {
-                            for(int k = 0; k <= 3; ++k) {
+                    for (int j = -1; j <= 1; ++j) {
+                        for (int k2 = -1; k2 <= 1; ++k2) {
+                            for (int k = 0; k <= 3; ++k) {
                                 int l2 = i2 + j;
                                 int l = j1 + k;
                                 int i1 = j2 + k2;
                                 BlockPos blockpos = new BlockPos(l2, l, i1);
                                 BlockState blockstate = this.level().getBlockState(blockpos);
-                                if (blockstate.getDestroySpeed(this.level(), blockpos) >= 0.0F && !blockstate.is(ACTagRegistry.UNMOVEABLE) && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
+                                if (blockstate.getDestroySpeed(this.level(), blockpos) >= 0.0F
+                                        && !blockstate.is(ACTagRegistry.UNMOVEABLE)
+                                        && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                                                .onEntityDestroyBlock(this, blockpos, blockstate)) {
                                     flag = this.level().destroyBlock(blockpos, true, this) || flag;
                                 }
                             }
@@ -469,7 +503,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
                     }
 
                     if (flag) {
-                        this.level().levelEvent((Player)null, 1022, this.blockPosition(), 0);
+                        this.level().levelEvent((Player) null, 1022, this.blockPosition(), 0);
                     }
                     this.destroyBlocksTick = 20;
                 }
@@ -477,7 +511,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         }
     }
 
-        @Override
+    @Override
     public float getScreenShakeAmount(float partialTicks) {
         return prevScreenShakeAmount + (screenShakeAmount - prevScreenShakeAmount) * partialTicks;
     }
@@ -491,8 +525,8 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         if (damageSource.is(DamageTypes.SONIC_BOOM)) {
             this.setSonicCharge(true);
             return false;
-        } else{
-            if(damageSource.getEntity() instanceof AbstractGolem) {
+        } else {
+            if (damageSource.getEntity() instanceof AbstractGolem) {
                 f *= 0.5F;
             }
             return super.hurt(damageSource, f);
@@ -501,7 +535,9 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{ANIMATION_SUMMON, ANIMATION_PREPARE_JUMP, ANIMATION_BITE, ANIMATION_LEFT_SLASH, ANIMATION_RIGHT_SLASH, ANIMATION_GROUND_SMASH, ANIMATION_SONIC_ATTACK, ANIMATION_SONIC_BLAST, ANIMATION_LEFT_PICKUP, ANIMATION_RIGHT_PICKUP};
+        return new Animation[] { ANIMATION_SUMMON, ANIMATION_PREPARE_JUMP, ANIMATION_BITE, ANIMATION_LEFT_SLASH,
+                ANIMATION_RIGHT_SLASH, ANIMATION_GROUND_SMASH, ANIMATION_SONIC_ATTACK, ANIMATION_SONIC_BLAST,
+                ANIMATION_LEFT_PICKUP, ANIMATION_RIGHT_PICKUP };
     }
 
     public float getSonicDamageAgainst(LivingEntity target) {
@@ -528,6 +564,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
     public float getSoundVolume() {
         return 2.5F;
     }
+
     protected void playStepSound(BlockPos pos, BlockState state) {
         if (!this.isBaby()) {
             this.playSound(ACSoundRegistry.FORSAKEN_STEP.get(), 1F, 1F);
