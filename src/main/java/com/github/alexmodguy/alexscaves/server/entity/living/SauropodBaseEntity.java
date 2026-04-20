@@ -42,9 +42,11 @@ import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SauropodBaseEntity extends DinosaurEntity implements ShakesScreen, IAnimatedEntity, KaijuMob, ITallWalker {
+public abstract class SauropodBaseEntity extends DinosaurEntity
+        implements ShakesScreen, IAnimatedEntity, KaijuMob, ITallWalker {
 
-    protected static final EntityDataAccessor<Boolean> WALKING = SynchedEntityData.defineId(SauropodBaseEntity.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Boolean> WALKING = SynchedEntityData.defineId(SauropodBaseEntity.class,
+            EntityDataSerializers.BOOLEAN);
     public static final Animation ANIMATION_SPEAK = Animation.create(15);
     public static final Animation ANIMATION_ROAR = Animation.create(60);
     public static final Animation ANIMATION_EPIC_DEATH = Animation.create(120);
@@ -114,7 +116,8 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         this.tailPart1 = new SauropodPartEntity(this, this, 3F, 2F);
         this.tailPart2 = new SauropodPartEntity(this, tailPart1, 2.5F, 1.5F);
         this.tailPart3 = new SauropodPartEntity(this, tailPart2, 2F, 1F);
-        this.allParts = new SauropodPartEntity[]{neckPart1, neckPart2, neckPart3, headPart, tailPart1, tailPart2, tailPart3};
+        this.allParts = new SauropodPartEntity[] { neckPart1, neckPart2, neckPart3, headPart, tailPart1, tailPart2,
+                tailPart3 };
     }
 
     @Override
@@ -178,15 +181,17 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
                 this.reapplyPosition();
             }
         }
-        if (this.getAnimation() == ANIMATION_STOMP && this.getAnimationTick() > 25 && this.getAnimationTick() < 35 || this.getAnimation() == ANIMATION_ROAR && this.getAnimationTick() > 5 && this.getAnimationTick() < 45) {
+        if (this.getAnimation() == ANIMATION_STOMP && this.getAnimationTick() > 25 && this.getAnimationTick() < 35
+                || this.getAnimation() == ANIMATION_ROAR && this.getAnimationTick() > 5
+                        && this.getAnimationTick() < 45) {
             if (screenShakeAmount <= 2.0F) {
                 screenShakeAmount = 2.0F;
             }
         }
-        if(wasPreviouslyChild != this.isBaby()){
+        if (wasPreviouslyChild != this.isBaby()) {
             wasPreviouslyChild = this.isBaby();
             this.refreshDimensions();
-            for(SauropodPartEntity sauropodPartEntity : this.allParts){
+            for (SauropodPartEntity sauropodPartEntity : this.allParts) {
                 sauropodPartEntity.refreshDimensions();
             }
         }
@@ -215,7 +220,8 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
                 walkAnimSpeed = Math.max(0, walkAnimSpeed - 0.025F);
             }
         }
-        if (f <= 0.05 && walkAnimSpeed > 0.0F && this.onGround() && (speed > 0.003F || this.isVehicle()) && stepSoundCooldown <= 0) {
+        if (f <= 0.05 && walkAnimSpeed > 0.0F && this.onGround() && (speed > 0.003F || this.isVehicle())
+                && stepSoundCooldown <= 0) {
             this.onStep();
             stepSoundCooldown = 5;
         }
@@ -223,7 +229,7 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
             this.lastStompX = this.getX();
             this.lastStompZ = this.getZ();
         }
-        if(stepSoundCooldown > 0){
+        if (stepSoundCooldown > 0) {
             stepSoundCooldown--;
         }
         double stompX = (this.getX() - this.lastStompX);
@@ -241,7 +247,9 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
     protected abstract void onStep();
 
     public boolean shouldRaiseArms() {
-        return this.isDancing() || this.getAnimation() == ANIMATION_LEFT_KICK || this.getAnimation() == ANIMATION_RIGHT_KICK || this.getAnimation() == ANIMATION_STOMP || this.getAnimation() == ANIMATION_JUMP;
+        return this.isDancing() || this.getAnimation() == ANIMATION_LEFT_KICK
+                || this.getAnimation() == ANIMATION_RIGHT_KICK || this.getAnimation() == ANIMATION_STOMP
+                || this.getAnimation() == ANIMATION_JUMP;
     }
 
     private void tickMultipart() {
@@ -261,7 +269,7 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         }
         float neckRotateSpeed = getNeckRotateSpeed();
         float tailRotateSpeed = getTailRotateSpeed();
-        if(turningFast){
+        if (turningFast) {
             neckRotateSpeed += 30;
             tailRotateSpeed += 30;
         }
@@ -280,19 +288,32 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
             float f = ACMath.cullAnimationTick(this.getAnimationTick(), 2, ANIMATION_STOMP, 1.0F, 0, 30);
             neckAdditionalY = 4 * f;
             neckAdditionalZ = -4 * f;
-        }else if(this.isDancing()){
+        } else if (this.isDancing()) {
             float f = this.getDanceProgress(1.0F);
             neckAdditionalY = 4 * f;
             neckAdditionalZ = -4 * f;
             headYStep *= (1F - f);
         }
-        this.neckPart1.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 2F + neckAdditionalY, 5F + neckAdditionalZ).scale(this.getScale()), headXStep, (yBodyRot + headYStep)).add(center));
-        this.neckPart2.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, 2.5F).scale(this.getScale()), headXStep, (yBodyRot + headYStep * 2F)).add(this.neckPart1.centeredPosition()));
-        this.neckPart3.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, 2F).scale(this.getScale()), headXStep, (yBodyRot + headYStep * 3F)).add(this.neckPart2.centeredPosition()));
-        this.headPart.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, 2.5F).scale(this.getScale()), headXStep, (yBodyRot + headYStep * 4F)).add(this.neckPart3.centeredPosition()));
-        this.tailPart1.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, -0.5F, -3.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep)).add(center));
-        this.tailPart2.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, -0.25F, -3.25F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 2F)).add(this.tailPart1.centeredPosition()));
-        this.tailPart3.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, 0, -2.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 3F)).add(this.tailPart2.centeredPosition()));
+        this.neckPart1.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(0, 2F + neckAdditionalY, 5F + neckAdditionalZ).scale(this.getScale()),
+                        headXStep, (yBodyRot + headYStep)).add(center));
+        this.neckPart2.setPosCenteredY(this
+                .rotateOffsetVec(new Vec3(0, 0, 2.5F).scale(this.getScale()), headXStep, (yBodyRot + headYStep * 2F))
+                .add(this.neckPart1.centeredPosition()));
+        this.neckPart3.setPosCenteredY(
+                this.rotateOffsetVec(new Vec3(0, 0, 2F).scale(this.getScale()), headXStep, (yBodyRot + headYStep * 3F))
+                        .add(this.neckPart2.centeredPosition()));
+        this.headPart.setPosCenteredY(this
+                .rotateOffsetVec(new Vec3(0, 0, 2.5F).scale(this.getScale()), headXStep, (yBodyRot + headYStep * 4F))
+                .add(this.neckPart3.centeredPosition()));
+        this.tailPart1.setPosCenteredY(this
+                .rotateOffsetVec(new Vec3(0, -0.5F, -3.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep))
+                .add(center));
+        this.tailPart2.setPosCenteredY(this.rotateOffsetVec(new Vec3(0, -0.25F, -3.25F).scale(this.getScale()),
+                tailXStep, (yBodyRot + tailYStep * 2F)).add(this.tailPart1.centeredPosition()));
+        this.tailPart3.setPosCenteredY(this
+                .rotateOffsetVec(new Vec3(0, 0, -2.5F).scale(this.getScale()), tailXStep, (yBodyRot + tailYStep * 3F))
+                .add(this.tailPart2.centeredPosition()));
 
         for (int l = 0; l < this.allParts.length; ++l) {
             this.allParts[l].xo = avector3d[l].x;
@@ -308,19 +329,19 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         return f % 360.0F;
     }
 
-
     protected void crushBlocksInRing(int width, int ringStartX, int ringStartZ, float dropChance) {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         float lowestFoot = 0.0F;
-        for(LuxtructosaurusLegSolver.Leg leg : legSolver.legs){
+        for (LuxtructosaurusLegSolver.Leg leg : legSolver.legs) {
             float height = leg.getHeight(1.0F);
-            if(height > lowestFoot){
+            if (height > lowestFoot) {
                 lowestFoot = height;
             }
         }
-        int feetY = this.blockPosition().getY() - (int)lowestFoot;
+        int feetY = this.blockPosition().getY() - (int) lowestFoot;
         BlockPos center = new BlockPos(ringStartX, feetY, ringStartZ);
-        if(com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || this.isVehicle() && this.getControllingPassenger() instanceof Player){
+        if (com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)
+                || this.isVehicle() && this.getControllingPassenger() instanceof Player) {
             for (int y = 0; y <= STOMP_CRUSH_HEIGHT; y++) {
                 List<MovingBlockData> dataPerYLevel = new ArrayList<>();
                 int currentBlocksInChunk = 0;
@@ -330,12 +351,17 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
                         double dist = Math.sqrt(mutableBlockPos.distSqr(center));
                         if (dist <= width && level().isLoaded(mutableBlockPos)) {
                             BlockState state = level().getBlockState(mutableBlockPos);
-                            if (state.is(ACTagRegistry.UNMOVEABLE) || state.isAir() || state.canBeReplaced() || state.getBlock().getExplosionResistance() > AlexsCaves.COMMON_CONFIG.atlatitanMaxExplosionResistance.get()) {
+                            if (state.is(ACTagRegistry.UNMOVEABLE) || state.isAir() || state.canBeReplaced() || state
+                                    .getBlock()
+                                    .getExplosionResistance() > AlexsCaves.COMMON_CONFIG.atlatitanMaxExplosionResistance
+                                            .get()) {
                                 continue;
                             } else {
                                 BlockEntity te = level().getBlockEntity(mutableBlockPos);
                                 BlockPos offset = mutableBlockPos.immutable().subtract(center);
-                                MovingBlockData data = new MovingBlockData(state, state.getShape(level(), mutableBlockPos), offset, te == null ? null : te.saveWithoutMetadata());
+                                MovingBlockData data = new MovingBlockData(state,
+                                        state.getShape(level(), mutableBlockPos), offset,
+                                        te == null ? null : te.saveWithoutMetadata());
                                 dataPerYLevel.add(data);
 
                                 if (currentBlocksInChunk < 16) {
@@ -378,7 +404,8 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         float heightFrontLeft = legSolver.frontLeft.getHeight(1.0F);
         float heightFrontRight = legSolver.frontRight.getHeight(1.0F);
         float armsWalkAmount = 1F - (raiseArmsAmount / 5F);
-        return Math.max(Math.max(heightBackLeft, heightBackRight), armsWalkAmount * Math.max(heightFrontLeft, heightFrontRight)) * 0.8F;
+        return Math.max(Math.max(heightBackLeft, heightBackRight),
+                armsWalkAmount * Math.max(heightFrontLeft, heightFrontRight)) * 0.8F;
     }
 
     public int getMaxHeadYRot() {
@@ -428,7 +455,6 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         this.lzd = lerpZ;
         this.setDeltaMovement(this.lxd, this.lyd, this.lzd);
     }
-
 
     public float getYawFromBuffer(int pointer, float partialTick) {
         int i = this.yawPointer - pointer & 127;
@@ -524,7 +550,8 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
     }
 
     public boolean areLegsMoving() {
-        return (this.entityData.get(WALKING) || this.getAnimation() == ANIMATION_LEFT_WHIP || this.getAnimation() == ANIMATION_RIGHT_WHIP) && !this.isImmobile() && !this.isNoAi();
+        return (this.entityData.get(WALKING) || this.getAnimation() == ANIMATION_LEFT_WHIP
+                || this.getAnimation() == ANIMATION_RIGHT_WHIP) && !this.isImmobile() && !this.isNoAi();
     }
 
     public float getLegSlamAmount(float speed, float offset) {
@@ -539,18 +566,21 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         return 3.2F;
     }
 
-    public boolean hurtEntitiesAround(Vec3 center, float radius, float damageAmount, float knockbackAmount, boolean setsOnFire, boolean disablesShields){
+    public boolean hurtEntitiesAround(Vec3 center, float radius, float damageAmount, float knockbackAmount,
+            boolean setsOnFire, boolean disablesShields) {
         AABB aabb = new AABB(center.subtract(radius, radius, radius), center.add(radius, radius, radius));
         boolean flag = false;
         DamageSource damageSource = this.damageSources().mobAttack(this);
-        for(LivingEntity living : level().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.NO_CREATIVE_OR_SPECTATOR)){
-            if(!living.is(this) && !living.isAlliedTo(this) && living.getType() != this.getType() && living.distanceToSqr(center.x, center.y, center.z) <= radius * radius){
-                if(living.isDamageSourceBlocked(damageSource) && disablesShields && living instanceof Player player){
+        for (LivingEntity living : level().getEntitiesOfClass(LivingEntity.class, aabb,
+                EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
+            if (!living.is(this) && !living.isAlliedTo(this) && living.getType() != this.getType()
+                    && living.distanceToSqr(center.x, center.y, center.z) <= radius * radius) {
+                if (living.isDamageSourceBlocked(damageSource) && disablesShields && living instanceof Player player) {
                     player.disableShield(true);
                 }
-                if(living.hurt(damageSource, damageAmount)){
+                if (living.hurt(damageSource, damageAmount)) {
                     flag = true;
-                    if(setsOnFire){
+                    if (setsOnFire) {
                         living.setSecondsOnFire(10);
                     }
                     living.knockback(knockbackAmount, center.x - living.getX(), center.z - living.getZ());
@@ -560,12 +590,12 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         return flag;
     }
 
-    public boolean isImmobile(){
+    public boolean isImmobile() {
         return super.isImmobile() || this.getAnimation() == ANIMATION_SUMMON;
     }
 
     public float getScreenShakeAmount(float partialTicks) {
-        if(!this.isAlive()){
+        if (!this.isAlive()) {
             return 0;
         }
         return prevScreenShakeAmount + (screenShakeAmount - prevScreenShakeAmount) * partialTicks;
@@ -609,7 +639,9 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{ANIMATION_SPEAK, ANIMATION_ROAR, ANIMATION_EPIC_DEATH, ANIMATION_SUMMON, ANIMATION_STOMP, ANIMATION_SPEW_FLAMES, ANIMATION_JUMP, ANIMATION_LEFT_KICK, ANIMATION_RIGHT_KICK, ANIMATION_LEFT_WHIP, ANIMATION_RIGHT_WHIP, ANIMATION_EAT_LEAVES};
+        return new Animation[] { ANIMATION_SPEAK, ANIMATION_ROAR, ANIMATION_EPIC_DEATH, ANIMATION_SUMMON,
+                ANIMATION_STOMP, ANIMATION_SPEW_FLAMES, ANIMATION_JUMP, ANIMATION_LEFT_KICK, ANIMATION_RIGHT_KICK,
+                ANIMATION_LEFT_WHIP, ANIMATION_RIGHT_WHIP, ANIMATION_EAT_LEAVES };
     }
 
     @Override
@@ -663,13 +695,14 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
                     float difference = Mth.degreesDifferenceAbs(SauropodBaseEntity.this.yBodyRot, moveToRot);
                     flag = difference < 15.0F;
                 }
-                if (SauropodBaseEntity.this.getAnimation() == ANIMATION_LEFT_WHIP || SauropodBaseEntity.this.getAnimation() == ANIMATION_RIGHT_WHIP) {
+                if (SauropodBaseEntity.this.getAnimation() == ANIMATION_LEFT_WHIP
+                        || SauropodBaseEntity.this.getAnimation() == ANIMATION_RIGHT_WHIP) {
                     flag = true;
                 }
                 float threshold = 0.65F;
                 if (f >= threshold && flag) {
                     float f1 = (f - threshold) / (1F - threshold);
-                    if(SauropodBaseEntity.this.isBaby()){
+                    if (SauropodBaseEntity.this.isBaby()) {
                         f1 *= 0.5F;
                     }
                     speedModifier = f1;

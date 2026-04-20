@@ -1,8 +1,7 @@
 {
     "display": {
         "icon": {
-            "item" : "citadel:icon_item",
-            "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/magnetic_caves.png\"}"
+            "item": "alexscaves:raw_scarlet_neodymium"
         },
         "title": {
             "translate": "advancements.alexscaves.discover_magnetic_caves.title"
@@ -14,7 +13,7 @@
     },
     "parent": "alexscaves:alexscaves/cave_map",
     "criteria": {
-        "discover":  {
+        "discover": {
             "conditions": {
                 "player": [
                     {

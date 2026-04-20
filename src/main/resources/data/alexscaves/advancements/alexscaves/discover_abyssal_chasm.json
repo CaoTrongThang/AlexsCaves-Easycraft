@@ -1,8 +1,7 @@
 {
     "display": {
         "icon": {
-            "item" : "citadel:icon_item",
-            "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/abyssal_chasm.png\"}"
+            "item": "alexscaves:marine_snow"
         },
         "title": {
             "translate": "advancements.alexscaves.discover_abyssal_chasm.title"
@@ -14,7 +13,7 @@
     },
     "parent": "alexscaves:alexscaves/cave_map",
     "criteria": {
-        "discover":  {
+        "discover": {
             "conditions": {
                 "player": [
                     {

@@ -1,8 +1,7 @@
 {
     "display": {
         "icon": {
-            "item" : "citadel:icon_item",
-            "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/candy_cavity.png\"}"
+            "item": "alexscaves:caramel"
         },
         "title": {
             "translate": "advancements.alexscaves.discover_candy_cavity.title"
@@ -14,7 +13,7 @@
     },
     "parent": "alexscaves:alexscaves/cave_map",
     "criteria": {
-        "discover":  {
+        "discover": {
             "conditions": {
                 "player": [
                     {

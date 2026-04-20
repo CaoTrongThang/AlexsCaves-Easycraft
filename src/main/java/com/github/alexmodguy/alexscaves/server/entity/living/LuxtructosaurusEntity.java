@@ -69,7 +69,8 @@ import java.util.List;
 
 public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
 
-    private static final EntityDataAccessor<Boolean> ENRAGED = SynchedEntityData.defineId(LuxtructosaurusEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> ENRAGED = SynchedEntityData.defineId(LuxtructosaurusEntity.class,
+            EntityDataSerializers.BOOLEAN);
     private static final VoronoiGenerator VORONOI_GENERATOR = new VoronoiGenerator(42L);
     private float prevEnragedProgress = 0;
     private float enragedProgress = 0;
@@ -79,7 +80,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
     private int postStopTicks;
     private boolean stompMakesFissures;
     private boolean prevOnGround;
-    private final ACBossEvent bossEvent = (ACBossEvent) new ACBossEvent(this.getDisplayName(), 0).setPlayBossMusic(true);
+    private final ACBossEvent bossEvent = (ACBossEvent) new ACBossEvent(this.getDisplayName(), 0)
+            .setPlayBossMusic(true);
     private int reducedDamageTicks;
     private boolean collectedLoot = false;
     private List<ItemStack> deathItems = new ArrayList<>();
@@ -106,7 +108,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         this.goalSelector.addGoal(6, new LookForwardsGoal(this));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, LuxtructosaurusEntity.class)));
         this.targetSelector.addGoal(2, new MobTarget3DGoal(this, Player.class, false));
-        this.targetSelector.addGoal(3, new MobTarget3DGoal(this, DinosaurEntity.class, false, 200, dinosaur -> !(dinosaur instanceof LuxtructosaurusEntity)));
+        this.targetSelector.addGoal(3, new MobTarget3DGoal(this, DinosaurEntity.class, false, 200,
+                dinosaur -> !(dinosaur instanceof LuxtructosaurusEntity)));
     }
 
     @Override
@@ -116,7 +119,10 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.325D).add(Attributes.MAX_HEALTH, 600.0D).add(Attributes.ARMOR, 20.0D).add(Attributes.KNOCKBACK_RESISTANCE, 1.0D).add(Attributes.ATTACK_DAMAGE, 12).add(Attributes.FOLLOW_RANGE, 256D);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.325D)
+                .add(Attributes.MAX_HEALTH, 148500.0D).add(Attributes.ARMOR, 30.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D).add(Attributes.ATTACK_DAMAGE, 60)
+                .add(Attributes.FOLLOW_RANGE, 256D);
     }
 
     public void readAdditionalSaveData(CompoundTag compoundTag) {
@@ -150,7 +156,6 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         return null;
     }
 
-
     public void tick() {
         super.tick();
 
@@ -166,22 +171,38 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             if (this.isAlive()) {
                 if (this.isEnraged()) {
                     if (random.nextInt(8) == 0) {
-                        level().addParticle(ACParticleRegistry.LUXTRUCTOSAURUS_SPIT.get(), this.getX(), this.getY() + 0.5F, this.getZ(), this.getId(), 0, 0);
+                        level().addParticle(ACParticleRegistry.LUXTRUCTOSAURUS_SPIT.get(), this.getX(),
+                                this.getY() + 0.5F, this.getZ(), this.getId(), 0, 0);
                     }
                     if (this.getAnimation() == ANIMATION_RIGHT_WHIP || this.getAnimation() == ANIMATION_LEFT_WHIP) {
-                        float tailPitch = tailPart1.calculateAnimationAngle(1.0F, true) + tailPart2.calculateAnimationAngle(1.0F, true) + tailPart3.calculateAnimationAngle(1.0F, true);
-                        float tailYaw = this.yBodyRot + tailPart1.calculateAnimationAngle(1.0F, false) + tailPart2.calculateAnimationAngle(1.0F, false) + tailPart3.calculateAnimationAngle(1.0F, false);
-                        Vec3 tailOffset = rotateOffsetVec(new Vec3((random.nextFloat() - 0.5F) * 0.1F, 0.5F + (random.nextFloat() - 0.5F) * 0.2F, -2 + (random.nextFloat() - 0.5F) * 2), tailPitch, tailYaw);
+                        float tailPitch = tailPart1.calculateAnimationAngle(1.0F, true)
+                                + tailPart2.calculateAnimationAngle(1.0F, true)
+                                + tailPart3.calculateAnimationAngle(1.0F, true);
+                        float tailYaw = this.yBodyRot + tailPart1.calculateAnimationAngle(1.0F, false)
+                                + tailPart2.calculateAnimationAngle(1.0F, false)
+                                + tailPart3.calculateAnimationAngle(1.0F, false);
+                        Vec3 tailOffset = rotateOffsetVec(new Vec3((random.nextFloat() - 0.5F) * 0.1F,
+                                0.5F + (random.nextFloat() - 0.5F) * 0.2F, -2 + (random.nextFloat() - 0.5F) * 2),
+                                tailPitch, tailYaw);
                         Vec3 tailCenter = this.tailPart3.centeredPosition().add(tailOffset);
-                        level().addParticle(ACParticleRegistry.TEPHRA_FLAME.get(), tailCenter.x, tailCenter.y, tailCenter.z, (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.1F, (random.nextFloat() - 0.5F) * 0.1F);
+                        level().addParticle(ACParticleRegistry.TEPHRA_FLAME.get(), tailCenter.x, tailCenter.y,
+                                tailCenter.z, (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.1F,
+                                (random.nextFloat() - 0.5F) * 0.1F);
                     }
                 }
-                if (this.getAnimation() == ANIMATION_SPEW_FLAMES && this.getAnimationTick() > 10F && this.getAnimationTick() < 70F) {
-                    Vec3 headPos = this.headPart.centeredPosition().add((random.nextFloat() - 0.5F) * 0.1F, (random.nextFloat() - 0.5F) * 0.1F, (random.nextFloat() - 0.5F) * 0.1F);
-                    float flameRot = this.yBodyRot + (neckPart1.calculateAnimationAngle(1.0F, false) + neckPart2.calculateAnimationAngle(1.0F, false) + neckPart3.calculateAnimationAngle(1.0F, false)) / 3F;
+                if (this.getAnimation() == ANIMATION_SPEW_FLAMES && this.getAnimationTick() > 10F
+                        && this.getAnimationTick() < 70F) {
+                    Vec3 headPos = this.headPart.centeredPosition().add((random.nextFloat() - 0.5F) * 0.1F,
+                            (random.nextFloat() - 0.5F) * 0.1F, (random.nextFloat() - 0.5F) * 0.1F);
+                    float flameRot = this.yBodyRot + (neckPart1.calculateAnimationAngle(1.0F, false)
+                            + neckPart2.calculateAnimationAngle(1.0F, false)
+                            + neckPart3.calculateAnimationAngle(1.0F, false)) / 3F;
                     for (int i = -3; i <= 3; i++) {
-                        Vec3 flameDelta = rotateOffsetVec(new Vec3(0, random.nextFloat() * 0.2F - 0.1F, random.nextFloat() * 0.5F + 0.5F), (random.nextFloat() - 0.5F) * 5F, 180 + flameRot + (i * 10));
-                        level().addParticle(ACParticleRegistry.TEPHRA_FLAME.get(), headPos.x, headPos.y, headPos.z, flameDelta.x, flameDelta.y, flameDelta.z);
+                        Vec3 flameDelta = rotateOffsetVec(
+                                new Vec3(0, random.nextFloat() * 0.2F - 0.1F, random.nextFloat() * 0.5F + 0.5F),
+                                (random.nextFloat() - 0.5F) * 5F, 180 + flameRot + (i * 10));
+                        level().addParticle(ACParticleRegistry.TEPHRA_FLAME.get(), headPos.x, headPos.y, headPos.z,
+                                flameDelta.x, flameDelta.y, flameDelta.z);
                     }
                 }
                 if (this.getAnimation() == ANIMATION_JUMP && this.getAnimationTick() > 25 && this.onGround()) {
@@ -201,25 +222,33 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                     if (vec31.lengthSqr() > 1.0E-7D) {
                         vec31 = vec31.scale(0.155F).add(vec3.scale(0.2D));
                     }
-                    this.setDeltaMovement(vec31.x, (10 - Math.min(this.getAnimationTick() - 10, 10)) * 0.2F + (double) vec31.length() * 0.3F, vec31.z);
+                    this.setDeltaMovement(vec31.x,
+                            (10 - Math.min(this.getAnimationTick() - 10, 10)) * 0.2F + (double) vec31.length() * 0.3F,
+                            vec31.z);
                 } else {
                     if (this.onGround() && !prevOnGround) {
-                        this.hurtEntitiesAround(this.position(), 10.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.5F, 2.0F, false, false);
+                        this.hurtEntitiesAround(this.position(), 10.0F,
+                                (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.5F, 2.0F, false, false);
                     }
                     this.setDeltaMovement(this.getDeltaMovement().subtract(0, 0.2, 0));
                 }
             }
-            if (this.getAnimation() == ANIMATION_ROAR && this.getAnimationTick() >= 10 && this.getAnimationTick() < 55 && this.getAnimationTick() % 5 == 0 && this.isAlive()) {
-                BlockPos tephraSpawnAt = this.blockPosition().offset(random.nextInt(20) - 10, 2, random.nextInt(20) - 10);
-                while (tephraSpawnAt.getY() < Math.min(level().getMaxBuildHeight(), this.getBlockY() + 100) && !level().getBlockState(tephraSpawnAt).isSolid()) {
+            if (this.getAnimation() == ANIMATION_ROAR && this.getAnimationTick() >= 10 && this.getAnimationTick() < 55
+                    && this.getAnimationTick() % 5 == 0 && this.isAlive()) {
+                BlockPos tephraSpawnAt = this.blockPosition().offset(random.nextInt(20) - 10, 2,
+                        random.nextInt(20) - 10);
+                while (tephraSpawnAt.getY() < Math.min(level().getMaxBuildHeight(), this.getBlockY() + 100)
+                        && !level().getBlockState(tephraSpawnAt).isSolid()) {
                     tephraSpawnAt = tephraSpawnAt.above();
                 }
                 tephraSpawnAt = tephraSpawnAt.below();
                 TephraEntity tephra = new TephraEntity(level(), this);
                 tephra.setPos(tephraSpawnAt.getCenter());
                 tephra.setMaxScale(1F + 2F * level().random.nextFloat());
-                Vec3 targetVec = new Vec3(level().random.nextFloat() - 0.5F, -1, level().random.nextFloat() - 0.5F).normalize().scale(level().random.nextInt(20) + 20);
-                tephra.shoot(targetVec.x, targetVec.y, targetVec.z, 5 + level().random.nextFloat() * 2F, 1 + level().random.nextFloat() * 0.5F);
+                Vec3 targetVec = new Vec3(level().random.nextFloat() - 0.5F, -1, level().random.nextFloat() - 0.5F)
+                        .normalize().scale(level().random.nextInt(20) + 20);
+                tephra.shoot(targetVec.x, targetVec.y, targetVec.z, 5 + level().random.nextFloat() * 2F,
+                        1 + level().random.nextFloat() * 0.5F);
                 level().addFreshEntity(tephra);
             }
             if (this.getAnimation() == ANIMATION_STOMP && this.getAnimationTick() == 30 && postStopTicks <= 0) {
@@ -227,20 +256,26 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                 postStopTicks = stompMakesFissures ? 15 : 50;
                 this.playSound(ACSoundRegistry.LUXTRUCTOSAURUS_STOMP.get(), 3.0F, 1.0F);
                 lastStompPos = this.blockPosition();
-                this.hurtEntitiesAround(this.position(), 10.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.2F, 2.0F, false, false);
+                this.hurtEntitiesAround(this.position(), 10.0F,
+                        (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.6F, 2.0F, false, false);
             }
             if (this.getAnimation() == ANIMATION_RIGHT_KICK && this.getAnimationTick() == 8) {
                 Vec3 armPos = this.position().add(rotateOffsetVec(new Vec3(-2, 0, 2.5F), 0, this.yBodyRot));
-                this.hurtEntitiesAround(armPos, 5.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F, 2.0F, false, false);
+                this.hurtEntitiesAround(armPos, 5.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.7F,
+                        2.0F, false, false);
             }
             if (this.getAnimation() == ANIMATION_LEFT_KICK && this.getAnimationTick() == 8) {
                 Vec3 armPos = this.position().add(rotateOffsetVec(new Vec3(2, 0, 2.5F), 0, this.yBodyRot));
-                this.hurtEntitiesAround(armPos, 5.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F, 2.0F, false, false);
+                this.hurtEntitiesAround(armPos, 5.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.7F,
+                        2.0F, false, false);
             }
-            if ((this.getAnimation() == ANIMATION_LEFT_WHIP || this.getAnimation() == ANIMATION_RIGHT_WHIP) && this.getAnimationTick() > 20 && this.getAnimationTick() < 30) {
-                this.hurtEntitiesAround(this.tailPart2.position(), 12.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE), 2.0F, this.isEnraged(), true);
+            if ((this.getAnimation() == ANIMATION_LEFT_WHIP || this.getAnimation() == ANIMATION_RIGHT_WHIP)
+                    && this.getAnimationTick() > 20 && this.getAnimationTick() < 30) {
+                this.hurtEntitiesAround(this.tailPart2.position(), 12.0F,
+                        (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.6F, 2.0F, this.isEnraged(), true);
             }
-            if (this.getAnimation() == ANIMATION_SPEW_FLAMES && this.getAnimationTick() > 10 && this.getAnimationTick() < 70) {
+            if (this.getAnimation() == ANIMATION_SPEW_FLAMES && this.getAnimationTick() > 10
+                    && this.getAnimationTick() < 70) {
                 burnWithBreath(13);
             }
             if (postStopTicks > 0) {
@@ -265,17 +300,22 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             if (tickCount % 60 == 0 && this.getAnimation() != ANIMATION_ROAR && this.isAlive()) {
                 if (this.level().isClientSide) {
                     Vec3 headCenter = this.headPart.centeredPosition();
-                    Vec3 nostilRightDelta = rotateOffsetVec(new Vec3(-0.25F, 0.5F, 0.75F), this.getXRot(), this.getYHeadRot());
+                    Vec3 nostilRightDelta = rotateOffsetVec(new Vec3(-0.25F, 0.5F, 0.75F), this.getXRot(),
+                            this.getYHeadRot());
                     Vec3 nostilRight = headCenter.add(nostilRightDelta);
-                    Vec3 nostilLeftDelta = rotateOffsetVec(new Vec3(0.25F, 0.5F, 0.75F), this.getXRot(), this.getYHeadRot());
+                    Vec3 nostilLeftDelta = rotateOffsetVec(new Vec3(0.25F, 0.5F, 0.75F), this.getXRot(),
+                            this.getYHeadRot());
                     Vec3 nostilLeft = headCenter.add(nostilLeftDelta);
                     nostilRightDelta = nostilRightDelta.scale(0.1F);
                     nostilLeftDelta = nostilLeftDelta.scale(0.1F);
                     ParticleOptions types = ACParticleRegistry.TEPHRA_SMALL.get();
-                    level().addParticle(types, nostilRight.x, nostilRight.y, nostilRight.z, nostilRightDelta.x, nostilRightDelta.y, nostilRightDelta.z);
-                    level().addParticle(types, nostilLeft.x, nostilLeft.y, nostilLeft.z, nostilLeftDelta.x, nostilLeftDelta.y, nostilLeftDelta.z);
+                    level().addParticle(types, nostilRight.x, nostilRight.y, nostilRight.z, nostilRightDelta.x,
+                            nostilRightDelta.y, nostilRightDelta.z);
+                    level().addParticle(types, nostilLeft.x, nostilLeft.y, nostilLeft.z, nostilLeftDelta.x,
+                            nostilLeftDelta.y, nostilLeftDelta.z);
                 }
-                this.playSound(ACSoundRegistry.LUXTRUCTOSAURUS_SNORT.get(), this.getSoundVolume(), this.getVoicePitch());
+                this.playSound(ACSoundRegistry.LUXTRUCTOSAURUS_SNORT.get(), this.getSoundVolume(),
+                        this.getVoicePitch());
             }
             if (this.getAnimation() == ANIMATION_ROAR && this.getAnimationTick() > 10 && this.getAnimationTick() < 50) {
                 if (!level().isClientSide) {
@@ -283,7 +323,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                 }
             }
         }
-        if (this.getAnimation() == ANIMATION_SUMMON && this.getAnimationTick() > 5 && !this.hasEffect(MobEffects.INVISIBILITY)) {
+        if (this.getAnimation() == ANIMATION_SUMMON && this.getAnimationTick() > 5
+                && !this.hasEffect(MobEffects.INVISIBILITY)) {
             this.setInvisible(false);
             this.playSound(ACSoundRegistry.LUXTRUCTOSAURUS_SUMMON.get(), 3.0F, 1.0F);
         }
@@ -297,7 +338,7 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
     }
 
     protected void tickDeath() {
-        if(deathTime <= 0){
+        if (deathTime <= 0) {
             this.toggleServerEruptionStatus(false);
         }
         this.deathTime++;
@@ -314,7 +355,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         if (this.getAnimation() == ANIMATION_EPIC_DEATH) {
             if (this.getAnimationTick() >= 100 && this.getAnimationTick() <= 110 && level().isClientSide) {
                 for (int i = 0; i < 50; i++) {
-                    level().addAlwaysVisibleParticle(ACParticleRegistry.LUXTRUCTOSAURUS_ASH.get(), true, this.getX(), this.getY(), this.getZ(), this.getId(), 0, 0);
+                    level().addAlwaysVisibleParticle(ACParticleRegistry.LUXTRUCTOSAURUS_ASH.get(), true, this.getX(),
+                            this.getY(), this.getZ(), this.getId(), 0, 0);
                 }
             }
             if (this.getAnimationTick() > 110 && !this.level().isClientSide() & !this.isRemoved()) {
@@ -345,9 +387,16 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         DamageSource damageSource = getLastDamageSource();
         if (damageSource != null) {
             LootTable loottable = this.level().getServer().getLootData().getLootTable(resourcelocation);
-            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, damageSource).withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity());
+            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level()))
+                    .withParameter(LootContextParams.THIS_ENTITY, this)
+                    .withParameter(LootContextParams.ORIGIN, this.position())
+                    .withParameter(LootContextParams.DAMAGE_SOURCE, damageSource)
+                    .withOptionalParameter(LootContextParams.KILLER_ENTITY, damageSource.getEntity())
+                    .withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, damageSource.getDirectEntity());
             if (this.lastHurtByPlayer != null) {
-                lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer).withLuck(this.lastHurtByPlayer.getLuck());
+                lootparams$builder = lootparams$builder
+                        .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.lastHurtByPlayer)
+                        .withLuck(this.lastHurtByPlayer.getLuck());
             }
             LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
             loottable.getRandomItems(lootparams, this.getLootTableSeed(), deathItems::add);
@@ -359,8 +408,10 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
     public ItemEntity spawnAtLocation(ItemStack stack) {
         ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY() + (double) 1, this.getZ(), stack);
         if (itementity != null) {
-            Vec3 centerOfMob = this.position().add(3.0F - 6.0F * random.nextFloat(), 4, 3.0F - 6.0F * random.nextFloat());
-            Vec3 randomDelta = new Vec3(1.0F - random.nextFloat(), 0, 1.0F - random.nextFloat()).normalize().scale(random.nextFloat() * 0.4F + 0.4F).add(0, 0.2, 0);
+            Vec3 centerOfMob = this.position().add(3.0F - 6.0F * random.nextFloat(), 4,
+                    3.0F - 6.0F * random.nextFloat());
+            Vec3 randomDelta = new Vec3(1.0F - random.nextFloat(), 0, 1.0F - random.nextFloat()).normalize()
+                    .scale(random.nextFloat() * 0.4F + 0.4F).add(0, 0.2, 0);
             itementity.setPos(centerOfMob);
             itementity.setDeltaMovement(randomDelta);
             itementity.setGlowingTag(true);
@@ -392,18 +443,28 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                     this.setEnraged(false);
                 }
             }
-            if ((this.horizontalCollision || this.isInWater()) || com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+            if ((this.horizontalCollision || this.isInWater())
+                    || com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                            .getMobGriefingEvent(this.level(), this)) {
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
                 if (this.getAnimation() == ANIMATION_JUMP && this.getAnimationTick() > 24 && this.onGround()) {
                     return;
                 }
-                for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX - 1), Mth.floor(aabb.minY - 1), Mth.floor(aabb.minZ - 1), Mth.ceil(aabb.maxX + 1), Mth.ceil(aabb.maxY + 2.0F), Mth.ceil(aabb.maxZ + 1))) {
+                for (BlockPos blockpos : BlockPos.betweenClosed(Mth.floor(aabb.minX - 1), Mth.floor(aabb.minY - 1),
+                        Mth.floor(aabb.minZ - 1), Mth.ceil(aabb.maxX + 1), Mth.ceil(aabb.maxY + 2.0F),
+                        Mth.ceil(aabb.maxZ + 1))) {
                     BlockState blockstate = this.level().getBlockState(blockpos);
                     if (blockstate.is(ACTagRegistry.LUXTRUCTOSAURUS_BREAKS)) {
-                        this.level().destroyBlock(blockpos, random.nextFloat() < AlexsCaves.COMMON_CONFIG.luxtructosaurusBlockDropChance.get(), this);
+                        this.level().destroyBlock(blockpos,
+                                random.nextFloat() < AlexsCaves.COMMON_CONFIG.luxtructosaurusBlockDropChance.get(),
+                                this);
                     }
                     if (blockstate.getFluidState().is(FluidTags.WATER)) {
-                        level().setBlock(blockpos, com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.fireFluidPlaceBlockEvent(level(), blockpos, blockpos, Blocks.STONE.defaultBlockState()), 3);
+                        level().setBlock(blockpos,
+                                com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                                        .fireFluidPlaceBlockEvent(level(), blockpos, blockpos,
+                                                Blocks.STONE.defaultBlockState()),
+                                3);
                         level().levelEvent(1501, blockpos, 0);
                     }
                 }
@@ -420,7 +481,6 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             screenShakeAmount = 3.0F;
         }
     }
-
 
     public void startSeenByPlayer(ServerPlayer serverPlayer) {
         super.startSeenByPlayer(serverPlayer);
@@ -487,13 +547,15 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             ACWorldData worldData = ACWorldData.get(level());
             if (worldData != null) {
                 worldData.trackPrimordialBoss(this.getId(), erupting);
-                AlexsCaves.sendMSGToAll(new UpdateBossEruptionStatus(this.getId(), worldData.isPrimordialBossActive(level())));
+                AlexsCaves.sendMSGToAll(
+                        new UpdateBossEruptionStatus(this.getId(), worldData.isPrimordialBossActive(level())));
             }
         }
     }
 
     public boolean isLoadedInWorld() {
-        return this.level().hasChunk(SectionPos.blockToSectionCoord(this.getX()), SectionPos.blockToSectionCoord(this.getZ()));
+        return this.level().hasChunk(SectionPos.blockToSectionCoord(this.getX()),
+                SectionPos.blockToSectionCoord(this.getZ()));
     }
 
     public boolean isEnraged() {
@@ -530,7 +592,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         if (reducedDamageTicks > 0) {
             damageAmount *= 0.35F;
         }
-        if (damageSource.getDirectEntity() instanceof DinosaurEntity && !(damageSource.getDirectEntity() instanceof TremorzillaEntity)) {
+        if (damageSource.getDirectEntity() instanceof DinosaurEntity
+                && !(damageSource.getDirectEntity() instanceof TremorzillaEntity)) {
             damageAmount *= 0.65D;
         }
         if (damageSource.getEntity() instanceof AbstractGolem) {
@@ -554,14 +617,17 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         if (this.tickCount - lastScareTimestamp > 5) {
             lastScareTimestamp = this.tickCount;
         }
-        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(64, 20, 64));
+        List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class,
+                this.getBoundingBox().inflate(64, 20, 64));
         for (LivingEntity e : list) {
             if (!e.getType().is(ACTagRegistry.RESISTS_TREMORSAURUS_ROAR) && !isAlliedTo(e)) {
-                if (e instanceof PathfinderMob mob && (!(mob instanceof TamableAnimal) || !((TamableAnimal) mob).isInSittingPose())) {
+                if (e instanceof PathfinderMob mob
+                        && (!(mob instanceof TamableAnimal) || !((TamableAnimal) mob).isInSittingPose())) {
                     mob.setTarget(null);
                     mob.setLastHurtByMob(null);
                     if (mob.onGround()) {
-                        Vec3 randomShake = new Vec3(random.nextFloat() - 0.5F, 0, random.nextFloat() - 0.5F).scale(0.1F);
+                        Vec3 randomShake = new Vec3(random.nextFloat() - 0.5F, 0, random.nextFloat() - 0.5F)
+                                .scale(0.1F);
                         mob.setDeltaMovement(mob.getDeltaMovement().multiply(0.7F, 1, 0.7F).add(randomShake));
                     }
                     if (lastScareTimestamp == tickCount) {
@@ -596,7 +662,10 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                     }
                     mutableBlockPos.move(0, 1, 0);
                     if (placeFissureBlock(mutableBlockPos)) {
-                        ((ServerLevel) level()).sendParticles(ACParticleRegistry.MUSHROOM_CLOUD_EXPLOSION.get(), mutableBlockPos.getX() + random.nextFloat(), mutableBlockPos.getY() + 0.5F + random.nextFloat(), mutableBlockPos.getZ() + random.nextFloat(), 0, 0, 0, 0, 1D);
+                        ((ServerLevel) level()).sendParticles(ACParticleRegistry.MUSHROOM_CLOUD_EXPLOSION.get(),
+                                mutableBlockPos.getX() + random.nextFloat(),
+                                mutableBlockPos.getY() + 0.5F + random.nextFloat(),
+                                mutableBlockPos.getZ() + random.nextFloat(), 0, 0, 0, 0, 1D);
                     }
                 }
             }
@@ -606,27 +675,35 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
     private boolean placeFissureBlock(BlockPos.MutableBlockPos blockPos) {
         float sampleScale = 0.08F;
         int depth = 4;
-        VoronoiGenerator.VoronoiInfo info = VORONOI_GENERATOR.get2(blockPos.getX() * sampleScale, blockPos.getZ() * sampleScale);
+        VoronoiGenerator.VoronoiInfo info = VORONOI_GENERATOR.get2(blockPos.getX() * sampleScale,
+                blockPos.getZ() * sampleScale);
         boolean flag = false;
         if (info.distance1() - sampleScale * 4 < info.distance()) {
-            if(com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)){
+            if (com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(),
+                    this)) {
                 int y = blockPos.getY();
                 for (int i = 0; i <= depth; i++) {
                     BlockState state = level().getBlockState(blockPos);
-                    if (blockPos.getY() <= level().getMinBuildHeight() || state.is(ACTagRegistry.UNMOVEABLE) || state.is(ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get())) {
+                    if (blockPos.getY() <= level().getMinBuildHeight() || state.is(ACTagRegistry.UNMOVEABLE)
+                            || state.is(ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get())) {
                         break;
                     } else {
                         if (i < depth && !state.is(ACTagRegistry.REGENERATES_AFTER_PRIMORDIAL_BOSS_FIGHT)) {
-                            level().destroyBlock(blockPos, random.nextFloat() < AlexsCaves.COMMON_CONFIG.luxtructosaurusBlockDropChance.get());
+                            level().destroyBlock(blockPos,
+                                    random.nextFloat() < AlexsCaves.COMMON_CONFIG.luxtructosaurusBlockDropChance.get());
                         } else {
-                            level().setBlockAndUpdate(blockPos, i == depth ? ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get().defaultBlockState().setValue(FissurePrimalMagmaBlock.REGEN_HEIGHT, Mth.clamp(i - 1, 0, 4)) : Blocks.AIR.defaultBlockState());
+                            level().setBlockAndUpdate(blockPos,
+                                    i == depth
+                                            ? ACBlockRegistry.FISSURE_PRIMAL_MAGMA.get().defaultBlockState().setValue(
+                                                    FissurePrimalMagmaBlock.REGEN_HEIGHT, Mth.clamp(i - 1, 0, 4))
+                                            : Blocks.AIR.defaultBlockState());
                         }
                         flag = true;
                     }
                     blockPos.move(0, -1, 0);
                 }
                 blockPos.setY(y);
-            }else{
+            } else {
                 return true;
             }
         }
@@ -638,7 +715,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             return false;
         } else {
             BlockState state = level().getBlockState(blockPos);
-            return !state.isSolid() || state.is(BlockTags.LEAVES) || state.is(BlockTags.LOGS) || !state.isCollisionShapeFullBlock(level(), blockPos);
+            return !state.isSolid() || state.is(BlockTags.LEAVES) || state.is(BlockTags.LOGS)
+                    || !state.isCollisionShapeFullBlock(level(), blockPos);
         }
     }
 
@@ -662,7 +740,8 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             Vec3 burnPos = headPos.add(rotateOffsetVec(new Vec3(0, 0, distanceBurned), 0, burnAngle));
             if (random.nextFloat() < 0.5F * (1F - (maxDistance - distanceBurned) / maxDistance)) {
                 BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-                pos.set(burnPos.x + (random.nextFloat() - 0.5F) * 2F * distanceBurned, burnPos.y, burnPos.z + (random.nextFloat() - 0.5F) * 2F * distanceBurned);
+                pos.set(burnPos.x + (random.nextFloat() - 0.5F) * 2F * distanceBurned, burnPos.y,
+                        burnPos.z + (random.nextFloat() - 0.5F) * 2F * distanceBurned);
                 while (canFissureMoveThrough(pos)) {
                     pos.move(0, -1, 0);
                 }
@@ -686,7 +765,11 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                 if (!prev) {
                     worldData.setFirstPrimordialBossDefeatTimestamp(level().getGameTime());
                     if (level() instanceof ServerLevel serverLevel) {
-                        serverLevel.getPlayers(EntitySelector.NO_SPECTATORS).forEach(serverPlayer -> serverPlayer.displayClientMessage(Component.translatable("entity.alexscaves.luxtructosaurus.slain_message").withStyle(ChatFormatting.GOLD), true));
+                        serverLevel.getPlayers(EntitySelector.NO_SPECTATORS)
+                                .forEach(serverPlayer -> serverPlayer.displayClientMessage(
+                                        Component.translatable("entity.alexscaves.luxtructosaurus.slain_message")
+                                                .withStyle(ChatFormatting.GOLD),
+                                        true));
                     }
                 }
             }

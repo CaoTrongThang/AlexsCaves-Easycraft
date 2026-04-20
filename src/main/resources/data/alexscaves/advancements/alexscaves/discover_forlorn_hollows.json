@@ -1,8 +1,7 @@
 {
     "display": {
         "icon": {
-            "item" : "citadel:icon_item",
-            "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/forlorn_hollows.png\"}"
+            "item": "alexscaves:pure_darkness"
         },
         "title": {
             "translate": "advancements.alexscaves.discover_forlorn_hollows.title"
@@ -14,7 +13,7 @@
     },
     "parent": "alexscaves:alexscaves/cave_map",
     "criteria": {
-        "discover":  {
+        "discover": {
             "conditions": {
                 "player": [
                     {

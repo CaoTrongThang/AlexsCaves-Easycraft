@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/discover_dinosaur.png\"}"
+      "item": "alexscaves:amber_curiosity"
     },
     "title": {
       "translate": "advancements.alexscaves.discover_dinosaur.title"
@@ -37,7 +36,6 @@
         }
       }
     },
-
     "killed_vallumraptor": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
@@ -62,7 +60,6 @@
         }
       }
     },
-
     "killed_tremorsaurus": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
@@ -87,7 +84,6 @@
         }
       }
     },
-
     "killed_relicheirus": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
@@ -112,7 +108,6 @@
         }
       }
     },
-
     "killed_subterranodon": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
