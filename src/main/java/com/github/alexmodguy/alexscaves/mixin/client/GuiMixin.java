@@ -69,7 +69,8 @@ public abstract class GuiMixin {
     }
 
     @Inject(method = "renderJumpMeter", at = @At("HEAD"), cancellable = true)
-    private void ac_beforeJumpBar(GuiGraphics guiGraphics, int x, CallbackInfo ci) {
+    private void ac_beforeJumpBar(net.minecraft.world.entity.PlayerRideableJumping playerRideableJumping,
+            GuiGraphics guiGraphics, int x, CallbackInfo ci) {
         RenderGuiOverlayEvent.Pre event = new RenderGuiOverlayEvent.Pre(guiGraphics, this.minecraft.getWindow(),
                 VanillaGuiOverlay.JUMP_BAR);
         if (MinecraftForge.EVENT_BUS.post(event)) {
@@ -78,7 +79,8 @@ public abstract class GuiMixin {
     }
 
     @Inject(method = "renderJumpMeter", at = @At("TAIL"))
-    private void ac_afterJumpBar(GuiGraphics guiGraphics, int x, CallbackInfo ci) {
+    private void ac_afterJumpBar(net.minecraft.world.entity.PlayerRideableJumping playerRideableJumping,
+            GuiGraphics guiGraphics, int x, CallbackInfo ci) {
         RenderGuiOverlayEvent.Post event = new RenderGuiOverlayEvent.Post(guiGraphics, this.minecraft.getWindow(),
                 VanillaGuiOverlay.JUMP_BAR);
         MinecraftForge.EVENT_BUS.post(event);
