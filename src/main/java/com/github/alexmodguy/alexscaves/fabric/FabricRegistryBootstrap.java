@@ -90,6 +90,24 @@ final class FabricRegistryBootstrap {
                 register.getEntries().forEach(ro -> {
                     EntityDataSerializers.registerSerializer((EntityDataSerializer<?>) ro.get());
                 });
+            } else if (register.getRegistryKey()
+                    .equals(net.minecraft.core.registries.Registries.POINT_OF_INTEREST_TYPE)) {
+                register.getEntries().forEach(ro -> {
+                    net.minecraft.world.entity.ai.village.poi.PoiType poiType = (net.minecraft.world.entity.ai.village.poi.PoiType) ro
+                            .get();
+                    @SuppressWarnings("unchecked")
+                    net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType> key = (net.minecraft.resources.ResourceKey<net.minecraft.world.entity.ai.village.poi.PoiType>) (Object) ro
+                            .getId();
+                    net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType> holder = net.minecraft.core.registries.BuiltInRegistries.POINT_OF_INTEREST_TYPE
+                            .getHolder(key).orElse(null);
+                    if (holder != null) {
+                        try {
+                            com.github.alexmodguy.alexscaves.mixin.PoiTypesAccessor.registerBlockStates(holder,
+                                    poiType.matchingStates());
+                        } catch (Exception e) {
+                        }
+                    }
+                });
             }
         }
     }

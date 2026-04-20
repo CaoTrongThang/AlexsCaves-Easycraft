@@ -1,5 +1,6 @@
 package com.github.alexmodguy.alexscaves.mixin;
 
+import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.entity.util.MagnetUtil;
 import com.github.alexmodguy.alexscaves.server.entity.util.MagneticEntityAccessor;
 import com.github.alexmodguy.alexscaves.server.item.ACItemRegistry;

@@ -28,6 +28,7 @@
     "NaturalSpawnerMixin",
     "OceanMonumentStructureMixin",
     "PlayerMixin",
+    "PoiTypesAccessor",
     "PotionUtilsMixin",
     "SeagrassFeatureMixin",
     "ShipwreckStructureMixin",

@@ -3,7 +3,9 @@ package com.github.alexmodguy.alexscaves.mixin.client;
 import com.github.alexmodguy.alexscaves.client.render.entity.LivingEntityRendererAccessor;
 import com.github.alexmodguy.alexscaves.forge_shim.client.event.RenderLivingEvent;
 import com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge;
+import com.github.alexthe666.citadel.client.event.EventLivingRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -25,6 +27,9 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer implement
     @Shadow
     protected abstract boolean addLayer(RenderLayer<?, ?> renderLayer);
 
+    @Shadow
+    protected EntityModel model;
+
     protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -43,6 +48,13 @@ public abstract class LivingEntityRendererMixin extends EntityRenderer implement
             MultiBufferSource bufferSource, int i, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new RenderLivingEvent.Post(entity, (LivingEntityRenderer) (Object) this, f2,
                 poseStack, bufferSource, i));
+    }
+
+    @Inject(method = "setupRotations(Lnet/minecraft/world/entity/LivingEntity;Lcom/mojang/blaze3d/vertex/PoseStack;FFF)V", at = @At("TAIL"))
+    private void ac_setupRotations(LivingEntity entity, PoseStack poseStack, float ageInTicks, float bodyYRot,
+            float partialTick, CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS
+                .post(new EventLivingRenderer.SetupRotations(entity, this.model, poseStack, bodyYRot, partialTick));
     }
 
     @Override
