@@ -26,6 +26,9 @@ import com.github.alexmodguy.alexscaves.server.misc.ACPotPatternRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.recipe.ACRecipeRegistry;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
+import net.minecraft.network.syncher.EntityDataSerializer;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import com.github.alexthe666.citadel.CitadelItemRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import com.github.alexmodguy.alexscaves.forge_shim.event.entity.EntityAttributeCreationEvent;
@@ -39,35 +42,34 @@ final class FabricRegistryBootstrap {
 
     static void bootstrapCommon() {
         register(
-            CitadelItemRegistry.DEF_REG,
-            ACBlockRegistry.DEF_REG,
-            ACFluidRegistry.FLUID_DEF_REG,
-            ACEntityRegistry.DEF_REG,
-            ACParticleRegistry.DEF_REG,
-            ACBlockEntityRegistry.DEF_REG,
-            ACMenuRegistry.DEF_REG,
-            ACSoundRegistry.DEF_REG,
-            ACEffectRegistry.DEF_REG,
-            ACEffectRegistry.POTION_DEF_REG,
-            ACItemRegistry.DEF_REG,
-            ACEnchantmentRegistry.DEF_REG,
-            ACCreativeTabRegistry.DEF_REG,
-            ACRecipeRegistry.TYPE_DEF_REG,
-            ACRecipeRegistry.DEF_REG,
-            ACPOIRegistry.DEF_REG,
-            ACFrogRegistry.DEF_REG,
-            ACLootTableRegistry.LOOT_FUNCTION_DEF_REG,
-            ACFeatureRegistry.DEF_REG,
-            ACCarverRegistry.DEF_REG,
-            ACStructureRegistry.DEF_REG,
-            ACStructurePieceRegistry.DEF_REG,
-            ACStructureProcessorRegistry.DEF_REG,
-            ACSurfaceRuleConditionRegistry.DEF_REG,
-            ACEntityDataRegistry.DEF_REG,
-            ACFluidRegistry.FLUID_TYPE_DEF_REG,
-            ACLootTableRegistry.GLOBAL_LOOT_MODIFIER_DEF_REG,
-            ACPotPatternRegistry.DEF_REG
-        );
+                CitadelItemRegistry.DEF_REG,
+                ACBlockRegistry.DEF_REG,
+                ACFluidRegistry.FLUID_DEF_REG,
+                ACEntityRegistry.DEF_REG,
+                ACParticleRegistry.DEF_REG,
+                ACBlockEntityRegistry.DEF_REG,
+                ACMenuRegistry.DEF_REG,
+                ACSoundRegistry.DEF_REG,
+                ACEffectRegistry.DEF_REG,
+                ACEffectRegistry.POTION_DEF_REG,
+                ACItemRegistry.DEF_REG,
+                ACEnchantmentRegistry.DEF_REG,
+                ACCreativeTabRegistry.DEF_REG,
+                ACRecipeRegistry.TYPE_DEF_REG,
+                ACRecipeRegistry.DEF_REG,
+                ACPOIRegistry.DEF_REG,
+                ACFrogRegistry.DEF_REG,
+                ACLootTableRegistry.LOOT_FUNCTION_DEF_REG,
+                ACFeatureRegistry.DEF_REG,
+                ACCarverRegistry.DEF_REG,
+                ACStructureRegistry.DEF_REG,
+                ACStructurePieceRegistry.DEF_REG,
+                ACStructureProcessorRegistry.DEF_REG,
+                ACSurfaceRuleConditionRegistry.DEF_REG,
+                ACEntityDataRegistry.DEF_REG,
+                ACFluidRegistry.FLUID_TYPE_DEF_REG,
+                ACLootTableRegistry.GLOBAL_LOOT_MODIFIER_DEF_REG,
+                ACPotPatternRegistry.DEF_REG);
         ACFluidRegistry.postInit();
         bootstrapEntities();
     }
@@ -84,6 +86,11 @@ final class FabricRegistryBootstrap {
     private static void register(DeferredRegister<?>... registers) {
         for (DeferredRegister<?> register : registers) {
             register.register(null);
+            if (register.getRegistryKey().equals(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS)) {
+                register.getEntries().forEach(ro -> {
+                    EntityDataSerializers.registerSerializer((EntityDataSerializer<?>) ro.get());
+                });
+            }
         }
     }
 

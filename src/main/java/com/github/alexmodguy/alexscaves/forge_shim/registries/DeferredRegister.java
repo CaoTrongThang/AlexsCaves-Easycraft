@@ -34,13 +34,19 @@ public class DeferredRegister<T> {
 
     public <I extends T> RegistryObject<I> register(String name, Supplier<? extends I> supplier) {
         @SuppressWarnings("unchecked")
-        RegistryObject<I> holder = new RegistryObject<>((ResourceKey<? extends Registry<I>>) (ResourceKey<?>) registryKey, new ResourceLocation(namespace, name), supplier);
+        RegistryObject<I> holder = new RegistryObject<>(
+                (ResourceKey<? extends Registry<I>>) (ResourceKey<?>) registryKey,
+                new ResourceLocation(namespace, name), supplier);
         entries.add(holder);
         return holder;
     }
 
     public List<RegistryObject<? extends T>> getEntries() {
         return entries;
+    }
+
+    public ResourceKey<? extends Registry<T>> getRegistryKey() {
+        return registryKey;
     }
 
     public void register(IEventBus eventBus) {
