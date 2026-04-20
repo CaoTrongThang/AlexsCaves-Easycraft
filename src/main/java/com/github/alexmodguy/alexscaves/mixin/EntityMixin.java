@@ -68,10 +68,14 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
     @Shadow
     public abstract double getY();
 
-    private static final EntityDataAccessor<Float> MAGNET_DELTA_X = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> MAGNET_DELTA_Y = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> MAGNET_DELTA_Z = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Direction> MAGNET_ATTACHMENT_DIRECTION = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.DIRECTION);
+    private static final EntityDataAccessor<Float> MAGNET_DELTA_X = SynchedEntityData.defineId(Entity.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> MAGNET_DELTA_Y = SynchedEntityData.defineId(Entity.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> MAGNET_DELTA_Z = SynchedEntityData.defineId(Entity.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Direction> MAGNET_ATTACHMENT_DIRECTION = SynchedEntityData
+            .defineId(Entity.class, EntityDataSerializers.DIRECTION);
     private float attachChangeProgress = 0F;
     private float prevAttachChangeProgress = 0F;
     private Direction prevAttachDir = Direction.DOWN;
@@ -88,12 +92,7 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         entityData.define(MAGNET_ATTACHMENT_DIRECTION, Direction.DOWN);
     }
 
-
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;tick()V"},
-            remap = true,
-            at = @At(value = "TAIL")
-    )
+    @Inject(method = { "Lnet/minecraft/world/entity/Entity;tick()V" }, remap = true, at = @At(value = "TAIL"))
     public void ac_tick(CallbackInfo ci) {
         Entity thisEntity = (Entity) (Object) this;
         prevAttachChangeProgress = attachChangeProgress;
@@ -120,11 +119,8 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;onSyncedDataUpdated(Lnet/minecraft/network/syncher/EntityDataAccessor;)V"},
-            remap = true,
-            at = @At(value = "TAIL")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;onSyncedDataUpdated(Lnet/minecraft/network/syncher/EntityDataAccessor;)V" }, remap = true, at = @At(value = "TAIL"))
     public void ac_onSyncedDataUpdated(EntityDataAccessor<?> entityDataAccessor, CallbackInfo ci) {
         if (MAGNET_ATTACHMENT_DIRECTION.equals(entityDataAccessor)) {
             this.prevAttachChangeProgress = 0.0F;
@@ -132,44 +128,39 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;getEyePosition()Lnet/minecraft/world/phys/Vec3;"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;getEyePosition()Lnet/minecraft/world/phys/Vec3;" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     public void ac_getEyePosition(CallbackInfoReturnable<Vec3> cir) {
         if (getMagneticAttachmentFace() != Direction.DOWN) {
-            cir.setReturnValue(MagnetUtil.getEyePositionForAttachment((Entity) (Object) this, getMagneticAttachmentFace(), 1.0F));
+            cir.setReturnValue(
+                    MagnetUtil.getEyePositionForAttachment((Entity) (Object) this, getMagneticAttachmentFace(), 1.0F));
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;getEyePosition(F)Lnet/minecraft/world/phys/Vec3;"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;getEyePosition(F)Lnet/minecraft/world/phys/Vec3;" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     public void ac_getEyePosition_lerp(float partialTick, CallbackInfoReturnable<Vec3> cir) {
         if (getMagneticAttachmentFace() != Direction.DOWN && getMagneticAttachmentFace() != Direction.UP) {
-            cir.setReturnValue(MagnetUtil.getEyePositionForAttachment((Entity) (Object) this, getMagneticAttachmentFace(), partialTick));
+            cir.setReturnValue(MagnetUtil.getEyePositionForAttachment((Entity) (Object) this,
+                    getMagneticAttachmentFace(), partialTick));
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;collide(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
-    //must override entire method for compatibility with Radium mod
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;collide(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
+    // must override entire method for compatibility with Radium mod
     public void ac_collide(Vec3 deltaIn, CallbackInfoReturnable<Vec3> cir) {
+        Entity thisEntity = (Entity) (Object) this;
+        if (thisEntity instanceof com.github.alexthe666.citadel.server.entity.collision.ICustomCollisions) {
+            cir.setReturnValue(com.github.alexthe666.citadel.server.entity.collision.ICustomCollisions
+                    .getAllowedMovementForEntity(thisEntity, deltaIn));
+            return;
+        }
 
         AABB aabb = this.getBoundingBox();
-        Entity thisEntity = (Entity) (Object) this;
-        //AC CODE START
+        // AC CODE START
         List<VoxelShape> list;
-        //fix infinity voxel collection crash for ItemEntity
+        // fix infinity voxel collection crash for ItemEntity
         if (this.getY() > this.level().getMinBuildHeight() - 200) {
             list = this.level().getEntityCollisions(thisEntity, aabb.expandTowards(deltaIn));
             List<VoxelShape> list2 = MagnetUtil.getMovingBlockCollisions(thisEntity, aabb);
@@ -177,25 +168,30 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         } else {
             list = List.of();
         }
-        //AC CODE END
-        Vec3 vec3 = deltaIn.lengthSqr() == 0.0D ? deltaIn : Entity.collideBoundingBox(thisEntity, deltaIn, aabb, this.level(), list);
+        // AC CODE END
+        Vec3 vec3 = deltaIn.lengthSqr() == 0.0D ? deltaIn
+                : Entity.collideBoundingBox(thisEntity, deltaIn, aabb, this.level(), list);
         boolean flag = deltaIn.x != vec3.x;
         boolean flag1 = deltaIn.y != vec3.y;
         boolean flag2 = deltaIn.z != vec3.z;
         boolean flag3 = this.onGround() || flag1 && deltaIn.y < 0.0D;
         float stepHeight = com.github.alexmodguy.alexscaves.fabric.EntityCompat.getStepHeight(thisEntity);
         if (stepHeight > 0.0F && flag3 && (flag || flag2)) {
-            Vec3 vec31 = Entity.collideBoundingBox(thisEntity, new Vec3(deltaIn.x, stepHeight, deltaIn.z), aabb, this.level, list);
-            Vec3 vec32 = Entity.collideBoundingBox(thisEntity, new Vec3(0.0D, stepHeight, 0.0D), aabb.expandTowards(deltaIn.x, 0.0D, deltaIn.z), this.level, list);
+            Vec3 vec31 = Entity.collideBoundingBox(thisEntity, new Vec3(deltaIn.x, stepHeight, deltaIn.z), aabb,
+                    this.level, list);
+            Vec3 vec32 = Entity.collideBoundingBox(thisEntity, new Vec3(0.0D, stepHeight, 0.0D),
+                    aabb.expandTowards(deltaIn.x, 0.0D, deltaIn.z), this.level, list);
             if (vec32.y < (double) stepHeight) {
-                Vec3 vec33 = Entity.collideBoundingBox(thisEntity, new Vec3(deltaIn.x, 0.0D, deltaIn.z), aabb.move(vec32), this.level(), list).add(vec32);
+                Vec3 vec33 = Entity.collideBoundingBox(thisEntity, new Vec3(deltaIn.x, 0.0D, deltaIn.z),
+                        aabb.move(vec32), this.level(), list).add(vec32);
                 if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
                     vec31 = vec33;
                 }
             }
 
             if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
-                cir.setReturnValue(vec31.add(Entity.collideBoundingBox(thisEntity, new Vec3(0.0D, -vec31.y + deltaIn.y, 0.0D), aabb.move(vec31), this.level(), list)));
+                cir.setReturnValue(vec31.add(Entity.collideBoundingBox(thisEntity,
+                        new Vec3(0.0D, -vec31.y + deltaIn.y, 0.0D), aabb.move(vec31), this.level(), list)));
                 return;
             }
         }
@@ -203,12 +199,8 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         cir.setReturnValue(vec3);
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;turn(DD)V"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;turn(DD)V" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     public void ac_turn(double yBy, double xBy, CallbackInfo ci) {
         if (getMagneticAttachmentFace() != Direction.DOWN) {
             ci.cancel();
@@ -216,42 +208,31 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;makeBoundingBox()Lnet/minecraft/world/phys/AABB;"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;makeBoundingBox()Lnet/minecraft/world/phys/AABB;" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     public void ac_makeBoundingBox(CallbackInfoReturnable<AABB> cir) {
         if (this.entityData.isDirty() && getMagneticAttachmentFace() != Direction.DOWN) {
             cir.setReturnValue(MagnetUtil.rotateBoundingBox(dimensions, getMagneticAttachmentFace(), position));
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;isInWater()Z"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;isInWater()Z" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     public void ac_isInWater(CallbackInfoReturnable<Boolean> cir) {
-        if ((Object) this instanceof LivingEntity living && living.getActiveEffectsMap() != null && living.hasEffect(ACEffectRegistry.BUBBLED.get()) && (living.canBreatheUnderwater() || living.getMobType() == MobType.WATER) && !living.getType().is(ACTagRegistry.RESISTS_BUBBLED)) {
+        if ((Object) this instanceof LivingEntity living && living.getActiveEffectsMap() != null
+                && living.hasEffect(ACEffectRegistry.BUBBLED.get())
+                && (living.canBreatheUnderwater() || living.getMobType() == MobType.WATER)
+                && !living.getType().is(ACTagRegistry.RESISTS_BUBBLED)) {
             cir.setReturnValue(true);
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/Entity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V"},
-            remap = true,
-            cancellable = true,
-            at = {@At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/block/Block;updateEntityAfterFallOn(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;)V",
-                    shift = At.Shift.AFTER
-            )}
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/Entity;move(Lnet/minecraft/world/entity/MoverType;Lnet/minecraft/world/phys/Vec3;)V" }, remap = true, cancellable = true, at = {
+                    @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;updateEntityAfterFallOn(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;)V", shift = At.Shift.AFTER) })
     public void ac_move(MoverType moverType, Vec3 vec3, CallbackInfo ci) {
-        if ((Object) this instanceof LivingEntity living && living.getItemBySlot(EquipmentSlot.FEET).is(ACItemRegistry.RAINBOUNCE_BOOTS.get())) {
+        if ((Object) this instanceof LivingEntity living
+                && living.getItemBySlot(EquipmentSlot.FEET).is(ACItemRegistry.RAINBOUNCE_BOOTS.get())) {
             RainbounceBootsItem.onEntityLand(living, vec3);
         }
     }
@@ -273,7 +254,8 @@ public abstract class EntityMixin implements MagneticEntityAccessor {
 
     @Override
     public Direction getMagneticAttachmentFace() {
-        return entityData.hasItem(MAGNET_ATTACHMENT_DIRECTION) ? entityData.get(MAGNET_ATTACHMENT_DIRECTION) : Direction.DOWN;
+        return entityData.hasItem(MAGNET_ATTACHMENT_DIRECTION) ? entityData.get(MAGNET_ATTACHMENT_DIRECTION)
+                : Direction.DOWN;
     }
 
     @Override

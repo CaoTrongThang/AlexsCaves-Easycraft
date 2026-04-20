@@ -120,7 +120,7 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.325D)
-                .add(Attributes.MAX_HEALTH, 148500.0D).add(Attributes.ARMOR, 30.0D)
+                .add(Attributes.MAX_HEALTH, 32500.0D).add(Attributes.ARMOR, 30.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D).add(Attributes.ATTACK_DAMAGE, 60)
                 .add(Attributes.FOLLOW_RANGE, 256D);
     }

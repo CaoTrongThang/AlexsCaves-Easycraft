@@ -62,20 +62,34 @@ import java.util.UUID;
 
 public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMob, ShakesScreen {
 
-    private static final EntityDataAccessor<Boolean> Z_ROT_DIRECTION = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> LEAPING = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> BITING = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Float> TARGET_DIG_PITCH = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> TEMP_SUMMON = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Optional<BlockPos>> GOBTHUMPER_POS = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
-    private static final EntityDataAccessor<Integer> RIDING_SEGMENT_ID = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Optional<UUID>> RIDING_SEGMENT_UUID = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> LEFT_HOOK_ID = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> RIGHT_HOOK_ID = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> RIDER_LEAP_TIME = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> RIDER_LEAP_TIME_MAX = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DIGGING = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> VALID_RIDER = SynchedEntityData.defineId(GumWormEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> Z_ROT_DIRECTION = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> LEAPING = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> BITING = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> TARGET_DIG_PITCH = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> TEMP_SUMMON = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Optional<BlockPos>> GOBTHUMPER_POS = SynchedEntityData
+            .defineId(GumWormEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
+    private static final EntityDataAccessor<Integer> RIDING_SEGMENT_ID = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Optional<UUID>> RIDING_SEGMENT_UUID = SynchedEntityData
+            .defineId(GumWormEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> LEFT_HOOK_ID = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> RIGHT_HOOK_ID = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> RIDER_LEAP_TIME = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> RIDER_LEAP_TIME_MAX = SynchedEntityData
+            .defineId(GumWormEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> DIGGING = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> VALID_RIDER = SynchedEntityData.defineId(GumWormEntity.class,
+            EntityDataSerializers.BOOLEAN);
     private int lSteps;
     private double lx;
     private double ly;
@@ -123,11 +137,16 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).add(ForgeMod.ENTITY_GRAVITY.get(), 0.15D).add(Attributes.MAX_HEALTH, 150.0D).add(Attributes.ARMOR, 10.0D).add(Attributes.ATTACK_DAMAGE, 9.0D).add(Attributes.FOLLOW_RANGE, 128.0D);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D)
+                .add(ForgeMod.ENTITY_GRAVITY.get(), 0.15D).add(Attributes.MAX_HEALTH, 4500.0D)
+                .add(Attributes.ARMOR, 20.0D).add(Attributes.ATTACK_DAMAGE, 40.0D).add(Attributes.FOLLOW_RANGE, 128.0D);
     }
 
-    public static boolean checkGumWormSpawnRules(EntityType<? extends Monster> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-        return checkMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource) && randomSource.nextInt(6) == 0;
+    public static boolean checkGumWormSpawnRules(EntityType<? extends Monster> entityType,
+            ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos,
+            RandomSource randomSource) {
+        return checkMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource)
+                && randomSource.nextInt(6) == 0;
     }
 
     @Override
@@ -195,8 +214,11 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         this.yBodyRot = this.getYRot();
         this.yHeadRot = this.getYRot();
         Entity target = this.getTarget();
-        if(!level().isClientSide && (!this.isLeaping() || (target == null || !target.isAlive())) && !this.isRidingMode()){
-            this.setTargetDigPitch((float) (-(Mth.atan2(this.getDeltaMovement().y, this.getDeltaMovement().horizontalDistance()) * (180F / (float) Math.PI))));
+        if (!level().isClientSide && (!this.isLeaping() || (target == null || !target.isAlive()))
+                && !this.isRidingMode()) {
+            this.setTargetDigPitch(
+                    (float) (-(Mth.atan2(this.getDeltaMovement().y, this.getDeltaMovement().horizontalDistance())
+                            * (180F / (float) Math.PI))));
         }
         if (screenShakeAmount > 0) {
             screenShakeAmount = Math.max(0, screenShakeAmount - 0.34F);
@@ -223,11 +245,11 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
             } else {
                 this.reapplyPosition();
             }
-            if(this.isDigging() && isAlive()){
+            if (this.isDigging() && isAlive()) {
                 AlexsCaves.PROXY.playWorldSound(this, (byte) 17);
             }
             spawnDustParticles(false);
-        }else{
+        } else {
             Entity ridingSegment = this.getRidingSegment();
             this.entityData.set(RIDING_SEGMENT_ID, ridingSegment == null ? -1 : ridingSegment.getId());
             this.entityData.set(DIGGING, isDigLogic() && !isLeaping());
@@ -240,39 +262,46 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
                 this.setDeltaMovement(random.nextFloat() - 0.5F, 0.8F, random.nextFloat() - 0.5F);
                 flag = true;
             }
-        }else if((surfaceY < this.getEyeY() || centralStateBelow.isAir() || com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this)) && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode() && !this.isLeaping()){
-            if(outOfGroundTime++ > 10){
+        } else if ((surfaceY < this.getEyeY() || centralStateBelow.isAir()
+                || com.github.alexmodguy.alexscaves.fabric.EntityCompat.isInFluidType(this))
+                && isSafeDig(level(), this.blockPosition().below()) && !isRidingMode() && !this.isLeaping()) {
+            if (outOfGroundTime++ > 10) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0, -0.5, 0));
             }
-        }else{
+        } else {
             outOfGroundTime = 0;
         }
-        if(isRidingMode()){
+        if (isRidingMode()) {
             boolean flag1 = false;
-            int worldHeight = level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) this.getX(), (int) this.getZ());
-            if(isTouchingBedrock()){
+            int worldHeight = level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, (int) this.getX(),
+                    (int) this.getZ());
+            if (isTouchingBedrock()) {
                 noPhysics = false;
-                this.setDeltaMovement(this.getDeltaMovement().scale(0.9).add(0, this.getY() < worldHeight - 6.0F ? 0.2F : -0.2F, 0));
-            }else if((centralState.isSolid() || this.horizontalCollision || ridingPlayer != null && ridingPlayer.getY() > this.getY() + this.getBbHeight() + 4.0F) && !this.isLeaping()){
+                this.setDeltaMovement(
+                        this.getDeltaMovement().scale(0.9).add(0, this.getY() < worldHeight - 6.0F ? 0.2F : -0.2F, 0));
+            } else if ((centralState.isSolid() || this.horizontalCollision
+                    || ridingPlayer != null && ridingPlayer.getY() > this.getY() + this.getBbHeight() + 4.0F)
+                    && !this.isLeaping()) {
                 float upOrDown = 0.4F;
-                if(surfaceY < worldHeight + 1.0F){
+                if (surfaceY < worldHeight + 1.0F) {
                     upOrDown = 0.8F;
-                }else if(this.getY() > level().getMinBuildHeight() + 3.0F){
+                } else if (this.getY() > level().getMinBuildHeight() + 3.0F) {
                     upOrDown = -0.1F;
                 }
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.9).add(0, upOrDown, 0));
                 flag = true;
                 flag1 = !this.horizontalCollision;
             }
-            if(!this.isLeaping() && !level().getBlockState(this.blockPosition().below()).isSolid() && !this.horizontalCollision){
+            if (!this.isLeaping() && !level().getBlockState(this.blockPosition().below()).isSolid()
+                    && !this.horizontalCollision) {
                 flag = true;
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.9).add(0, -0.8F, 0));
             }
             noPhysics = flag1;
         }
-        if(wasDiggingLastTick != isDigging()){
+        if (wasDiggingLastTick != isDigging()) {
             wasDiggingLastTick = isDigging();
-            if(!isDigging()){
+            if (!isDigging()) {
                 attemptPlayStopDiggingNoise();
             }
         }
@@ -283,19 +312,19 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         if (leapAttackCooldown > 0) {
             leapAttackCooldown--;
         }
-        if(ridingModeTicks > 0){
+        if (ridingModeTicks > 0) {
             ridingModeTicks--;
         }
-        if(recentlyLeaptTicks > 0 && !this.isLeaping()){
+        if (recentlyLeaptTicks > 0 && !this.isLeaping()) {
             recentlyLeaptTicks--;
         }
-        if(forceMouthOpenTicks > 0){
+        if (forceMouthOpenTicks > 0) {
             forceMouthOpenTicks--;
         }
-        if(attackNoiseCooldown > 0){
+        if (attackNoiseCooldown > 0) {
             attackNoiseCooldown--;
         }
-        if(stopDiggingNoiseCooldown > 0){
+        if (stopDiggingNoiseCooldown > 0) {
             stopDiggingNoiseCooldown--;
         }
     }
@@ -332,10 +361,13 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         }
     }
 
-    public void onMounted(){
+    public void onMounted() {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         mutableBlockPos.set(this.getBlockX(), this.getBlockY() - 1, this.getBlockZ());
-        while (!level().getBlockState(mutableBlockPos).is(Blocks.BEDROCK) && !level().getBlockState(mutableBlockPos).isAir() && mutableBlockPos.getY() < level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, mutableBlockPos.getX(), mutableBlockPos.getZ())) {
+        while (!level().getBlockState(mutableBlockPos).is(Blocks.BEDROCK)
+                && !level().getBlockState(mutableBlockPos).isAir()
+                && mutableBlockPos.getY() < level().getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                        mutableBlockPos.getX(), mutableBlockPos.getZ())) {
             mutableBlockPos.move(0, 1, 0);
         }
         this.setPos(this.getX(), mutableBlockPos.getY(), this.getZ());
@@ -365,7 +397,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
     private void dropItemAtSurface(ItemEntity itementity) {
         BlockPos pos = itementity.blockPosition();
-        while (level().getBlockState(pos).isSolid() && pos.getY() < level().getMaxBuildHeight()){
+        while (level().getBlockState(pos).isSolid() && pos.getY() < level().getMaxBuildHeight()) {
             pos = pos.above();
         }
         itementity.setPos(itementity.getX(), pos.getY() + 0.2F, itementity.getZ());
@@ -379,8 +411,10 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         AABB hurtBox = this.getBoundingBox().inflate(this.isLeaping() ? 3.0D : 1.0D);
         Entity target = this.getTarget();
         DamageSource damageSource = this.damageSources().mobAttack(this);
-        for (LivingEntity living : level().getEntitiesOfClass(LivingEntity.class, hurtBox, EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
-            if (!living.is(this) && !living.isAlliedTo(this) && !isRidingPlayer(living) && living.getType() != this.getType()) {
+        for (LivingEntity living : level().getEntitiesOfClass(LivingEntity.class, hurtBox,
+                EntitySelector.NO_CREATIVE_OR_SPECTATOR)) {
+            if (!living.is(this) && !living.isAlliedTo(this) && !isRidingPlayer(living)
+                    && living.getType() != this.getType()) {
                 if (living.hurt(damageSource, damageAmount)) {
                     living.knockback(knockbackAmount, this.getX() - living.getX(), this.getZ() - living.getZ());
                 }
@@ -392,21 +426,21 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         return attackedMainTarget;
     }
 
-    public boolean isRidingPlayer(Entity player){
+    public boolean isRidingPlayer(Entity player) {
         Entity owner1 = getHook(true) instanceof CandyCaneHookEntity hookEntity ? hookEntity.getOwner() : null;
         Entity owner2 = getHook(false) instanceof CandyCaneHookEntity hookEntity ? hookEntity.getOwner() : null;
         return owner1 != null && owner2 != null && player.is(owner1);
     }
 
-    public boolean hasARidingHook(){
+    public boolean hasARidingHook() {
         return getHook(true) != null || getHook(false) != null;
     }
 
-    public boolean isRidingMode(){
+    public boolean isRidingMode() {
         return ridingModeTicks > 0;
     }
 
-    public Player getRidingPlayer(){
+    public Player getRidingPlayer() {
         return ridingPlayer;
     }
 
@@ -415,7 +449,10 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
             BlockPos lightPos = BlockPos.containing(this.getX(), surfaceY - 1.0F, this.getZ());
             BlockState state = level().getBlockState(lightPos);
             if (!state.isAir()) {
-                level().addParticle(new BlockParticleOption(ACParticleRegistry.BIG_BLOCK_DUST.get(), state), true, this.getRandomX(0.8F), surfaceY + random.nextFloat(), this.getRandomZ(0.8F), (random.nextFloat() - 0.5F) * 0.2F, (random.nextFloat() - 0.5F) * 0.2F, (random.nextFloat() - 0.5F) * 0.2F);
+                level().addParticle(new BlockParticleOption(ACParticleRegistry.BIG_BLOCK_DUST.get(), state), true,
+                        this.getRandomX(0.8F), surfaceY + random.nextFloat(), this.getRandomZ(0.8F),
+                        (random.nextFloat() - 0.5F) * 0.2F, (random.nextFloat() - 0.5F) * 0.2F,
+                        (random.nextFloat() - 0.5F) * 0.2F);
             }
         }
     }
@@ -438,6 +475,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         this.lzd = lerpZ;
         this.setDeltaMovement(this.lxd, this.lyd, this.lzd);
     }
+
     public boolean getZRotDirection() {
         return this.entityData.get(Z_ROT_DIRECTION);
     }
@@ -490,7 +528,6 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         this.entityData.set(TEMP_SUMMON, tempSummon);
     }
 
-
     public boolean isValidRider() {
         return this.entityData.get(VALID_RIDER);
     }
@@ -514,10 +551,10 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         super.onSyncedDataUpdated(dataAccessor);
     }
 
-    public void setRidingSegmentId(int id){
+    public void setRidingSegmentId(int id) {
         this.entityData.set(RIDING_SEGMENT_ID, id);
     }
-    
+
     @Nullable
     public UUID getRidingSegmentUUID() {
         return this.entityData.get(RIDING_SEGMENT_UUID).orElse(null);
@@ -527,35 +564,36 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
         this.entityData.set(RIDING_SEGMENT_UUID, Optional.ofNullable(uniqueId));
     }
 
-    public void setHookId(boolean left, int id){
+    public void setHookId(boolean left, int id) {
         this.entityData.set(left ? LEFT_HOOK_ID : RIGHT_HOOK_ID, id);
     }
 
-    public Entity getHook(boolean left){
+    public Entity getHook(boolean left) {
         int id = this.entityData.get(left ? LEFT_HOOK_ID : RIGHT_HOOK_ID);
         return id == -1 ? null : level().getEntity(id);
     }
 
-    public void setRidingLeapTime(int time){
+    public void setRidingLeapTime(int time) {
         this.entityData.set(RIDER_LEAP_TIME, time);
     }
 
-    public void setMaxRidingLeapTime(int time){
+    public void setMaxRidingLeapTime(int time) {
         this.entityData.set(RIDER_LEAP_TIME_MAX, time);
     }
 
-    public int getRidingLeapTime(){
+    public int getRidingLeapTime() {
         return this.entityData.get(RIDER_LEAP_TIME);
     }
 
-    public int getMaxRidingLeapTime(){
+    public int getMaxRidingLeapTime() {
         return this.entityData.get(RIDER_LEAP_TIME_MAX);
     }
 
     private Vec3 calculateLightAbovePosition() {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
         mutableBlockPos.set(this.getBlockX(), this.getBlockY() - 1, this.getBlockZ());
-        while (mutableBlockPos.getY() < level().getMaxBuildHeight() && level().getBlockState(mutableBlockPos).isSuffocating(level(), mutableBlockPos)) {
+        while (mutableBlockPos.getY() < level().getMaxBuildHeight()
+                && level().getBlockState(mutableBlockPos).isSuffocating(level(), mutableBlockPos)) {
             mutableBlockPos.move(0, 1, 0);
         }
         return new Vec3(this.getX(), mutableBlockPos.getY(), this.getZ());
@@ -563,16 +601,18 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
     private double calculateSurfaceY() {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-        mutableBlockPos.set(Math.round(surfacePosition.x), Math.max(surfacePosition.y, this.getY(1.0F)) + 2, Math.round(surfacePosition.z));
-        while (mutableBlockPos.getY() > level().getMinBuildHeight() && !level().getBlockState(mutableBlockPos).isSuffocating(level(), mutableBlockPos)) {
+        mutableBlockPos.set(Math.round(surfacePosition.x), Math.max(surfacePosition.y, this.getY(1.0F)) + 2,
+                Math.round(surfacePosition.z));
+        while (mutableBlockPos.getY() > level().getMinBuildHeight()
+                && !level().getBlockState(mutableBlockPos).isSuffocating(level(), mutableBlockPos)) {
             mutableBlockPos.move(0, -1, 0);
         }
         return 1D + mutableBlockPos.getY();
     }
 
-
     @javax.annotation.Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficultyIn, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData spawnDataIn, @javax.annotation.Nullable CompoundTag dataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficultyIn, MobSpawnType reason,
+            @javax.annotation.Nullable SpawnGroupData spawnDataIn, @javax.annotation.Nullable CompoundTag dataTag) {
         if (reason == MobSpawnType.NATURAL) {
             doInitialPosing(level);
         }
@@ -583,7 +623,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     private void doInitialPosing(LevelAccessor world) {
         BlockPos down = this.blockPosition().below();
         int downCount = 0;
-        while (!world.getBlockState(down).isAir()  && downCount < 10 && down.getY() > world.getMinBuildHeight()) {
+        while (!world.getBlockState(down).isAir() && downCount < 10 && down.getY() > world.getMinBuildHeight()) {
             down = down.below();
             downCount++;
         }
@@ -608,8 +648,10 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     @Override
     public void readAdditionalSaveData(CompoundTag compoundTag) {
         super.readAdditionalSaveData(compoundTag);
-        if (compoundTag.contains("GobthumperX") && compoundTag.contains("GobthumperY") && compoundTag.contains("GobthumperZ")) {
-            this.setGobthumperPos(new BlockPos(compoundTag.getInt("GobthumperX"), compoundTag.getInt("GobthumperY"), compoundTag.getInt("GobthumperZ")));
+        if (compoundTag.contains("GobthumperX") && compoundTag.contains("GobthumperY")
+                && compoundTag.contains("GobthumperZ")) {
+            this.setGobthumperPos(new BlockPos(compoundTag.getInt("GobthumperX"), compoundTag.getInt("GobthumperY"),
+                    compoundTag.getInt("GobthumperZ")));
         }
         if (compoundTag.hasUUID("RidingSegmentUUID")) {
             this.setRidingSegmentUUID(compoundTag.getUUID("RidingSegmentUUID"));
@@ -619,7 +661,8 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
     @Override
     public boolean canPassThrough(BlockPos blockPos, BlockState blockState, VoxelShape voxelShape) {
-        return canDigBlock(blockState) && (!isRidingMode() || !level().getBlockState(blockPos.above()).isSolid() || !blockState.isSuffocating(level(), blockPos));
+        return canDigBlock(blockState) && (!isRidingMode() || !level().getBlockState(blockPos.above()).isSolid()
+                || !blockState.isSuffocating(level(), blockPos));
     }
 
     public boolean isColliding(BlockPos pos, BlockState blockstate) {
@@ -674,7 +717,10 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return super.isInvulnerableTo(damageSource) || damageSource.is(DamageTypes.IN_WALL) || damageSource.is(DamageTypes.CACTUS) || damageSource.is(DamageTypes.DROWN) || damageSource.is(DamageTypes.FALL) || damageSource.getEntity() != null && isRidingPlayer(damageSource.getEntity());
+        return super.isInvulnerableTo(damageSource) || damageSource.is(DamageTypes.IN_WALL)
+                || damageSource.is(DamageTypes.CACTUS) || damageSource.is(DamageTypes.DROWN)
+                || damageSource.is(DamageTypes.FALL)
+                || damageSource.getEntity() != null && isRidingPlayer(damageSource.getEntity());
     }
 
     @Override
@@ -735,7 +781,8 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     public Vec3 getHookPosition(int i) {
-        Vec3 offset = new Vec3(i * -1.0F, -0.5F, -1.15F).xRot((float) -Math.toRadians(this.getXRot())).yRot((float) -Math.toRadians(this.yBodyRot));
+        Vec3 offset = new Vec3(i * -1.0F, -0.5F, -1.15F).xRot((float) -Math.toRadians(this.getXRot()))
+                .yRot((float) -Math.toRadians(this.yBodyRot));
         return this.position().add(0, 0.5F * this.getBbWidth(), 0).add(offset);
     }
 
@@ -759,18 +806,18 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     public void tickController(Player passenger) {
         ridingPlayer = passenger;
         this.entityData.set(VALID_RIDER, isRidingPlayer(ridingPlayer));
-        if(hasARidingHook()){
+        if (hasARidingHook()) {
             ridingModeTicks = 10;
         }
     }
 
     public void onPlayerJump(int i) {
-        int leapFor = (int) Math.ceil((float)i * 0.2F) + 10;
+        int leapFor = (int) Math.ceil((float) i * 0.2F) + 10;
         this.setRidingLeapTime(leapFor);
         this.setMaxRidingLeapTime(leapFor);
     }
 
-    public boolean recentlyLeapt(){
+    public boolean recentlyLeapt() {
         return recentlyLeaptTicks > 0;
     }
 
@@ -784,14 +831,14 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
     }
 
     public void attemptPlayAttackNoise() {
-        if(attackNoiseCooldown == 0){
+        if (attackNoiseCooldown == 0) {
             this.playSound(ACSoundRegistry.GUM_WORM_ATTACK.get(), this.getSoundVolume(), this.getVoicePitch());
             attackNoiseCooldown = 70;
         }
     }
 
     public void attemptPlayStopDiggingNoise() {
-        if(stopDiggingNoiseCooldown == 0){
+        if (stopDiggingNoiseCooldown == 0) {
             this.playSound(ACSoundRegistry.GUM_WORM_DIG_STOP.get(), this.getSoundVolume(), this.getVoicePitch());
             stopDiggingNoiseCooldown = 10;
         }
@@ -805,12 +852,14 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
         public void tick() {
             if (this.operation == MoveControl.Operation.MOVE_TO) {
-                Vec3 vector3d = new Vec3(this.wantedX - mob.getX(), this.wantedY - mob.getY(), this.wantedZ - mob.getZ());
+                Vec3 vector3d = new Vec3(this.wantedX - mob.getX(), this.wantedY - mob.getY(),
+                        this.wantedZ - mob.getZ());
                 double d0 = vector3d.length();
                 double width = mob.getBoundingBox().getSize();
                 float digSpeed = 0.25F;
                 Vec3 vector3d1 = vector3d.scale(this.speedModifier * digSpeed / d0);
-                boolean safeDig = isSafeDig(level(), BlockPos.containing(wantedX, Mth.clamp(this.wantedY, this.mob.getY() - 1.0, this.mob.getY() + 1.0), wantedZ));
+                boolean safeDig = isSafeDig(level(), BlockPos.containing(wantedX,
+                        Mth.clamp(this.wantedY, this.mob.getY() - 1.0, this.mob.getY() + 1.0), wantedZ));
                 if (isSafeDig(level(), BlockPos.containing(wantedX, wantedY, wantedZ))) {
                     mob.setDeltaMovement(mob.getDeltaMovement().add(vector3d1).scale(0.9F));
                 } else {
@@ -821,7 +870,8 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
                 if (d0 < width * 0.15F) {
                     this.operation = Operation.WAIT;
                 } else if (d0 >= width && !GumWormEntity.this.isLeaping()) {
-                    mob.setYRot(Mth.approachDegrees(mob.getYRot(), -((float) Mth.atan2(vector3d1.x, vector3d1.z)) * (180F / (float) Math.PI), 25));
+                    mob.setYRot(Mth.approachDegrees(mob.getYRot(),
+                            -((float) Mth.atan2(vector3d1.x, vector3d1.z)) * (180F / (float) Math.PI), 25));
                 }
             }
         }
@@ -857,8 +907,10 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
             double d0 = Math.abs(this.mob.getX() - ((double) vector3i.getX() + 0.5D));
             double d1 = Math.abs(this.mob.getY() - (double) vector3i.getY());
             double d2 = Math.abs(this.mob.getZ() - ((double) vector3i.getZ() + 0.5D));
-            boolean flag = d0 < (double) this.maxDistanceToWaypoint && d2 < (double) this.maxDistanceToWaypoint && d1 <= (double) this.maxDistanceToWaypoint;
-            if (flag || this.canCutCorner(this.path.getNextNode().type) && this.shouldTargetNextNodeInDirection(vector3d)) {
+            boolean flag = d0 < (double) this.maxDistanceToWaypoint && d2 < (double) this.maxDistanceToWaypoint
+                    && d1 <= (double) this.maxDistanceToWaypoint;
+            if (flag || this.canCutCorner(this.path.getNextNode().type)
+                    && this.shouldTargetNextNodeInDirection(vector3d)) {
                 this.path.advance();
             }
 
@@ -867,7 +919,8 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
 
         protected boolean canMoveDirectly(Vec3 vec3, Vec3 vec31) {
             Vec3 vector3d = new Vec3(vec31.x, vec31.y + (double) this.mob.getBbHeight() * 0.5D, vec31.z);
-            BlockHitResult result = this.level.clip(new ClipContext(vec3, vector3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
+            BlockHitResult result = this.level.clip(
+                    new ClipContext(vec3, vector3d, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.mob));
             return isSafeDig(level, result.getBlockPos());
         }
 
@@ -876,7 +929,7 @@ public class GumWormEntity extends Monster implements ICustomCollisions, KaijuMo
                 return false;
             } else {
                 Vec3 vector3d = Vec3.atBottomCenterOf(this.path.getNextNodePos());
-                if(level.getBlockState(this.path.getNextNodePos()).isAir()){
+                if (level.getBlockState(this.path.getNextNodePos()).isAir()) {
                     return true;
                 }
                 if (!currentPosition.closerThan(vector3d, 2.0D)) {
