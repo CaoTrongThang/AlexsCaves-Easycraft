@@ -3,9 +3,9 @@ package com.github.alexthe666.citadel.client.event;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.eventbus.api.Event;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.Dist;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.OnlyIn;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event;
 
 @OnlyIn(Dist.CLIENT)
 @Event.HasResult

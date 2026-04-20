@@ -24,8 +24,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientItemExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraftforge.eventbus.api.Event;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -65,9 +65,9 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -643,7 +643,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     public void aiStep() {
         super.aiStep();
         if (!this.level().isClientSide) {
-            if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) && blockBreakCounter <= 0) {
+            if (com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) && blockBreakCounter <= 0) {
                 this.breakBlocksInBoundingBox(0.1F);
                 blockBreakCounter = 10;
             }
@@ -872,7 +872,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public void knockbackTarget(Entity target, double strength, double x, double z, boolean ignoreResistance) {
-        net.minecraftforge.event.entity.living.LivingKnockBackEvent event = net.minecraftforge.common.ForgeHooks.onLivingKnockBack(this, (float) strength, x, z);
+        com.github.alexmodguy.alexscaves.forge_shim.event.entity.living.LivingKnockBackEvent event = com.github.alexmodguy.alexscaves.forge_shim.common.ForgeHooks.onLivingKnockBack(this, (float) strength, x, z);
         if (event.isCanceled()) return;
         strength = event.getStrength();
         x = event.getRatioX();
@@ -889,7 +889,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public boolean breakBlocksAround(Vec3 center, float radius, boolean square, boolean triggerExplosions, float dropChance) {
-        if (this.isBaby() || !net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || level().isClientSide) {
+        if (this.isBaby() || !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || level().isClientSide) {
             return false;
         }
         boolean flag = false;
@@ -917,7 +917,7 @@ public class TremorzillaEntity extends DinosaurEntity implements KeybindUsingMou
     }
 
     public boolean breakBlocksInBoundingBox(float dropChance) {
-        if (this.isBaby() || !net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || level().isClientSide) {
+        if (this.isBaby() || !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || level().isClientSide) {
             return false;
         }
         boolean flag = false;

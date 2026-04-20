@@ -39,9 +39,9 @@ public class AncientTreeGrower extends AbstractTreeGrower {
             return false;
         } else {
             Holder<ConfiguredFeature<?, ?>> holder = serverLevel.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(resourcekey).orElse((Holder.Reference<ConfiguredFeature<?, ?>>) null);
-            var event = net.minecraftforge.event.ForgeEventFactory.blockGrowFeature(serverLevel, randomSource, blockPos, holder);
+            var event = com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.blockGrowFeature(serverLevel, randomSource, blockPos, holder);
             holder = event.getFeature();
-            if (event.getResult() == net.minecraftforge.eventbus.api.Event.Result.DENY) return false;
+            if (event.getResult() == com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event.Result.DENY) return false;
             if (holder == null) {
                 return false;
             } else {

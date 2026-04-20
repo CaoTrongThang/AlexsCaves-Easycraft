@@ -10,8 +10,8 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.Dist;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.OnlyIn;
 
 public class JellyBeanEatParticle extends BreakingItemParticle {
 

@@ -26,7 +26,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientItemExtensions;
 
 public class OrtholanceItem extends Item implements Vanishable {
     private final Multimap<Attribute, AttributeModifier> defaultModifiers;

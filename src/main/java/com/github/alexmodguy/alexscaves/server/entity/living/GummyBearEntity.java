@@ -61,7 +61,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Attr;
 

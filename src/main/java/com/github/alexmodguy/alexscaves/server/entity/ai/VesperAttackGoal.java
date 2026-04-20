@@ -15,7 +15,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ToolActions;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolActions;
 
 import java.util.EnumSet;
 
@@ -121,7 +121,7 @@ public class VesperAttackGoal extends Goal {
                 InteractionHand hand = holder.getUsedItemHand();
                 holder.getUseItem().hurtAndBreak(i, holder, (p_213833_1_) -> {
                     p_213833_1_.broadcastBreakEvent(hand);
-                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(holder, holder.getUseItem(), hand);
+                    com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onPlayerDestroyItem(holder, holder.getUseItem(), hand);
                 });
                 if (holder.getUseItem().isEmpty()) {
                     if (hand == InteractionHand.MAIN_HAND) {

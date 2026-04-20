@@ -26,7 +26,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.ForgeRenderTypes;
+import com.github.alexmodguy.alexscaves.forge_shim.client.ForgeRenderTypes;
 
 public class ACItemstackRenderer extends BlockEntityWithoutLevelRenderer {
     private static final ResourceLocation GALENA_GAUNTLET_TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/galena_gauntlet.png");

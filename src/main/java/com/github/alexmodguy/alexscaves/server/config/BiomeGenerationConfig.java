@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.fml.loading.FMLPaths;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nullable;

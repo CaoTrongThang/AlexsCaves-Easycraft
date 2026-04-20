@@ -15,9 +15,9 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.DeferredRegister;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class ACCreativeTabRegistry {
 

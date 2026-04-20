@@ -7,8 +7,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.DecoratedPotPatterns;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.DeferredRegister;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class ACPotPatternRegistry {
 

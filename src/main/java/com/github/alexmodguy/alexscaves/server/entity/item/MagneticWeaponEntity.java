@@ -40,8 +40,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -215,7 +215,7 @@ public class MagneticWeaponEntity extends Entity {
                             ItemStack itemStack = getItemStack();
                             itemStack.mineBlock(this.level(), miningState, miningBlock, player);
                             int exp = ACBlockCompat.getExpDrop(miningState, level(), miningBlock, player, itemStack);
-                            net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemStack, InteractionHand.MAIN_HAND);
+                            com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onPlayerDestroyItem(player, itemStack, InteractionHand.MAIN_HAND);
                             boolean flag;
                             if (miningState.getBlock() instanceof ShulkerBoxBlock) {
                                 flag = level().destroyBlock(miningBlock, true);
@@ -331,7 +331,7 @@ public class MagneticWeaponEntity extends Entity {
             f /= 5.0F;
         }
 
-        f = net.minecraftforge.event.ForgeEventFactory.getBreakSpeed(player, state, f, pos);
+        f = com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getBreakSpeed(player, state, f, pos);
         return f;
     }
 

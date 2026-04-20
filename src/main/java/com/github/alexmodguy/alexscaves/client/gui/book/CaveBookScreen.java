@@ -17,7 +17,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
-import net.minecraftforge.client.ForgeRenderTypes;
+import com.github.alexmodguy.alexscaves.forge_shim.client.ForgeRenderTypes;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
@@ -216,7 +216,7 @@ public class CaveBookScreen extends Screen {
     @Override
     public void renderBackground(GuiGraphics guiGraphics) {
         guiGraphics.fillGradient(0, 0, this.width, this.height, -1000, -1072689136, -804253680);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ScreenEvent.BackgroundRendered(this, guiGraphics));
+        com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge.EVENT_BUS.post(new com.github.alexmodguy.alexscaves.forge_shim.client.event.ScreenEvent.BackgroundRendered(this, guiGraphics));
     }
 
     @Override

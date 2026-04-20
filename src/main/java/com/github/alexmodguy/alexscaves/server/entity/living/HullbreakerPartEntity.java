@@ -17,7 +17,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 public class HullbreakerPartEntity extends PartEntity<HullbreakerEntity> {
 

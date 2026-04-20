@@ -32,10 +32,10 @@ import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeSpawnEggItem;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.DeferredRegister;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

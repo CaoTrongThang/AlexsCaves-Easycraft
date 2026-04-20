@@ -79,11 +79,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.*;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import com.github.alexmodguy.alexscaves.forge_shim.client.event.*;
+import com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.IEventBus;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.ModList;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

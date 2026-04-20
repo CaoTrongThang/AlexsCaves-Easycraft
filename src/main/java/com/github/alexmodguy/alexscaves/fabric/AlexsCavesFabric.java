@@ -13,6 +13,6 @@ public class AlexsCavesFabric implements ModInitializer {
         FabricRegistryBootstrap.bootstrapCommon();
         AlexsCaves.setProxy(new com.github.alexmodguy.alexscaves.server.CommonProxy());
         AlexsCaves.init();
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new CommonEvents());
+        com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge.EVENT_BUS.register(new CommonEvents());
     }
 }

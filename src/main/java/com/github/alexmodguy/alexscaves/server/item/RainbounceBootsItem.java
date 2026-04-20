@@ -14,7 +14,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
 

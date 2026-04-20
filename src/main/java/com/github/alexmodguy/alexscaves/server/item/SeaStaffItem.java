@@ -21,7 +21,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientItemExtensions;
 
 public class SeaStaffItem extends Item {
     public SeaStaffItem(Item.Properties properties) {

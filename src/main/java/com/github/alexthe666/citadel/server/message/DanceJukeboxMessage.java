@@ -4,8 +4,8 @@ import com.github.alexthe666.citadel.Citadel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.LogicalSide;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

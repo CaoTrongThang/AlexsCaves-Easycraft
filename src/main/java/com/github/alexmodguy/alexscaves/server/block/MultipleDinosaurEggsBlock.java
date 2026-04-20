@@ -15,7 +15,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 

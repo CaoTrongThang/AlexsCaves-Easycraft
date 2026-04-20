@@ -25,7 +25,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -129,7 +129,7 @@ public class AmberMonolithBlockEntity extends BlockEntity {
                     entity.moveTo(d0, (double) blockpos.getY(), d1, level.random.nextFloat() * 360.0F, 0.0F);
                     if (entity instanceof Mob) {
                         Mob mob = (Mob) entity;
-                        if (net.minecraftforge.event.ForgeEventFactory.checkSpawnPosition(mob, (ServerLevelAccessor) level, MobSpawnType.CHUNK_GENERATION)) {
+                        if (com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.checkSpawnPosition(mob, (ServerLevelAccessor) level, MobSpawnType.CHUNK_GENERATION)) {
                             spawngroupdata = mob.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata, (CompoundTag) null);
                             ((ServerLevel) level).addFreshEntityWithPassengers(mob);
                             spawned = true;

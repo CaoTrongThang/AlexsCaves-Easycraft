@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class PurpleSodaBlock extends LiquidBlock {
 

@@ -6,8 +6,8 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.WaterDropParticle;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.Dist;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.OnlyIn;
 
 public class BigSplashEffectParticle extends WaterDropParticle {
 

@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.Dist;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.OnlyIn;
 
 public class WaterFoamParticle extends TextureSheetParticle {
 

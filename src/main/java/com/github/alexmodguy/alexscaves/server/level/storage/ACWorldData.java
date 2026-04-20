@@ -16,8 +16,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import net.minecraftforge.common.WorldWorkerManager;
-import net.minecraftforge.common.world.ForgeChunkManager;
+import com.github.alexmodguy.alexscaves.forge_shim.common.WorldWorkerManager;
+import com.github.alexmodguy.alexscaves.forge_shim.common.world.ForgeChunkManager;
 
 import javax.annotation.Nullable;
 import java.util.*;

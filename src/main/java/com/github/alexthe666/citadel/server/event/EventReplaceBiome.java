@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Climate;
-import net.minecraftforge.eventbus.api.Event;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event;
 
 @Event.HasResult
 @Deprecated(since = "2.6.0")

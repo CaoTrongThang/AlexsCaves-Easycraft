@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.client.ForgeRenderTypes;
+import com.github.alexmodguy.alexscaves.forge_shim.client.ForgeRenderTypes;
 
 public class AmberMonolithBlockRenderer<T extends AmberMonolithBlockEntity> implements BlockEntityRenderer<T> {
 

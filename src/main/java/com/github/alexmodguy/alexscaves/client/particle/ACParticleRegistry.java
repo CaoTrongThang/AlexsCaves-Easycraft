@@ -7,9 +7,9 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.DeferredRegister;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class ACParticleRegistry {
     public static final DeferredRegister<ParticleType<?>> DEF_REG = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, AlexsCaves.MODID);

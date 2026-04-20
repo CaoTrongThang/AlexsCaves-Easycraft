@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 import javax.annotation.Nullable;
 

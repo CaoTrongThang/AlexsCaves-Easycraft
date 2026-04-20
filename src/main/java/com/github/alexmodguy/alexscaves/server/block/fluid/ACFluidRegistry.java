@@ -11,14 +11,14 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.SoundActions;
-import net.minecraftforge.fluids.FluidInteractionRegistry;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
+import com.github.alexmodguy.alexscaves.forge_shim.common.SoundActions;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidInteractionRegistry;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.ForgeFlowingFluid;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.DeferredRegister;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class ACFluidRegistry {
     @SuppressWarnings("unchecked")

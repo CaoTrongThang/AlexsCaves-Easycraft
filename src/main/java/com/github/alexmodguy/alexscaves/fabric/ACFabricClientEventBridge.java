@@ -1,8 +1,8 @@
 package com.github.alexmodguy.alexscaves.fabric;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.TickEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge;
+import com.github.alexmodguy.alexscaves.forge_shim.event.TickEvent;
 
 public final class ACFabricClientEventBridge {
 

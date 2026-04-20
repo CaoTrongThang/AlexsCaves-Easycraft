@@ -16,7 +16,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditions;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
+import com.github.alexmodguy.alexscaves.forge_shim.common.loot.IGlobalLootModifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;

@@ -24,7 +24,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.List;

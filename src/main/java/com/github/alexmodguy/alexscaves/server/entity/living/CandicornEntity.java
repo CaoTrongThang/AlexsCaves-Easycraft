@@ -640,7 +640,7 @@ public class CandicornEntity extends TamableAnimal implements KeybindUsingMount,
 
     @Override
     public boolean causeFallDamage(float f1, float f2, DamageSource damageSource) {
-        float[] ret = net.minecraftforge.common.ForgeHooks.onLivingFall(this, f1, f2);
+        float[] ret = com.github.alexmodguy.alexscaves.forge_shim.common.ForgeHooks.onLivingFall(this, f1, f2);
         if (ret == null) return false;
         f1 = ret[0];
         f2 = ret[1];
@@ -658,7 +658,7 @@ public class CandicornEntity extends TamableAnimal implements KeybindUsingMount,
     }
 
     private boolean causeInternalFallDamage(float f1, float f2, DamageSource damageSource) {
-        float[] ret = net.minecraftforge.common.ForgeHooks.onLivingFall(this, f1, f2);
+        float[] ret = com.github.alexmodguy.alexscaves.forge_shim.common.ForgeHooks.onLivingFall(this, f1, f2);
         if (ret == null) return false;
         f1 = ret[0];
         f2 = ret[1];

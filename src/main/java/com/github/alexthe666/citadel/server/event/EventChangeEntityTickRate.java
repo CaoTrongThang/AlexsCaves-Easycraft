@@ -1,8 +1,8 @@
 package com.github.alexthe666.citadel.server.event;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.eventbus.api.Cancelable;
-import net.minecraftforge.eventbus.api.Event;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Cancelable;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event;
 
 @Cancelable
 public class EventChangeEntityTickRate extends Event {

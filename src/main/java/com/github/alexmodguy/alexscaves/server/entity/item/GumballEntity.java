@@ -23,8 +23,8 @@ import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -28,9 +28,9 @@ import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import com.github.alexmodguy.alexscaves.server.recipe.ACRecipeRegistry;
 import com.github.alexthe666.citadel.CitadelItemRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
-import net.minecraftforge.registries.DeferredRegister;
+import com.github.alexmodguy.alexscaves.forge_shim.event.entity.EntityAttributeCreationEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.event.entity.SpawnPlacementRegisterEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.DeferredRegister;
 
 final class FabricRegistryBootstrap {
 

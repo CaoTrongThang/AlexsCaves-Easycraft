@@ -35,10 +35,10 @@ import com.github.alexmodguy.alexscaves.server.misc.WebHelper;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.world.ForgeChunkManager;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.common.world.ForgeChunkManager;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkDirection;
+import com.github.alexmodguy.alexscaves.forge_shim.network.simple.SimpleChannel;
+import com.github.alexmodguy.alexscaves.forge_shim.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 

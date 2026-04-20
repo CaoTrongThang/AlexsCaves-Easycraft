@@ -392,7 +392,7 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                     this.setEnraged(false);
                 }
             }
-            if ((this.horizontalCollision || this.isInWater()) || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+            if ((this.horizontalCollision || this.isInWater()) || com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
                 AABB aabb = this.getBoundingBox().inflate(0.2D);
                 if (this.getAnimation() == ANIMATION_JUMP && this.getAnimationTick() > 24 && this.onGround()) {
                     return;
@@ -403,7 +403,7 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
                         this.level().destroyBlock(blockpos, random.nextFloat() < AlexsCaves.COMMON_CONFIG.luxtructosaurusBlockDropChance.get(), this);
                     }
                     if (blockstate.getFluidState().is(FluidTags.WATER)) {
-                        level().setBlock(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(level(), blockpos, blockpos, Blocks.STONE.defaultBlockState()), 3);
+                        level().setBlock(blockpos, com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.fireFluidPlaceBlockEvent(level(), blockpos, blockpos, Blocks.STONE.defaultBlockState()), 3);
                         level().levelEvent(1501, blockpos, 0);
                     }
                 }
@@ -609,7 +609,7 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
         VoronoiGenerator.VoronoiInfo info = VORONOI_GENERATOR.get2(blockPos.getX() * sampleScale, blockPos.getZ() * sampleScale);
         boolean flag = false;
         if (info.distance1() - sampleScale * 4 < info.distance()) {
-            if(net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)){
+            if(com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)){
                 int y = blockPos.getY();
                 for (int i = 0; i <= depth; i++) {
                     BlockState state = level().getBlockState(blockPos);

@@ -10,7 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 public abstract class ACMultipartEntity<T extends Entity> extends PartEntity<T> {
 

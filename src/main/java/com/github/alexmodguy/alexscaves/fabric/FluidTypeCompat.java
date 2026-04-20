@@ -6,9 +6,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.BaseFlowingFluid;
-import net.minecraftforge.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.BaseFlowingFluid;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
 
 public final class FluidTypeCompat {
     private FluidTypeCompat() {

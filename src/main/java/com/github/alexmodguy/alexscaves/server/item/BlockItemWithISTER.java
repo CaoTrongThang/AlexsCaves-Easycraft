@@ -3,8 +3,8 @@ package com.github.alexmodguy.alexscaves.server.item;
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexthe666.citadel.item.BlockItemWithSupplier;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientItemExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class BlockItemWithISTER extends BlockItemWithSupplier {
 

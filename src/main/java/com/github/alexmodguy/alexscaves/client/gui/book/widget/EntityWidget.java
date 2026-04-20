@@ -25,7 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
 
 public class EntityWidget extends BookWidget {
 

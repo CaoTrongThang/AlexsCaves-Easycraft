@@ -3,7 +3,7 @@ package com.github.alexmodguy.alexscaves.server.entity.item;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 public class MovingMetalBlockEntity extends AbstractMovingBlockEntity {
 

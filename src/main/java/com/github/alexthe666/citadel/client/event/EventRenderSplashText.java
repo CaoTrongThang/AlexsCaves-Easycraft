@@ -1,7 +1,7 @@
 package com.github.alexthe666.citadel.client.event;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraftforge.eventbus.api.Event;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event;
 
 public class EventRenderSplashText extends Event {
     private String splashText;

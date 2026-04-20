@@ -29,11 +29,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolActions;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 public class SubmarineEntity extends Entity implements KeybindUsingMount {
     private static final EntityDataAccessor<Float> RIGHT_PROPELLER_ROT = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);

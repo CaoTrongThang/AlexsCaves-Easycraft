@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
 
 import java.util.List;
 import java.util.Queue;

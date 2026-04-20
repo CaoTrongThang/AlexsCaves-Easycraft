@@ -28,8 +28,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 import javax.annotation.Nullable;
 

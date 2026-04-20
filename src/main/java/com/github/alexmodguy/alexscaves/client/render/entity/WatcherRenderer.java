@@ -35,7 +35,7 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
     }
 
     public void render(WatcherEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int light) {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<WatcherEntity, WatcherModel>(entity, this, partialTicks, poseStack, bufferSource, light)))
+        if (com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge.EVENT_BUS.post(new com.github.alexmodguy.alexscaves.forge_shim.client.event.RenderLivingEvent.Pre<WatcherEntity, WatcherModel>(entity, this, partialTicks, poseStack, bufferSource, light)))
             return;
         poseStack.pushPose();
         this.model.attackTime = this.getAttackAnim(entity, partialTicks);
@@ -119,13 +119,13 @@ public class WatcherRenderer extends MobRenderer<WatcherEntity, WatcherModel> {
                 renderlayer.render(poseStack, bufferSource, light, entity, f5, f8, partialTicks, f7, f2, f6);
             }
         }
-        var renderNameTagEvent = new net.minecraftforge.client.event.RenderNameTagEvent(entity, entity.getDisplayName(), this, poseStack, bufferSource, light, partialTicks);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
-        if (renderNameTagEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(entity))) {
+        var renderNameTagEvent = new com.github.alexmodguy.alexscaves.forge_shim.client.event.RenderNameTagEvent(entity, entity.getDisplayName(), this, poseStack, bufferSource, light, partialTicks);
+        com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
+        if (renderNameTagEvent.getResult() != com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event.Result.ALLOW || this.shouldShowName(entity))) {
             this.renderNameTag(entity, renderNameTagEvent.getContent(), poseStack, bufferSource, light);
         }
         poseStack.popPose();
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<WatcherEntity, WatcherModel>(entity, this, partialTicks, poseStack, bufferSource, light));
+        com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge.EVENT_BUS.post(new com.github.alexmodguy.alexscaves.forge_shim.client.event.RenderLivingEvent.Post<WatcherEntity, WatcherModel>(entity, this, partialTicks, poseStack, bufferSource, light));
     }
 
     private float getWatcherTransparency(WatcherEntity entity, float partialTicks) {

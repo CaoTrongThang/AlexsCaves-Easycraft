@@ -14,9 +14,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 import javax.annotation.Nullable;
 import java.util.Optional;

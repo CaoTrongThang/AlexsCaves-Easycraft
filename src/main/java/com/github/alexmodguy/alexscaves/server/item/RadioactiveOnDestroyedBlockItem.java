@@ -7,7 +7,7 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 public class RadioactiveOnDestroyedBlockItem extends RadioactiveBlockItem {
 

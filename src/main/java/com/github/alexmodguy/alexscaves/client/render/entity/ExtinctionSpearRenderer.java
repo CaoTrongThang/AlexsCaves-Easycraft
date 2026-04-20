@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.ForgeRenderTypes;
+import com.github.alexmodguy.alexscaves.forge_shim.client.ForgeRenderTypes;
 
 public class ExtinctionSpearRenderer extends EntityRenderer<ExtinctionSpearEntity> {
 

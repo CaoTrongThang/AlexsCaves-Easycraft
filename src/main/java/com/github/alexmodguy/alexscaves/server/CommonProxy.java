@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fml.ModList;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.UUID;

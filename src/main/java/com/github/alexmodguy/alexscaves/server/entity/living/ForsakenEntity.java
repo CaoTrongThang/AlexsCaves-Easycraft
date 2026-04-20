@@ -447,7 +447,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
         if(this.isInWall()){
             if (this.destroyBlocksTick > 0) {
                 --this.destroyBlocksTick;
-                if (this.destroyBlocksTick == 0 && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+                if (this.destroyBlocksTick == 0 && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
                     int j1 = Mth.floor(this.getY());
                     int i2 = Mth.floor(this.getX());
                     int j2 = Mth.floor(this.getZ());
@@ -461,7 +461,7 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
                                 int i1 = j2 + k2;
                                 BlockPos blockpos = new BlockPos(l2, l, i1);
                                 BlockState blockstate = this.level().getBlockState(blockpos);
-                                if (blockstate.getDestroySpeed(this.level(), blockpos) >= 0.0F && !blockstate.is(ACTagRegistry.UNMOVEABLE) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
+                                if (blockstate.getDestroySpeed(this.level(), blockpos) >= 0.0F && !blockstate.is(ACTagRegistry.UNMOVEABLE) && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onEntityDestroyBlock(this, blockpos, blockstate)) {
                                     flag = this.level().destroyBlock(blockpos, true, this) || flag;
                                 }
                             }

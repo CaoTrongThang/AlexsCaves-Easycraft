@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSource;
 import net.minecraft.world.level.biome.Climate;
-import net.minecraftforge.common.WorldWorkerManager;
+import com.github.alexmodguy.alexscaves.forge_shim.common.WorldWorkerManager;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

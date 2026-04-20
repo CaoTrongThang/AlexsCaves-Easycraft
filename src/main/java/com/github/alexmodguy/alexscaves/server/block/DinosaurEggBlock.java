@@ -27,7 +27,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.RegistryObject;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -162,7 +162,7 @@ public class DinosaurEggBlock extends Block {
             if (!(trampler instanceof LivingEntity)) {
                 return false;
             } else {
-                return trampler instanceof Player || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(worldIn, trampler);
+                return trampler instanceof Player || com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(worldIn, trampler);
             }
         } else {
             return false;

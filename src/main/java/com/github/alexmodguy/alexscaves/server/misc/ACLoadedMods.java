@@ -1,6 +1,6 @@
 package com.github.alexmodguy.alexscaves.server.misc;
 
-import net.minecraftforge.fml.ModList;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.ModList;
 
 public class ACLoadedMods {
 

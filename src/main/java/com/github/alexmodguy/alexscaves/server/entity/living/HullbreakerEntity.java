@@ -53,8 +53,8 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -300,7 +300,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         }
         boolean flag = false;
         AABB damageBox = this.headPart.getBoundingBox().inflate(1.2F).move(this.calculateViewVector(this.getXRot(), this.getYRot()));
-        if (!level().isClientSide && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level(), this) && this.getTarget() instanceof Player) {
+        if (!level().isClientSide && com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(level(), this) && this.getTarget() instanceof Player) {
             for (int a = (int) Math.round(damageBox.minX); a <= (int) Math.round(damageBox.maxX); a++) {
                 for (int b = (int) Math.round(damageBox.minY) - 1; (b <= (int) Math.round(damageBox.maxY) + 1) && (b <= 127); b++) {
                     for (int c = (int) Math.round(damageBox.minZ); c <= (int) Math.round(damageBox.maxZ); c++) {

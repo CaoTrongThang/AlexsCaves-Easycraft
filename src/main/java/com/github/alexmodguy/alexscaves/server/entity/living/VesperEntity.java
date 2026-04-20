@@ -222,7 +222,7 @@ public class VesperEntity extends Monster implements IAnimatedEntity, Underzealo
                 if (forsakenEntity != null) {
                     this.playSound(ACSoundRegistry.FORSAKEN_SPAWN.get(), 8.0F, 1.0F);
                     forsakenEntity.setAnimation(ForsakenEntity.ANIMATION_SUMMON);
-                    net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, forsakenEntity);
+                    com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onLivingConvert(this, forsakenEntity);
                     forsakenEntity.stopRiding();
                 }
             }

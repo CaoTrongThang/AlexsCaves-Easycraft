@@ -47,7 +47,7 @@ public class NuclearBombRenderer extends EntityRenderer<NuclearBombEntity> {
         float f1 = 1.0F + progress;
         float f2 = 1.0F - progress;
         RenderType renderType = ItemBlockRenderTypes.getMovingBlockRenderType(state);
-        renderModel(poseStack.last(), source.getBuffer(net.minecraftforge.client.RenderTypeHelper.getEntityRenderType(renderType, false)), state, bakedmodel, f, f1, f2, 240, OverlayTexture.NO_OVERLAY);
+        renderModel(poseStack.last(), source.getBuffer(com.github.alexmodguy.alexscaves.forge_shim.client.RenderTypeHelper.getEntityRenderType(renderType, false)), state, bakedmodel, f, f1, f2, 240, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
         poseStack.popPose();
     }

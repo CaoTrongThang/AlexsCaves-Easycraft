@@ -26,8 +26,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -130,7 +130,7 @@ public class TephraEntity extends Projectile {
         }
 
         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+        if (hitresult.getType() != HitResult.Type.MISS && !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
         }
         if (dieIn > 0) {
@@ -175,7 +175,7 @@ public class TephraEntity extends Projectile {
     }
 
     private void explode() {
-        Explosion.BlockInteraction blockinteraction = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level(), this) ? level().getGameRules().getBoolean(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
+        Explosion.BlockInteraction blockinteraction = com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(level(), this) ? level().getGameRules().getBoolean(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
         TephraExplosion explosion = new TephraExplosion(level(), this, this.getX(), this.getY(0.5), this.getZ(), 1.0F + getMaxScale(), blockinteraction);
         explosion.explode();
         explosion.finalizeExplosion(true);

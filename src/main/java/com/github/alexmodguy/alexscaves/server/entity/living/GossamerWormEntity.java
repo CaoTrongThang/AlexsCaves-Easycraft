@@ -35,7 +35,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;

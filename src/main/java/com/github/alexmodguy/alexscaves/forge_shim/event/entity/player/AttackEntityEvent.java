@@ -1,0 +1,32 @@
+package com.github.alexmodguy.alexscaves.forge_shim.event.entity.player;
+
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event;
+
+public class AttackEntityEvent extends Event {
+    private final Player entity;
+    private final Entity target;
+    private boolean canceled;
+
+    public AttackEntityEvent(Player entity, Entity target) {
+        this.entity = entity;
+        this.target = target;
+    }
+
+    public Player getEntity() {
+        return entity;
+    }
+
+    public Entity getTarget() {
+        return target;
+    }
+
+    public boolean isCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
+    }
+}

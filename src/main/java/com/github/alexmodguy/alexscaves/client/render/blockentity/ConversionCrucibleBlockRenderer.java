@@ -28,7 +28,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
+import com.github.alexmodguy.alexscaves.forge_shim.client.model.data.ModelData;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 

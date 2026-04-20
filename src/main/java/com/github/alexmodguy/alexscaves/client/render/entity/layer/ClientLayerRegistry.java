@@ -8,11 +8,11 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.Dist;
+import com.github.alexmodguy.alexscaves.forge_shim.api.distmarker.OnlyIn;
+import com.github.alexmodguy.alexscaves.forge_shim.client.event.EntityRenderersEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.SubscribeEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.stream.Collectors;

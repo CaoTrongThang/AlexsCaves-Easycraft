@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -320,7 +320,7 @@ public abstract class SauropodBaseEntity extends DinosaurEntity implements Shake
         }
         int feetY = this.blockPosition().getY() - (int)lowestFoot;
         BlockPos center = new BlockPos(ringStartX, feetY, ringStartZ);
-        if(net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || this.isVehicle() && this.getControllingPassenger() instanceof Player){
+        if(com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this) || this.isVehicle() && this.getControllingPassenger() instanceof Player){
             for (int y = 0; y <= STOMP_CRUSH_HEIGHT; y++) {
                 List<MovingBlockData> dataPerYLevel = new ArrayList<>();
                 int currentBlocksInChunk = 0;

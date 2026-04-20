@@ -9,8 +9,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.fml.LogicalSide;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkEvent;
 
 import java.util.function.Supplier;
 

@@ -49,7 +49,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.entity.PartEntity;
+import com.github.alexmodguy.alexscaves.forge_shim.entity.PartEntity;
 
 public class CorrodentEntity extends Monster implements ICustomCollisions, IAnimatedEntity {
     public static final int LIGHT_THRESHOLD = 7;

@@ -79,7 +79,7 @@ public class NaturalSpawnerMixin {
                                     entity.moveTo(d0, (double) blockpos.getY(), d1, randomSource.nextFloat() * 360.0F, 0.0F);
                                     if (entity instanceof Mob) {
                                         Mob mob = (Mob) entity;
-                                        //if (net.minecraftforge.common.ForgeHooks.canEntitySpawn(mob, level, d0, blockpos.getY(), d1, null, MobSpawnType.CHUNK_GENERATION) == -1)
+                                        //if (com.github.alexmodguy.alexscaves.forge_shim.common.ForgeHooks.canEntitySpawn(mob, level, d0, blockpos.getY(), d1, null, MobSpawnType.CHUNK_GENERATION) == -1)
                                         //    continue;
                                         if (mob.checkSpawnRules(level, MobSpawnType.CHUNK_GENERATION) && mob.checkSpawnObstruction(level)) {
                                             spawngroupdata = mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.CHUNK_GENERATION, spawngroupdata, (CompoundTag) null);

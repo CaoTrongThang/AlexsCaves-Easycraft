@@ -18,10 +18,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.SoundActions;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientFluidTypeExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.common.SoundActions;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidStack;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

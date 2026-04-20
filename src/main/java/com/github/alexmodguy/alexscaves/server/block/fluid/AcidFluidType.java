@@ -17,10 +17,10 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.SoundActions;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
+import com.github.alexmodguy.alexscaves.forge_shim.client.extensions.common.IClientFluidTypeExtensions;
+import com.github.alexmodguy.alexscaves.forge_shim.common.SoundActions;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidStack;
+import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -79,7 +79,7 @@ public class AcidFluidType extends FluidType {
             f4 = 0.96F;
         }
 
-        f5 *= (float) entity.getAttribute(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get()).getValue();
+        f5 *= (float) entity.getAttribute(com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod.SWIM_SPEED.get()).getValue();
         entity.moveRelative(f5, movementVector);
         entity.move(MoverType.SELF, entity.getDeltaMovement());
         Vec3 vec36 = entity.getDeltaMovement();

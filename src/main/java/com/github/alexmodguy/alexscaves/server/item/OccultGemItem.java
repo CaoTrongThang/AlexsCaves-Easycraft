@@ -26,7 +26,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.world.ForgeChunkManager;
+import com.github.alexmodguy.alexscaves.forge_shim.common.world.ForgeChunkManager;
 
 import javax.annotation.Nullable;
 import java.util.List;

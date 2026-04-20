@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.ForgeRenderTypes;
+import com.github.alexmodguy.alexscaves.forge_shim.client.ForgeRenderTypes;
 
 public class WatcherAppearanceParticle extends Particle {
     private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/watcher_appearance.png");

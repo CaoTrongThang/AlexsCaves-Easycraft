@@ -17,7 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraftforge.common.ToolActions;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolActions;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -160,7 +160,7 @@ public class CandyCaneHookItem extends Item {
         return stack.getCount() == 1;
     }
 
-    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ToolAction toolAction) {
+    public boolean canPerformAction(ItemStack stack, com.github.alexmodguy.alexscaves.forge_shim.common.ToolAction toolAction) {
         return toolAction == ToolActions.FISHING_ROD_CAST;
     }
 }

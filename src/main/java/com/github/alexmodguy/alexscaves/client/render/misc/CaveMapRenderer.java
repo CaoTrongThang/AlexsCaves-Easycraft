@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.Tags;
+import com.github.alexmodguy.alexscaves.forge_shim.common.Tags;
 import org.joml.Matrix4f;
 
 import java.util.*;

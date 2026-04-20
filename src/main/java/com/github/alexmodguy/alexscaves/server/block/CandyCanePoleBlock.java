@@ -18,8 +18,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolAction;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolActions;
 
 public class CandyCanePoleBlock extends CrossCollisionBlock {
 

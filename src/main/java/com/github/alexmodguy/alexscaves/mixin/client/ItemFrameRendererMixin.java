@@ -55,9 +55,9 @@ public abstract class ItemFrameRendererMixin {
         ItemStack itemstack = entity.getItem();
         if (itemstack.is(ACItemRegistry.CAVE_MAP.get()) && CaveMapItem.isFilled(itemstack)) {
             ci.cancel();
-            var renderNameTagEvent = new net.minecraftforge.client.event.RenderNameTagEvent(entity, entity.getDisplayName(), (ItemFrameRenderer) (Object) this, poseStack, bufferSource, packedLight, partialTicks);
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
-            if (renderNameTagEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || shouldShowName(entity))) {
+            var renderNameTagEvent = new com.github.alexmodguy.alexscaves.forge_shim.client.event.RenderNameTagEvent(entity, entity.getDisplayName(), (ItemFrameRenderer) (Object) this, poseStack, bufferSource, packedLight, partialTicks);
+            com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge.EVENT_BUS.post(renderNameTagEvent);
+            if (renderNameTagEvent.getResult() != com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event.Result.DENY && (renderNameTagEvent.getResult() == com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.Event.Result.ALLOW || shouldShowName(entity))) {
                 renderNameTag(entity, renderNameTagEvent.getContent(), poseStack, bufferSource, packedLight);
             }
             poseStack.pushPose();

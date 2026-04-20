@@ -200,7 +200,7 @@ public class MineGuardianEntity extends Monster {
         if (this.isExploding()) {
             if (explodeProgress >= 10.0F) {
                 this.remove(RemovalReason.KILLED);
-                Explosion.BlockInteraction blockinteraction = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level(), this) ? level().getGameRules().getBoolean(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
+                Explosion.BlockInteraction blockinteraction = com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.getMobGriefingEvent(level(), this) ? level().getGameRules().getBoolean(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
                 MineExplosion explosion = new MineExplosion(level(), this, this.getX(), this.getY(0.5), this.getZ(), 5.0F, this.isInWaterOrBubble(), blockinteraction);
                 explosion.explode();
                 explosion.finalizeExplosion(true);

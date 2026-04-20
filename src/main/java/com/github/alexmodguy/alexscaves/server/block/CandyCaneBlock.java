@@ -9,8 +9,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import net.minecraftforge.common.ToolAction;
-import net.minecraftforge.common.ToolActions;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolAction;
+import com.github.alexmodguy.alexscaves.forge_shim.common.ToolActions;
 
 public class CandyCaneBlock extends RotatedPillarBlock {
 

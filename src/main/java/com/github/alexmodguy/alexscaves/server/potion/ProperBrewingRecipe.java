@@ -2,7 +2,7 @@ package com.github.alexmodguy.alexscaves.server.potion;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.brewing.BrewingRecipe;
+import com.github.alexmodguy.alexscaves.forge_shim.common.brewing.BrewingRecipe;
 
 import javax.annotation.Nonnull;
 

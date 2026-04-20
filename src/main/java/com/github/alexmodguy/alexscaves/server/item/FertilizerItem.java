@@ -50,7 +50,7 @@ public class FertilizerItem extends Item {
 
     private static boolean applyFertilizer(ItemStack itemStack, Level level, BlockPos blockPos, Player player) {
         BlockState blockstate = level.getBlockState(blockPos);
-        int hook = net.minecraftforge.event.ForgeEventFactory.onApplyBonemeal(player, level, blockPos, blockstate, itemStack);
+        int hook = com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onApplyBonemeal(player, level, blockPos, blockstate, itemStack);
         if (hook != 0) {
             return hook > 0;
         }

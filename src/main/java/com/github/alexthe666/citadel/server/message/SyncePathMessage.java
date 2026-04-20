@@ -3,8 +3,8 @@ package com.github.alexthe666.citadel.server.message;
 import com.github.alexthe666.citadel.client.render.pathfinding.PathfindingDebugRenderer;
 import com.github.alexthe666.citadel.server.entity.pathfinding.raycoms.MNode;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkDirection;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkEvent;
 
 import java.util.HashSet;
 import java.util.Set;

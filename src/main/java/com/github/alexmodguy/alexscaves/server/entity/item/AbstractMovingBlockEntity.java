@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +120,7 @@ public abstract class AbstractMovingBlockEntity extends Entity {
             if (!entity.noPhysics && !(entity instanceof MovingMetalBlockEntity)) {
                 double gravity = entity.isNoGravity() ? 0 : 0.08D;
                 if (entity instanceof LivingEntity living) {
-                    AttributeInstance attribute = living.getAttribute(net.minecraftforge.common.ForgeMod.ENTITY_GRAVITY.get());
+                    AttributeInstance attribute = living.getAttribute(com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod.ENTITY_GRAVITY.get());
                     gravity = attribute.getValue();
                 }
                 float f2 = 1.0F;

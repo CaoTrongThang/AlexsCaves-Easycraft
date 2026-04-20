@@ -4,8 +4,8 @@ import com.github.alexthe666.citadel.client.render.pathfinding.PathfindingDebugR
 import com.github.alexthe666.citadel.server.entity.pathfinding.raycoms.MNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkDirection;
+import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkEvent;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -50,7 +50,7 @@ public class ThrownWasteDrumEntityRenderer extends EntityRenderer<ThrownWasteDru
         float f1 = 1.0F + progress;
         float f2 = 1.0F - progress;
         RenderType renderType = ItemBlockRenderTypes.getMovingBlockRenderType(state);
-        NuclearBombRenderer.renderModel(poseStack.last(), source.getBuffer(net.minecraftforge.client.RenderTypeHelper.getEntityRenderType(renderType, false)), state, bakedmodel, f, f1, f2, lightIn, OverlayTexture.NO_OVERLAY);
+        NuclearBombRenderer.renderModel(poseStack.last(), source.getBuffer(com.github.alexmodguy.alexscaves.forge_shim.client.RenderTypeHelper.getEntityRenderType(renderType, false)), state, bakedmodel, f, f1, f2, lightIn, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
         poseStack.popPose();
     }

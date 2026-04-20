@@ -3,7 +3,7 @@ package com.github.alexmodguy.alexscaves.server.block;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraftforge.common.util.ForgeSoundType;
+import com.github.alexmodguy.alexscaves.forge_shim.common.util.ForgeSoundType;
 
 public class ACSoundTypes {
 

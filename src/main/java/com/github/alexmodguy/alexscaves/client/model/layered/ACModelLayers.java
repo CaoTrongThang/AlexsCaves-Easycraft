@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+import com.github.alexmodguy.alexscaves.forge_shim.client.event.EntityRenderersEvent;
 
 public class ACModelLayers {
 
