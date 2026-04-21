@@ -24,7 +24,9 @@ public class BiomeGenerationNoiseCondition {
     private final float[] depth;
     private final List<String> dimensions;
 
-    private BiomeGenerationNoiseCondition(boolean disabledCompletely, int distanceFromSpawn, int alexscavesRarityOffset, float[] continentalness, float[] erosion, float[] humidity, float[] temperature, float[] weirdness, float[] depth, String[] dimensions) {
+    private BiomeGenerationNoiseCondition(boolean disabledCompletely, int distanceFromSpawn, int alexscavesRarityOffset,
+            float[] continentalness, float[] erosion, float[] humidity, float[] temperature, float[] weirdness,
+            float[] depth, String[] dimensions) {
         this.disabledCompletely = disabledCompletely;
         this.distanceFromSpawn = distanceFromSpawn;
         this.continentalness = continentalness;
@@ -37,7 +39,7 @@ public class BiomeGenerationNoiseCondition {
         this.dimensions = List.of(dimensions);
     }
 
-    @Deprecated(forRemoval = true, since="1.21")
+    @Deprecated(forRemoval = true, since = "1.21")
     public boolean test(EventReplaceBiome event, VoronoiGenerator.VoronoiInfo info) {
         if (disabledCompletely) {
             return false;
@@ -49,14 +51,17 @@ public class BiomeGenerationNoiseCondition {
         if (rareBiomeCenter == null) {
             return false;
         }
-        Climate.TargetPoint centerTargetPoint = event.getClimateSampler().sample((int)Math.floor(rareBiomeCenter.x), event.getY(), (int)Math.floor(rareBiomeCenter.z));
+        Climate.TargetPoint centerTargetPoint = event.getClimateSampler().sample((int) Math.floor(rareBiomeCenter.x),
+                event.getY(), (int) Math.floor(rareBiomeCenter.z));
         float f = Climate.unquantizeCoord(centerTargetPoint.continentalness());
         float f1 = Climate.unquantizeCoord(centerTargetPoint.erosion());
         float f2 = Climate.unquantizeCoord(centerTargetPoint.temperature());
         float f3 = Climate.unquantizeCoord(centerTargetPoint.humidity());
         float f4 = Climate.unquantizeCoord(centerTargetPoint.weirdness());
-        //for these values, sample the center of the possible biome instead of every quad
-        if (continentalness != null && continentalness.length >= 2 && (f < continentalness[0] || f > continentalness[1])) {
+        // for these values, sample the center of the possible biome instead of every
+        // quad
+        if (continentalness != null && continentalness.length >= 2
+                && (f < continentalness[0] || f > continentalness[1])) {
             return false;
         }
         if (erosion != null && erosion.length >= 2 && (f1 < erosion[0] || f1 > erosion[1])) {
@@ -75,20 +80,22 @@ public class BiomeGenerationNoiseCondition {
         if (depth != null && depth.length >= 2 && !event.testDepth(depth[0], depth[1])) {
             return false;
         }
-        if(event.getWorldDimension() != null && !dimensions.contains(event.getWorldDimension().location().toString())){
+        if (event.getWorldDimension() != null
+                && !dimensions.contains(event.getWorldDimension().location().toString())) {
             return false;
         }
         return true;
     }
 
-    @Deprecated(forRemoval = true, since="1.21")
+    @Deprecated(forRemoval = true, since = "1.21")
     private static boolean isFarEnoughFromSpawn(EventReplaceBiome event, double dist) {
-        int x = QuartPos.fromSection(event.getX());
-        int z = QuartPos.fromSection(event.getZ());
+        long x = QuartPos.fromSection(event.getX());
+        long z = QuartPos.fromSection(event.getZ());
         return x * x + z * z >= dist * dist;
     }
 
-    public boolean test(int x, int y, int z, float unquantizedDepth, Climate.Sampler climateSampler, ResourceKey<Level> dimension, VoronoiGenerator.VoronoiInfo info) {
+    public boolean test(int x, int y, int z, float unquantizedDepth, Climate.Sampler climateSampler,
+            ResourceKey<Level> dimension, VoronoiGenerator.VoronoiInfo info) {
         if (disabledCompletely) {
             return false;
         }
@@ -99,14 +106,17 @@ public class BiomeGenerationNoiseCondition {
         if (rareBiomeCenter == null) {
             return false;
         }
-        Climate.TargetPoint centerTargetPoint = climateSampler.sample((int)Math.floor(rareBiomeCenter.x), y, (int)Math.floor(rareBiomeCenter.z));
+        Climate.TargetPoint centerTargetPoint = climateSampler.sample((int) Math.floor(rareBiomeCenter.x), y,
+                (int) Math.floor(rareBiomeCenter.z));
         float f = Climate.unquantizeCoord(centerTargetPoint.continentalness());
         float f1 = Climate.unquantizeCoord(centerTargetPoint.erosion());
         float f2 = Climate.unquantizeCoord(centerTargetPoint.temperature());
         float f3 = Climate.unquantizeCoord(centerTargetPoint.humidity());
         float f4 = Climate.unquantizeCoord(centerTargetPoint.weirdness());
-        //for these values, sample the center of the possible biome instead of every quad
-        if (continentalness != null && continentalness.length >= 2 && (f < continentalness[0] || f > continentalness[1])) {
+        // for these values, sample the center of the possible biome instead of every
+        // quad
+        if (continentalness != null && continentalness.length >= 2
+                && (f < continentalness[0] || f > continentalness[1])) {
             return false;
         }
         if (erosion != null && erosion.length >= 2 && (f1 < erosion[0] || f1 > erosion[1])) {
@@ -125,18 +135,17 @@ public class BiomeGenerationNoiseCondition {
         if (depth != null && depth.length >= 2 && (unquantizedDepth < depth[0] || unquantizedDepth > depth[1])) {
             return false;
         }
-        if(dimension != null && !dimensions.contains(dimension.location().toString())){
+        if (dimension != null && !dimensions.contains(dimension.location().toString())) {
             return false;
         }
         return true;
     }
 
     private static boolean isFarEnoughFromSpawn(int xIn, int zIn, double dist) {
-        int x = QuartPos.fromSection(xIn);
-        int z = QuartPos.toBlock(zIn);
+        long x = xIn;
+        long z = zIn;
         return x * x + z * z >= dist * dist;
     }
-
 
     public boolean isDisabledCompletely() {
         return disabledCompletely;
@@ -146,7 +155,7 @@ public class BiomeGenerationNoiseCondition {
         return dimensions == null && !disabledCompletely;
     }
 
-    public int getRarityOffset(){
+    public int getRarityOffset() {
         return alexscavesRarityOffset;
     }
 
@@ -217,7 +226,8 @@ public class BiomeGenerationNoiseCondition {
         }
 
         public BiomeGenerationNoiseCondition build() {
-            return new BiomeGenerationNoiseCondition(disabledCompletely, distanceFromSpawn, rarityOffset, continentalness, erosion, humidity, temperature, weirdness, depth, dimensions);
+            return new BiomeGenerationNoiseCondition(disabledCompletely, distanceFromSpawn, rarityOffset,
+                    continentalness, erosion, humidity, temperature, weirdness, depth, dimensions);
         }
     }
 }
