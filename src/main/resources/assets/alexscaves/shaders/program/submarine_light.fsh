@@ -28,7 +28,7 @@ void main(){
     vec2 uv = texCoord;
     float d = sqrt(pow((uv.x - 0.5),2.0) + pow((uv.y - 0.5),2.0));
 	d = exp(-(d * AOE)) * exposure / (distance*0.01);
-	if(depth > 500){
+	if(depth < 500.0){
 	    fragColor = vec4(texture(DiffuseSampler,texCoord).rgb*clamp(1.0 + d, 0.0, 10.0),1.0);
 	}else{
         fragColor = texture(DiffuseSampler,texCoord);

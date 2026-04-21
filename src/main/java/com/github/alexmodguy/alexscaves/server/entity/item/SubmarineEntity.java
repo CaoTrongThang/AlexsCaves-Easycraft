@@ -1,6 +1,9 @@
 package com.github.alexmodguy.alexscaves.server.entity.item;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
+import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
+import com.github.alexmodguy.alexscaves.server.block.LightSourceBlock;
+import com.github.alexmodguy.alexscaves.server.block.blockentity.LightSourceBlockEntity;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.util.KeybindUsingMount;
 import com.github.alexmodguy.alexscaves.server.message.MountedEntityKeyMessage;
@@ -32,20 +35,34 @@ import net.minecraft.world.phys.Vec3;
 import com.github.alexmodguy.alexscaves.forge_shim.common.ForgeMod;
 import com.github.alexmodguy.alexscaves.forge_shim.common.ToolActions;
 import com.github.alexmodguy.alexscaves.forge_shim.fluids.FluidType;
-import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkHooks;
 import com.github.alexmodguy.alexscaves.forge_shim.network.PlayMessages;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 public class SubmarineEntity extends Entity implements KeybindUsingMount {
-    private static final EntityDataAccessor<Float> RIGHT_PROPELLER_ROT = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> LEFT_PROPELLER_ROT = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> BACK_PROPELLER_ROT = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> ACCELERATION = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> LIGHTS = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> WAXED = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> OXIDIZATION_LEVEL = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> RIGHT_PROPELLER_ROT = SynchedEntityData
+            .defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> LEFT_PROPELLER_ROT = SynchedEntityData
+            .defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> BACK_PROPELLER_ROT = SynchedEntityData
+            .defineId(SubmarineEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> ACCELERATION = SynchedEntityData.defineId(SubmarineEntity.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> LIGHTS = SynchedEntityData.defineId(SubmarineEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> WAXED = SynchedEntityData.defineId(SubmarineEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> OXIDIZATION_LEVEL = SynchedEntityData
+            .defineId(SubmarineEntity.class, EntityDataSerializers.INT);
 
-    private static final EntityDataAccessor<Integer> DAMAGE_LEVEL = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DANGER_ALERT_TICKS = SynchedEntityData.defineId(SubmarineEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DAMAGE_LEVEL = SynchedEntityData.defineId(SubmarineEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DANGER_ALERT_TICKS = SynchedEntityData
+            .defineId(SubmarineEntity.class, EntityDataSerializers.INT);
     private static final float TOP_SPEED = 0.65F;
     private float prevLeftPropellerRot;
     private float prevRightPropellerRot;
@@ -83,7 +100,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
 
     @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return (Packet<ClientGamePacketListener>) NetworkHooks.getEntitySpawningPacket(this);
+        return new net.minecraft.network.protocol.game.ClientboundAddEntityPacket(this);
     }
 
     @Override
@@ -143,17 +160,17 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         this.xRotO = this.getXRot();
         this.yRotO = Mth.wrapDegrees(this.getYRot());
         this.prevSonarFlashAmount = sonarFlashAmount;
-        if(this.getDangerAlertTicks() > 0 && sonarFlashAmount < 1.0F){
+        if (this.getDangerAlertTicks() > 0 && sonarFlashAmount < 1.0F) {
             sonarFlashAmount += 0.25F;
         }
-        if(this.getDangerAlertTicks() <= 0 && sonarFlashAmount > 0.0F){
+        if (this.getDangerAlertTicks() <= 0 && sonarFlashAmount > 0.0F) {
             sonarFlashAmount -= 0.25F;
         }
-        if(this.getDangerAlertTicks() > 0 && this.getDamageLevel() <= 3 && this.isVehicle() && tickCount % 20 == 0){
+        if (this.getDangerAlertTicks() > 0 && this.getDamageLevel() <= 3 && this.isVehicle() && tickCount % 20 == 0) {
             this.playSound(ACSoundRegistry.SUBMARINE_SONAR.get());
         }
-        if(this.getDamageLevel() > 0 && this.isVehicle()){
-            if(creakTime-- <= 0){
+        if (this.getDamageLevel() > 0 && this.isVehicle()) {
+            if (creakTime-- <= 0) {
                 creakTime = 500 - (this.getDamageLevel() * 120) + random.nextInt(60);
                 this.playSound(ACSoundRegistry.SUBMARINE_CREAK.get());
             }
@@ -197,7 +214,9 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
                 this.setAcceleration(Math.max(0F, acceleration - 0.01F));
             }
             if (Math.abs(acceleration) > 0) {
-                Vec3 vec3 = new Vec3(0, 0, Mth.clamp(acceleration, -0.25F, TOP_SPEED) * 0.2F).xRot(-this.getXRot() * ((float) Math.PI / 180F)).yRot(-this.getYRot() * ((float) Math.PI / 180F));
+                Vec3 vec3 = new Vec3(0, 0, Mth.clamp(acceleration, -0.25F, TOP_SPEED) * 0.2F)
+                        .xRot(-this.getXRot() * ((float) Math.PI / 180F))
+                        .yRot(-this.getYRot() * ((float) Math.PI / 180F));
                 this.setDeltaMovement(this.getDeltaMovement().add(vec3));
             }
             if (this.isInWaterOrBubble()) {
@@ -216,11 +235,12 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
                     this.setOxidizationLevel(this.getOxidizationLevel() + 1);
                 }
             }
-            if(this.getDangerAlertTicks() > 0){
+            if (this.getDangerAlertTicks() > 0) {
                 this.setDangerAlertTicks(this.getDangerAlertTicks() - 1);
             }
         }
-        float xRotSet = Mth.clamp(-(float) this.getDeltaMovement().y * 2F, -1.0F, 1.0F) * -(float) (180F / (float) Math.PI) * (float) Math.signum(getAcceleration() + 0.01);
+        float xRotSet = Mth.clamp(-(float) this.getDeltaMovement().y * 2F, -1.0F, 1.0F)
+                * -(float) (180F / (float) Math.PI) * (float) Math.signum(getAcceleration() + 0.01);
         float rot = acceleration * 30 + Math.signum(acceleration) * 15;
 
         this.setBackPropellerRot(backPropellerRot + rot);
@@ -229,12 +249,14 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
 
         if (this.getWaterHeight() >= 1.5F) {
             if (Math.abs(getAcceleration()) > 0.05F) {
-                Vec3 bubblesAt = new Vec3(0F, 0.3F, -2F).xRot((float) Math.toRadians(this.getXRot())).yRot((float) Math.toRadians(-this.getYRot()));
+                Vec3 bubblesAt = new Vec3(0F, 0.3F, -2F).xRot((float) Math.toRadians(this.getXRot()))
+                        .yRot((float) Math.toRadians(-this.getYRot()));
                 for (int i = 0; i < 1 + random.nextInt(4); i++) {
                     float offsetX = 0.5F - random.nextFloat();
                     float offsetY = 0.5F - random.nextFloat();
                     float offsetZ = 0.5F - random.nextFloat();
-                    level().addParticle(ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + offsetX + bubblesAt.x, this.getY(0.5F) + offsetY + bubblesAt.y, this.getZ() + offsetZ + bubblesAt.z, 0, 0, 0);
+                    level().addParticle(ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + offsetX + bubblesAt.x,
+                            this.getY(0.5F) + offsetY + bubblesAt.y, this.getZ() + offsetZ + bubblesAt.z, 0, 0, 0);
                 }
             }
             if (submergedTicks < 10) {
@@ -255,15 +277,50 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         if (shakeTime > 0) {
             shakeTime--;
         }
-        if(wereLightsOn != this.areLightsOn()){
-            this.playSound(wereLightsOn ? ACSoundRegistry.SUBMARINE_LIGHT_OFF.get() :  ACSoundRegistry.SUBMARINE_LIGHT_ON.get());
+        if (wereLightsOn != this.areLightsOn()) {
+            this.playSound(wereLightsOn ? ACSoundRegistry.SUBMARINE_LIGHT_OFF.get()
+                    : ACSoundRegistry.SUBMARINE_LIGHT_ON.get());
             wereLightsOn = this.areLightsOn();
         }
-        this.setXRot(ACMath.approachRotation(this.getXRot(), Mth.clamp(getDamageLevel() >= 4 ? 0 : xRotSet, -50, 50), 2));
+        this.setXRot(
+                ACMath.approachRotation(this.getXRot(), Mth.clamp(getDamageLevel() >= 4 ? 0 : xRotSet, -50, 50), 2));
         prevLeftPropellerRot = leftPropellerRot;
         prevRightPropellerRot = rightPropellerRot;
         prevBackPropellerRot = backPropellerRot;
 
+        boolean lightsOn = this.areLightsOn();
+        this.tickSubmarineLight(lightsOn);
+    }
+
+    private void tickSubmarineLight(boolean lightsOn) {
+        if (lightsOn) {
+            Entity rider = this.getFirstPassenger();
+            Vec3 lookVec = rider != null ? rider.getLookAngle() : this.getViewVector(1.0F);
+            Vec3 eyePos = (rider != null ? rider.getEyePosition() : this.getEyePosition());
+            Vec3 endPos = eyePos.add(lookVec.scale(32.0F));
+            BlockHitResult hitResult = this.level()
+                    .clip(new ClipContext(eyePos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+            BlockPos pos;
+            if (hitResult.getType() != HitResult.Type.MISS) {
+                pos = hitResult.getBlockPos().relative(hitResult.getDirection());
+            } else {
+                pos = BlockPos.containing(endPos);
+            }
+            if (!this.level().isClientSide) {
+                BlockState stateAtPos = level().getBlockState(pos);
+                if (stateAtPos.isAir() || stateAtPos.is(Blocks.WATER)
+                        || stateAtPos.is(ACBlockRegistry.LIGHT_SOURCE.get())) {
+                    if (!stateAtPos.is(ACBlockRegistry.LIGHT_SOURCE.get())) {
+                        boolean waterlogged = level().getFluidState(pos).getType() == Fluids.WATER;
+                        level().setBlock(pos, ACBlockRegistry.LIGHT_SOURCE.get().defaultBlockState()
+                                .setValue(LightSourceBlock.WATERLOGGED, waterlogged), 2);
+                    }
+                }
+            }
+            if (level().getBlockEntity(pos) instanceof LightSourceBlockEntity lightSource) {
+                lightSource.refresh();
+            }
+        }
     }
 
     public void remove(Entity.RemovalReason removalReason) {
@@ -305,6 +362,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
 
     public void setLightsOn(boolean bool) {
         this.entityData.set(LIGHTS, bool);
+        this.level().broadcastEntityEvent(this, (byte) (bool ? 49 : 50));
     }
 
     public boolean isWaxed() {
@@ -351,17 +409,20 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
     @Override
     public boolean shouldRender(double x, double y, double z) {
         boolean prev = super.shouldRender(x, y, z);
-        return prev || this.isVehicle() && this.getFirstPassenger() != null && this.getFirstPassenger().shouldRender(x, y, z);
+        return prev || this.isVehicle() && this.getFirstPassenger() != null
+                && this.getFirstPassenger().shouldRender(x, y, z);
     }
 
     public void positionRider(Entity passenger, MoveFunction moveFunction) {
-        if (this.isPassengerOfSameVehicle(passenger) && passenger instanceof LivingEntity living && !this.touchingUnloadedChunk()) {
+        if (this.isPassengerOfSameVehicle(passenger) && passenger instanceof LivingEntity living
+                && !this.touchingUnloadedChunk()) {
             clampRotation(living);
             if (passenger instanceof Player) {
                 tickController((Player) passenger);
             }
             float f1 = -(this.getXRot() / 40F);
-            Vec3 seatOffset = new Vec3(0F, -0.2F, 0.8F + f1).xRot((float) Math.toRadians(this.getXRot())).yRot((float) Math.toRadians(-this.getYRot()));
+            Vec3 seatOffset = new Vec3(0F, -0.2F, 0.8F + f1).xRot((float) Math.toRadians(this.getXRot()))
+                    .yRot((float) Math.toRadians(-this.getYRot()));
             double d0 = this.getY() + this.getBbHeight() * 0.5F + seatOffset.y + passenger.getMyRidingOffset();
             moveFunction.accept(passenger, this.getX() + seatOffset.x, d0, this.getZ() + seatOffset.z);
             living.setAirSupply(Math.min(living.getAirSupply() + 2, living.getMaxAirSupply()));
@@ -376,11 +437,15 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
     public void handleEntityEvent(byte b) {
         if (b == 45) {
             for (int i = 0; i < 5; i++) {
-                this.level().addParticle(ParticleTypes.WAX_ON, this.getRandomX(0.9D), this.getRandomY(), this.getRandomZ(0.9D), (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.15F, (random.nextFloat() - 0.5F) * 0.1F);
+                this.level().addParticle(ParticleTypes.WAX_ON, this.getRandomX(0.9D), this.getRandomY(),
+                        this.getRandomZ(0.9D), (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.15F,
+                        (random.nextFloat() - 0.5F) * 0.1F);
             }
         } else if (b == 46) {
             for (int i = 0; i < 5; i++) {
-                this.level().addParticle(ParticleTypes.WAX_OFF, this.getRandomX(0.9D), this.getRandomY(), this.getRandomZ(0.9D), (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.15F, (random.nextFloat() - 0.5F) * 0.1F);
+                this.level().addParticle(ParticleTypes.WAX_OFF, this.getRandomX(0.9D), this.getRandomY(),
+                        this.getRandomZ(0.9D), (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.15F,
+                        (random.nextFloat() - 0.5F) * 0.1F);
             }
         } else if (b == 47) {
             Block particleState = Blocks.COPPER_BLOCK;
@@ -396,16 +461,25 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
                     break;
             }
             for (int i = 0; i < 10; i++) {
-                this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, particleState.defaultBlockState()), this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.15F, (random.nextFloat() - 0.5F) * 0.1F);
+                this.level().addParticle(
+                        new BlockParticleOption(ParticleTypes.BLOCK, particleState.defaultBlockState()),
+                        this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D),
+                        (random.nextFloat() - 0.5F) * 0.1F, random.nextFloat() * 0.15F,
+                        (random.nextFloat() - 0.5F) * 0.1F);
             }
             shakeTime = 20;
         } else if (b == 48) {
             shakeTime = 10;
-        } else{
+        } else if (b == 49) {
+            AlexsCaves.LOGGER.info("CLIENT: Received EVENT 49 (LIGHTS ON)");
+            this.entityData.set(LIGHTS, true);
+        } else if (b == 50) {
+            AlexsCaves.LOGGER.info("CLIENT: Received EVENT 50 (LIGHTS OFF)");
+            this.entityData.set(LIGHTS, false);
+        } else {
             super.handleEntityEvent(b);
         }
     }
-
 
     private void tickController(Player passenger) {
         if (passenger.xxa != 0) {
@@ -433,7 +507,8 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
             return InteractionResult.PASS;
         } else {
             ItemStack itemStack = player.getItemInHand(hand);
-            if (ToolActions.canPerformAction(itemStack, ToolActions.AXE_SCRAPE) && (this.getOxidizationLevel() > 0 || this.isWaxed())) {
+            if (ToolActions.canPerformAction(itemStack, ToolActions.AXE_SCRAPE)
+                    && (this.getOxidizationLevel() > 0 || this.isWaxed())) {
                 player.swing(hand);
                 if (!player.isCreative()) {
                     itemStack.hurtAndBreak(1, player, (player1) -> {
@@ -568,7 +643,8 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
     }
 
     public float getWaterHeight() {
-        return (float) com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this, ForgeMod.WATER_TYPE.get());
+        return (float) com.github.alexmodguy.alexscaves.fabric.EntityCompat.getFluidTypeHeight(this,
+                ForgeMod.WATER_TYPE.get());
     }
 
     @Override
@@ -603,7 +679,10 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return super.isInvulnerableTo(damageSource) || damageSource.is(DamageTypes.DROWN) || damageSource.is(DamageTypes.DRY_OUT) || damageSource.is(DamageTypes.CACTUS) || damageSource.is(DamageTypes.HOT_FLOOR) || damageSource.is(DamageTypes.IN_FIRE) || damageSource.is(DamageTypes.ON_FIRE) || damageSource.is(DamageTypes.FALL);
+        return super.isInvulnerableTo(damageSource) || damageSource.is(DamageTypes.DROWN)
+                || damageSource.is(DamageTypes.DRY_OUT) || damageSource.is(DamageTypes.CACTUS)
+                || damageSource.is(DamageTypes.HOT_FLOOR) || damageSource.is(DamageTypes.IN_FIRE)
+                || damageSource.is(DamageTypes.ON_FIRE) || damageSource.is(DamageTypes.FALL);
     }
 
     @Override
@@ -630,7 +709,7 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
                     this.setDamageLevel(this.getDamageLevel() + 1);
                 }
             }
-            if(!flag){
+            if (!flag) {
                 this.playSound(ACSoundRegistry.SUBMARINE_HIT.get());
             }
             return true;
@@ -643,8 +722,9 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         return 1.0F - f + f1;
     }
 
-    public static void alertSubmarineMountOf(LivingEntity living){
-        if(living.isAlive() && living.getVehicle() instanceof SubmarineEntity submarine && submarine.getDamageLevel() <= 3){
+    public static void alertSubmarineMountOf(LivingEntity living) {
+        if (living.isAlive() && living.getVehicle() instanceof SubmarineEntity submarine
+                && submarine.getDamageLevel() <= 3) {
             submarine.setDangerAlertTicks(100);
         }
     }

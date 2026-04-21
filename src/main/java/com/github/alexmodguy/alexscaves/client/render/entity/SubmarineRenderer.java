@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.joml.Matrix3f;
@@ -29,17 +28,28 @@ import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
 
 public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
 
-    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine.png");
-    private static final ResourceLocation TEXTURE_EXPOSED = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_exposed.png");
-    private static final ResourceLocation TEXTURE_WEATHERED = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_weathered.png");
-    private static final ResourceLocation TEXTURE_OXIDIZED = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_oxidized.png");
-    private static final ResourceLocation TEXTURE_NEW = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_new.png");
-    private static final ResourceLocation TEXTURE_LOW = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_low.png");
-    private static final ResourceLocation TEXTURE_MEDIUM = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_medium.png");
-    private static final ResourceLocation TEXTURE_HIGH = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_high.png");
-    private static final ResourceLocation TEXTURE_CRITICAL = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_critical.png");
-    private static final ResourceLocation TEXTURE_BUTTONS = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_buttons.png");
-    private static final ResourceLocation TEXTURE_GLOW = new ResourceLocation(AlexsCaves.MODID, "textures/entity/submarine/submarine_glow.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine.png");
+    private static final ResourceLocation TEXTURE_EXPOSED = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_exposed.png");
+    private static final ResourceLocation TEXTURE_WEATHERED = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_weathered.png");
+    private static final ResourceLocation TEXTURE_OXIDIZED = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_oxidized.png");
+    private static final ResourceLocation TEXTURE_NEW = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_new.png");
+    private static final ResourceLocation TEXTURE_LOW = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_low.png");
+    private static final ResourceLocation TEXTURE_MEDIUM = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_medium.png");
+    private static final ResourceLocation TEXTURE_HIGH = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_high.png");
+    private static final ResourceLocation TEXTURE_CRITICAL = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_critical.png");
+    private static final ResourceLocation TEXTURE_BUTTONS = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_buttons.png");
+    private static final ResourceLocation TEXTURE_GLOW = new ResourceLocation(AlexsCaves.MODID,
+            "textures/entity/submarine/submarine_glow.png");
     private static SubmarineModel MODEL = new SubmarineModel();
     private static final float HALF_SQRT_3 = (float) (Math.sqrt(3.0D) / 2.0D);
 
@@ -48,7 +58,8 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
         this.shadowRadius = 1.0F;
     }
 
-    public void render(SubmarineEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource source, int lightIn) {
+    public void render(SubmarineEntity entity, float entityYaw, float partialTicks, PoseStack poseStack,
+            MultiBufferSource source, int lightIn) {
         if (!isFirstPersonFloodlightsMode(entity)) {
             renderSubmarine(entity, partialTicks, poseStack, source, lightIn, true);
             super.render(entity, entityYaw, partialTicks, poseStack, source, lightIn);
@@ -57,14 +68,24 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
 
     public static boolean isFirstPersonFloodlightsMode(SubmarineEntity entity) {
         Entity player = Minecraft.getInstance().getCameraEntity();
-        return player.isPassengerOfSameVehicle(entity) && Minecraft.getInstance().options.getCameraType().isFirstPerson() && entity.areLightsOn();
+        return player.isPassengerOfSameVehicle(entity)
+                && Minecraft.getInstance().options.getCameraType().isFirstPerson() && entity.areLightsOn();
     }
 
-    public static void renderSubFirstPerson(SubmarineEntity entity, float partialTicks, PoseStack poseStack, MultiBufferSource source) {
-        renderSubmarine(entity, partialTicks, poseStack, source, LevelRenderer.getLightColor(entity.level(), entity.blockPosition()), false);
+    public static void renderSubFirstPerson(SubmarineEntity entity, float partialTicks, PoseStack poseStack,
+            MultiBufferSource source) {
+        renderSubmarine(entity, partialTicks, poseStack, source,
+                LevelRenderer.getLightColor(entity.level(), entity.blockPosition()), false, true);
     }
 
-    public static void renderSubmarine(SubmarineEntity entity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int lightIn, boolean maskWater) {
+    public static void renderSubmarine(SubmarineEntity entity, float partialTicks, PoseStack poseStack,
+            MultiBufferSource source, int lightIn, boolean maskWater) {
+        renderSubmarine(entity, partialTicks, poseStack, source, lightIn, maskWater,
+                !isFirstPersonFloodlightsMode(entity));
+    }
+
+    public static void renderSubmarine(SubmarineEntity entity, float partialTicks, PoseStack poseStack,
+            MultiBufferSource source, int lightIn, boolean maskWater, boolean renderFloodlight) {
         Player player = Minecraft.getInstance().player;
         float ageInTicks = entity.tickCount + partialTicks;
         float submarineYaw = entity.getViewYRot(partialTicks);
@@ -100,7 +121,8 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
         MODEL.renderToBuffer(poseStack, damageBuffer, lightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         if (entity.getDamageLevel() <= 3) {
             VertexConsumer buttonsBuffer = source.getBuffer(ACRenderTypes.getEyesAlphaEnabled(TEXTURE_BUTTONS));
-            MODEL.renderToBuffer(poseStack, buttonsBuffer, lightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, entity.getSonarFlashAmount(partialTicks));
+            MODEL.renderToBuffer(poseStack, buttonsBuffer, lightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F,
+                    entity.getSonarFlashAmount(partialTicks));
             if (entity.areLightsOn() && entity.isVehicle()) {
                 VertexConsumer glowBuffer = source.getBuffer(RenderType.eyes(TEXTURE_GLOW));
                 MODEL.renderToBuffer(poseStack, glowBuffer, lightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
@@ -109,22 +131,23 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
         if (maskWater) {
             VertexConsumer waterMask = source.getBuffer(ACRenderTypes.getSubmarineMask());
             MODEL.setupWaterMask(entity, partialTicks);
-            MODEL.getWaterMask().render(poseStack, waterMask, lightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            MODEL.getWaterMask().render(poseStack, waterMask, lightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F,
+                    1.0F);
         }
-        if (!isFirstPersonFloodlightsMode(entity) && entity.areLightsOn() && entity.isVehicle()) {
+        if (renderFloodlight && entity.areLightsOn() && entity.isVehicle()) {
             Entity first = entity.getFirstPassenger();
             float xRot = 0;
             float yRot = 0;
             if (first instanceof Player firstPlayer) {
-                float headYaw = (firstPlayer.yHeadRotO + (firstPlayer.getYHeadRot() - firstPlayer.yHeadRotO) * partialTicks);
-                xRot = firstPlayer.getViewXRot(partialTicks) + submarinePitch;
-                yRot = Mth.approachDegrees(submarineYaw, headYaw, 60);
+                float headYaw = (firstPlayer.yHeadRotO
+                        + (firstPlayer.getYHeadRot() - firstPlayer.yHeadRotO) * partialTicks);
+                xRot = firstPlayer.getViewXRot(partialTicks) - submarinePitch;
+                yRot = headYaw - submarineYaw;
             }
             float length = 4.5F;
             float width = 0.45F;
             poseStack.pushPose();
             poseStack.translate(0, 0.75F, -2.4F);
-            poseStack.mulPose(Axis.YN.rotationDegrees(submarineYaw));
             poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
             poseStack.mulPose(Axis.XN.rotationDegrees(90 - xRot));
             poseStack.scale(3, 1, 1);
@@ -160,7 +183,8 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
         return TEXTURE_NEW;
     }
 
-    public static <E extends Entity> void renderPassenger(E entityIn, double x, double y, double z, float yaw, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int packedLight) {
+    public static <E extends Entity> void renderPassenger(E entityIn, double x, double y, double z, float yaw,
+            float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int packedLight) {
         EntityRenderer<? super E> render = null;
         EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
         try {
@@ -185,16 +209,24 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
         }
     }
 
-    private static void shineOriginVertex(VertexConsumer p_114220_, Matrix4f p_114221_, Matrix3f p_114092_, float xOffset, float yOffset) {
-        p_114220_.vertex(p_114221_, 0.0F, 0.0F, 0.0F).color(255, 255, 255, 255).uv(xOffset + 0.5F, yOffset).overlayCoords(NO_OVERLAY).uv2(240).normal(p_114092_, 0.0F, 1.0F, 0.0F).endVertex();
+    private static void shineOriginVertex(VertexConsumer p_114220_, Matrix4f p_114221_, Matrix3f p_114092_,
+            float xOffset, float yOffset) {
+        p_114220_.vertex(p_114221_, 0.0F, 0.0F, 0.0F).color(255, 255, 255, 255).uv(xOffset + 0.5F, yOffset)
+                .overlayCoords(NO_OVERLAY).uv2(240).normal(p_114092_, 0.0F, 1.0F, 0.0F).endVertex();
     }
 
-    private static void shineLeftCornerVertex(VertexConsumer p_114215_, Matrix4f p_114216_, Matrix3f p_114092_, float p_114217_, float p_114218_, float xOffset, float yOffset) {
-        p_114215_.vertex(p_114216_, -HALF_SQRT_3 * p_114218_, p_114217_, 0).color(200, 235, 255, 0).uv(xOffset, yOffset + 1).overlayCoords(NO_OVERLAY).uv2(240).normal(p_114092_, 0.0F, -1.0F, 0.0F).endVertex();
+    private static void shineLeftCornerVertex(VertexConsumer p_114215_, Matrix4f p_114216_, Matrix3f p_114092_,
+            float p_114217_, float p_114218_, float xOffset, float yOffset) {
+        p_114215_.vertex(p_114216_, -HALF_SQRT_3 * p_114218_, p_114217_, 0).color(200, 235, 255, 0)
+                .uv(xOffset, yOffset + 1).overlayCoords(NO_OVERLAY).uv2(240).normal(p_114092_, 0.0F, -1.0F, 0.0F)
+                .endVertex();
     }
 
-    private static void shineRightCornerVertex(VertexConsumer p_114224_, Matrix4f p_114225_, Matrix3f p_114092_, float p_114226_, float p_114227_, float xOffset, float yOffset) {
-        p_114224_.vertex(p_114225_, HALF_SQRT_3 * p_114227_, p_114226_, 0).color(200, 235, 255, 0).uv(xOffset + 1, yOffset + 1).overlayCoords(NO_OVERLAY).uv2(240).normal(p_114092_, 0.0F, -1.0F, 0.0F).endVertex();
+    private static void shineRightCornerVertex(VertexConsumer p_114224_, Matrix4f p_114225_, Matrix3f p_114092_,
+            float p_114226_, float p_114227_, float xOffset, float yOffset) {
+        p_114224_.vertex(p_114225_, HALF_SQRT_3 * p_114227_, p_114226_, 0).color(200, 235, 255, 0)
+                .uv(xOffset + 1, yOffset + 1).overlayCoords(NO_OVERLAY).uv2(240).normal(p_114092_, 0.0F, -1.0F, 0.0F)
+                .endVertex();
     }
 
     private static ResourceLocation getSubmarineBaseTexture(SubmarineEntity entity) {
@@ -215,4 +247,3 @@ public class SubmarineRenderer extends EntityRenderer<SubmarineEntity> {
         return TEXTURE;
     }
 }
-

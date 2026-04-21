@@ -54,6 +54,18 @@ sourceSets {
     }
 }
 
+configurations.configureEach {
+    resolutionStrategy {
+        force 'org.lwjgl:lwjgl:3.3.1'
+        force 'org.lwjgl:lwjgl-glfw:3.3.1'
+        force 'org.lwjgl:lwjgl-jemalloc:3.3.1'
+        force 'org.lwjgl:lwjgl-openal:3.3.1'
+        force 'org.lwjgl:lwjgl-opengl:3.3.1'
+        force 'org.lwjgl:lwjgl-stb:3.3.1'
+        force 'org.lwjgl:lwjgl-tinyfd:3.3.1'
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.officialMojangMappings()
