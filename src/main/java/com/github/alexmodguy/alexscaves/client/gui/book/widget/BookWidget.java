@@ -47,7 +47,16 @@ public abstract class BookWidget {
         return scale;
     }
 
-    public abstract void render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, float partialTicks, boolean onFlippingPage);
+    public void setDisplayPage(int displayPage) {
+        this.displayPage = displayPage;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public abstract void render(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, float partialTicks,
+            boolean onFlippingPage);
 
     public enum Type {
 
@@ -61,6 +70,7 @@ public abstract class BookWidget {
         ENTITY_BOX(EntityBoxWidget.class),
         @SerializedName("crafting_recipe")
         CRAFTING_RECIPE(CraftingRecipeWidget.class);
+
         private final Class<? extends BookWidget> widgetClass;
 
         Type(Class<? extends BookWidget> widgetClass) {

@@ -22,7 +22,9 @@ import java.util.regex.Pattern;
 
 public class BookEntry {
 
-    public static final Gson GSON = (new GsonBuilder()).registerTypeAdapter(BookEntry.class, new BookEntry.Deserializer()).excludeFieldsWithoutExposeAnnotation().create();
+    public static final Gson GSON = (new GsonBuilder())
+            .registerTypeAdapter(BookEntry.class, new BookEntry.Deserializer()).excludeFieldsWithoutExposeAnnotation()
+            .create();
     private static Pattern pattern = Pattern.compile("\\{.*?\\}");
     @Expose
     private String translatableTitle;
@@ -39,8 +41,8 @@ public class BookEntry {
 
     private int pageCount = 0;
 
-
-    public BookEntry(String translatableTitle, String parent, String textFileToReadFrom, String requiredProgress, BookWidget[] widgets) {
+    public BookEntry(String translatableTitle, String parent, String textFileToReadFrom, String requiredProgress,
+            BookWidget[] widgets) {
         this.translatableTitle = translatableTitle;
         this.parent = parent;
         this.textFileToReadFrom = textFileToReadFrom;
@@ -80,6 +82,72 @@ public class BookEntry {
     public void init(CaveBookScreen screen) {
         this.entryText = getRawTextFromFile(textFileToReadFrom, screen, 30);
         this.pageCount = (int) Math.ceil(entryText.size() / (float) (CaveBookScreen.PAGE_SIZE_IN_LINES * 2));
+
+        if (this.widgets != null) {
+            java.util.Map<Float, java.util.List<BookWidget>> blockMap = new java.util.HashMap<>();
+            java.util.Map<BookWidget, Float> widgetExpectedLines = new java.util.HashMap<>();
+
+            for (BookWidget widget : this.widgets) {
+                float expectedLine = (widget.getDisplayPage() - 1) * CaveBookScreen.PAGE_SIZE_IN_LINES
+                        + (widget.getY() / 10f);
+                widgetExpectedLines.put(widget, expectedLine);
+                float closestCenter = -1;
+                float minDistance = 25f;
+
+                int currentBlockStart = -1;
+                for (int i = 0; i <= entryText.size(); i++) {
+                    boolean isEmpty = i < entryText.size() && entryText.get(i).trim().isEmpty();
+                    if (isEmpty) {
+                        if (currentBlockStart == -1)
+                            currentBlockStart = i;
+                    } else {
+                        if (currentBlockStart != -1) {
+                            int currentBlockEnd = i - 1;
+                            int blockSize = currentBlockEnd - currentBlockStart + 1;
+                            if (blockSize >= 2) {
+                                float center = currentBlockStart + (blockSize - 1) / 2f;
+                                float dist = Math.abs(center - expectedLine);
+                                if (dist < minDistance) {
+                                    minDistance = dist;
+                                    closestCenter = center;
+                                }
+                            }
+                            currentBlockStart = -1;
+                        }
+                    }
+                }
+
+                if (closestCenter != -1) {
+                    blockMap.computeIfAbsent(closestCenter, k -> new java.util.ArrayList<>()).add(widget);
+                }
+            }
+
+            for (java.util.Map.Entry<Float, java.util.List<BookWidget>> entry : blockMap.entrySet()) {
+                float center = entry.getKey();
+                java.util.List<BookWidget> group = entry.getValue();
+
+                float minExpected = Float.MAX_VALUE;
+                float maxExpected = Float.MIN_VALUE;
+                for (BookWidget w : group) {
+                    float val = widgetExpectedLines.get(w);
+                    if (val < minExpected)
+                        minExpected = val;
+                    if (val > maxExpected)
+                        maxExpected = val;
+                }
+                float groupCenter = (minExpected + maxExpected) / 2f;
+
+                float shift = center - groupCenter;
+
+                for (BookWidget w : group) {
+                    float newExpectedLine = widgetExpectedLines.get(w) + shift;
+                    int newPage = (int) (newExpectedLine / CaveBookScreen.PAGE_SIZE_IN_LINES) + 1;
+                    int newY = Math.round((newExpectedLine % CaveBookScreen.PAGE_SIZE_IN_LINES) * 10f);
+                    w.setDisplayPage(newPage);
+                    w.setY(newY);
+                }
+            }
+        }
     }
 
     private List<String> getRawTextFromFile(String fileName, CaveBookScreen screen, int maxLineSize) {
@@ -87,7 +155,7 @@ public class BookEntry {
         ResourceLocation fileRes;
         try {
             fileRes = new ResourceLocation(CaveBookScreen.getBookFileDirectory() + lang + "/" + fileName);
-            //test if it exists. if no exception, then the language is supported
+            // test if it exists. if no exception, then the language is supported
             InputStream is = Minecraft.getInstance().getResourceManager().open(fileRes);
             is.close();
         } catch (Exception e) {
@@ -110,26 +178,27 @@ public class BookEntry {
                         String linkTo = found[1].substring(0, found[1].length() - 1);
                         int visiblity = screen.getEntryVisiblity(linkTo);
                         String display = "";
-                        if(visiblity != 2){
+                        if (visiblity != 2) {
                             display = visiblity == 0 ? found[0].substring(1) : "???";
                             bookLinks.add(new BookLink(currentLineCount, m.start(), display, linkTo, visiblity == 0));
                             readString = m.replaceFirst(display);
-                        }else{
+                        } else {
                             readString = display;
                             skipLineEntirely = true;
                         }
                         noOverflow = true;
                     }
                 }
-                if(readString.isEmpty() && !skipLineEntirely){
+                if (readString.isEmpty() && !skipLineEntirely) {
                     strings.add(readString);
                     currentLineCount++;
                 }
                 while (font.width(readString) > maxLineSize) {
                     int spaceScanIndex = 0;
                     int lastSpace = -1;
-                    while(spaceScanIndex < readString.length()){
-                        if(readString.charAt(spaceScanIndex) == ' ' && font.width(readString.substring(0, spaceScanIndex)) > 92){
+                    while (spaceScanIndex < readString.length()) {
+                        if (readString.charAt(spaceScanIndex) == ' '
+                                && font.width(readString.substring(0, spaceScanIndex)) > 92) {
                             lastSpace = noOverflow ? readString.length() : spaceScanIndex;
                             break;
                         }
@@ -143,7 +212,7 @@ public class BookEntry {
                         readString = readString.substring(1);
                     }
                 }
-                if(!readString.isEmpty()){
+                if (!readString.isEmpty()) {
                     strings.add(readString);
                     currentLineCount++;
                 }
@@ -155,26 +224,28 @@ public class BookEntry {
         return strings;
     }
 
-    public void mouseOver(CaveBookScreen screen, int page, float mouseX, float mouseY){
+    public void mouseOver(CaveBookScreen screen, int page, float mouseX, float mouseY) {
         boolean hoverFlag = false;
         screen.unlockTooltip = false;
-        for(BookLink link : bookLinks){
+        for (BookLink link : bookLinks) {
             int minLine = page * CaveBookScreen.PAGE_SIZE_IN_LINES;
             link.setHovered(false);
-            if(link.getLineNumber() >= minLine && link.getLineNumber() <= minLine + CaveBookScreen.PAGE_SIZE_IN_LINES * 2){
+            if (link.getLineNumber() >= minLine
+                    && link.getLineNumber() <= minLine + CaveBookScreen.PAGE_SIZE_IN_LINES * 2) {
                 String line = entryText.get(link.getLineNumber());
                 boolean rightPage = link.getLineNumber() > minLine + CaveBookScreen.PAGE_SIZE_IN_LINES;
                 float textStartsX = rightPage ? 0.03F : -0.71F;
                 float textsStartsY = -0.38F;
-                float wordStartAt = textStartsX + Minecraft.getInstance().font.width(line.substring(0, link.getCharacterStartsAt())) * 0.00475F;
+                float wordStartAt = textStartsX
+                        + Minecraft.getInstance().font.width(line.substring(0, link.getCharacterStartsAt())) * 0.00475F;
                 float wordEndAt = wordStartAt + Minecraft.getInstance().font.width(link.getDisplayText()) * 0.005F;
                 float wordTopAt = textsStartsY + (link.getLineNumber() % CaveBookScreen.PAGE_SIZE_IN_LINES) * 0.0425F;
                 float wordBottomAt = wordTopAt + 0.05F;
-                if(mouseX > wordStartAt && mouseX < wordEndAt && mouseY > wordTopAt && mouseY < wordBottomAt){
-                    if(link.isEnabled()){
+                if (mouseX > wordStartAt && mouseX < wordEndAt && mouseY > wordTopAt && mouseY < wordBottomAt) {
+                    if (link.isEnabled()) {
                         link.setHovered(!hoverFlag);
                         hoverFlag = true;
-                    }else{
+                    } else {
                         screen.unlockTooltip = true;
                     }
                 }
@@ -182,29 +253,32 @@ public class BookEntry {
         }
     }
 
-    public boolean consumeMouseClick(CaveBookScreen screen){
-        for(BookLink link : bookLinks) {
+    public boolean consumeMouseClick(CaveBookScreen screen) {
+        for (BookLink link : bookLinks) {
             int minLine = screen.getEntryPageNumber() * CaveBookScreen.PAGE_SIZE_IN_LINES;
-            if(link.isEnabled() && link.isHovered() && link.getLineNumber() >= minLine && link.getLineNumber() <= minLine + CaveBookScreen.PAGE_SIZE_IN_LINES * 2) {
-                return screen.attemptChangePage(new ResourceLocation(CaveBookScreen.getBookFileDirectory() + link.getLinksTo()), true);
+            if (link.isEnabled() && link.isHovered() && link.getLineNumber() >= minLine
+                    && link.getLineNumber() <= minLine + CaveBookScreen.PAGE_SIZE_IN_LINES * 2) {
+                return screen.attemptChangePage(
+                        new ResourceLocation(CaveBookScreen.getBookFileDirectory() + link.getLinksTo()), true);
             }
         }
         return false;
     }
 
     /*
-        0 = always visible
-        1 = ??? (no link)
-        2 = super secret, no ???
+     * 0 = always visible
+     * 1 = ??? (no link)
+     * 2 = super secret, no ???
      */
-    public int getVisibility(CaveBookScreen caveBookScreen){
-        if(this.requiredProgress == null){
+    public int getVisibility(CaveBookScreen caveBookScreen) {
+        if (this.requiredProgress == null) {
             return 0;
-        }else{
-            if(caveBookScreen.getCaveBookProgress().isUnlockedFor(requiredProgress)){
+        } else {
+            if (caveBookScreen.getCaveBookProgress().isUnlockedFor(requiredProgress)) {
                 return 0;
-            }else {
-                CaveBookProgress.Subcategory subcategory = caveBookScreen.getCaveBookProgress().getSubcategoryFromPage(requiredProgress);
+            } else {
+                CaveBookProgress.Subcategory subcategory = caveBookScreen.getCaveBookProgress()
+                        .getSubcategoryFromPage(requiredProgress);
                 return subcategory == CaveBookProgress.Subcategory.SECRETS ? 2 : 1;
             }
         }
@@ -212,13 +286,14 @@ public class BookEntry {
 
     public static class Deserializer implements JsonDeserializer<BookEntry> {
 
-        public BookEntry deserialize(JsonElement mainElement, Type deserializeType, JsonDeserializationContext context) throws JsonParseException {
+        public BookEntry deserialize(JsonElement mainElement, Type deserializeType, JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonobject = GsonHelper.convertToJsonObject(mainElement, "book entry");
             BookWidget[] bookWidgets = new BookWidget[0];
-            if(jsonobject.has("widgets")){
+            if (jsonobject.has("widgets")) {
                 JsonArray jsonArray = jsonobject.getAsJsonArray("widgets");
                 bookWidgets = new BookWidget[jsonArray.size()];
-                for(int i = 0; i < jsonArray.size(); i++){
+                for (int i = 0; i < jsonArray.size(); i++) {
                     JsonObject widgetJson = jsonArray.get(i).getAsJsonObject();
                     BookWidget.Type type = GsonHelper.getAsObject(widgetJson, "type", context, BookWidget.Type.class);
                     bookWidgets[i] = GsonHelper.convertToObject(widgetJson, "", context, type.getWidgetClass());
