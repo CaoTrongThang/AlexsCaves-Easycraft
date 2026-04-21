@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/hatch_tremorzilla.png\"}"
+      "item": "alexscaves:tremorzilla_egg"
     },
     "title": {
       "translate": "advancements.alexscaves.hatch_tremorzilla_egg.title"

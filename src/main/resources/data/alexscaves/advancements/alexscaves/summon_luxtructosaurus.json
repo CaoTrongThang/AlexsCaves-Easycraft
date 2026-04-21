@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/summon_luxtructosaurus.png\"}"
+      "item": "alexscaves:ominous_catalyst"
     },
     "title": {
       "translate": "advancements.alexscaves.summon_luxtructosaurus.title"

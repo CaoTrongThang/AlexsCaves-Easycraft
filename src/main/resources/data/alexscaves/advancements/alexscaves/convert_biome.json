@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/convert_biome.png\"}"
+      "item": "alexscaves:cave_map"
     },
     "title": {
       "translate": "advancements.alexscaves.convert_biome.title"

@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/underzealot_sacrifice.png\"}"
+      "item": "alexscaves:pure_darkness"
     },
     "title": {
       "translate": "advancements.alexscaves.underzealot_sacrifice.title"

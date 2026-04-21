@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/ride_gum_worm.png\"}"
+      "item": "alexscaves:sweet_tooth"
     },
     "title": {
       "translate": "advancements.alexscaves.ride_gum_worm.title"

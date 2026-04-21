@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/tremorzilla_beam.png\"}"
+      "item": "alexscaves:nuclear_bomb"
     },
     "title": {
       "translate": "advancements.alexscaves.tremorzilla_kill_beam.title"

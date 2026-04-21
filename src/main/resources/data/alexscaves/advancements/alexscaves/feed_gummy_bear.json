@@ -1,8 +1,7 @@
 {
     "display": {
         "icon": {
-            "item" : "citadel:icon_item",
-            "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/feed_gummy_bear.png\"}"
+            "item": "alexscaves:gummy_ring_red"
         },
         "title": {
             "translate": "advancements.alexscaves.feed_gummy_bear.title"

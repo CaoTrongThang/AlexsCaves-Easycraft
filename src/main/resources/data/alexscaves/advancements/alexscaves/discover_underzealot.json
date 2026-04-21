@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/discover_underzealot.png\"}"
+      "item": "alexscaves:darkened_apple"
     },
     "title": {
       "translate": "advancements.alexscaves.discover_underzealot.title"

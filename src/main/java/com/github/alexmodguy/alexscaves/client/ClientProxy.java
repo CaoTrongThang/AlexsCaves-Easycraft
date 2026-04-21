@@ -166,7 +166,6 @@ public class ClientProxy extends CommonProxy {
         registerBuiltinItemRenderer(ACBlockRegistry.COPPER_VALVE.get());
         registerBuiltinItemRenderer(ACBlockRegistry.BEHOLDER.get());
         registerBuiltinItemRenderer(ACBlockRegistry.GOBTHUMPER.get());
-        registerBuiltinItemRenderer(com.github.alexthe666.citadel.CitadelItemRegistry.ICON_ITEM.get());
     }
 
     public static void registerFabricFluidRendering() {

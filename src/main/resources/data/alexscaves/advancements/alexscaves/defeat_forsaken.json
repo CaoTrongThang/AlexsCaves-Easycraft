@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/defeat_forsaken.png\"}"
+      "item": "alexscaves:pure_darkness"
     },
     "title": {
       "translate": "advancements.alexscaves.defeat_forsaken.title"

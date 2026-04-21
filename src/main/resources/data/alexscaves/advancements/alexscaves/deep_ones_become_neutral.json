@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/deep_one_2.png\"}"
+      "item": "alexscaves:ink_bomb"
     },
     "title": {
       "translate": "advancements.alexscaves.deep_ones_become_neutral.title"

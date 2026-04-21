@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/defeat_gloomoth.png\"}"
+      "item": "alexscaves:moth_dust"
     },
     "title": {
       "translate": "advancements.alexscaves.defeat_gloomoth.title"

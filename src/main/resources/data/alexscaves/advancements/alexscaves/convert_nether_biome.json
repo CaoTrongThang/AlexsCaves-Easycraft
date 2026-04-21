@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/convert_nether_biome.png\"}"
+      "item": "alexscaves:bioluminescent_torch"
     },
     "title": {
       "translate": "advancements.alexscaves.convert_nether_biome.title"

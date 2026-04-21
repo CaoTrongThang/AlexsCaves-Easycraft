@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/defeat_brainiac.png\"}"
+      "item": "alexscaves:fissile_core"
     },
     "title": {
       "translate": "advancements.alexscaves.defeat_brainiac.title"

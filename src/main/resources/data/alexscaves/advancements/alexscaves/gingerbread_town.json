@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/gingerbread_town.png\"}"
+      "item": "alexscaves:gingerbread_block"
     },
     "title": {
       "translate": "advancements.alexscaves.gingerbread_town.title"

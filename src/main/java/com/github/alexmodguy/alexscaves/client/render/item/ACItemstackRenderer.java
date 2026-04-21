@@ -8,12 +8,10 @@ import com.github.alexmodguy.alexscaves.client.render.misc.CaveMapRenderHelper;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.enchantment.ACEnchantmentRegistry;
 import com.github.alexmodguy.alexscaves.server.item.*;
-import com.github.alexthe666.citadel.CitadelItemRegistry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import org.joml.Matrix4f;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -567,29 +565,6 @@ public class ACItemstackRenderer extends BlockEntityWithoutLevelRenderer {
             } else {
                 renderStaticItemSprite(spriteItem, transformType, combinedLightIn, combinedOverlayIn, poseStack,
                         bufferIn, level);
-            }
-        }
-
-        if (itemStackIn.is(CitadelItemRegistry.ICON_ITEM.get())) {
-            String iconLocation = itemStackIn.getTag() != null ? itemStackIn.getTag().getString("IconLocation") : "";
-            if (!iconLocation.isEmpty()) {
-                ResourceLocation resourceLocation = new ResourceLocation(iconLocation);
-                poseStack.pushPose();
-                poseStack.translate(0.5F, 0.5F, 0.5F);
-                poseStack.mulPose(Axis.YP.rotationDegrees(180));
-                poseStack.translate(-0.5F, -0.5F, 0.05F);
-                Matrix4f matrix = poseStack.last().pose();
-                VertexConsumer consumer = getVertexConsumer(bufferIn, RenderType.entityCutout(resourceLocation),
-                        resourceLocation);
-                consumer.vertex(matrix, 0, 1, 0).color(255, 255, 255, 255).uv(0, 0).overlayCoords(combinedOverlayIn)
-                        .uv2(combinedLightIn).normal(0, 0, 1).endVertex();
-                consumer.vertex(matrix, 0, 0, 0).color(255, 255, 255, 255).uv(0, 1).overlayCoords(combinedOverlayIn)
-                        .uv2(combinedLightIn).normal(0, 0, 1).endVertex();
-                consumer.vertex(matrix, 1, 0, 0).color(255, 255, 255, 255).uv(1, 1).overlayCoords(combinedOverlayIn)
-                        .uv2(combinedLightIn).normal(0, 0, 1).endVertex();
-                consumer.vertex(matrix, 1, 1, 0).color(255, 255, 255, 255).uv(1, 0).overlayCoords(combinedOverlayIn)
-                        .uv2(combinedLightIn).normal(0, 0, 1).endVertex();
-                poseStack.popPose();
             }
         }
     }

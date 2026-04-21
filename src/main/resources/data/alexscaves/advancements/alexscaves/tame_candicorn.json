@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item" : "citadel:icon_item",
-      "nbt": "{IconLocation:\"alexscaves:textures/misc/advancement/icon/tame_candicorn.png\"}"
+      "item": "alexscaves:caramel_apple"
     },
     "title": {
       "translate": "advancements.alexscaves.tame_candicorn.title"
