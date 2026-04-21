@@ -26,12 +26,6 @@
       "replace_current_music": false,
       "sound": "alexscaves:toxic_caves_music"
     },
-    "music": {
-      "max_delay": 24000,
-      "min_delay": 12000,
-      "replace_current_music": false,
-      "sound": "alexscaves:toxic_caves_music"
-    },
     "particle": {
       "options": {
         "type": "alexscaves:fallout"
@@ -44,8 +38,7 @@
     "water_fog_color": 4944498
   },
   "features": [
-    [
-    ],
+    [],
     [
       "alexscaves:acid_lake",
       "alexscaves:toxic_ruins"
@@ -92,8 +85,7 @@
       "minecraft:disk_gravel",
       "alexscaves:radrock_uranium_ore"
     ],
-    [
-    ],
+    [],
     [
       "minecraft:spring_water",
       "minecraft:spring_lava",
@@ -119,8 +111,7 @@
     ]
   ],
   "precipitation": "rain",
-  "spawn_costs": {
-  },
+  "spawn_costs": {},
   "creature_spawn_probability": 0.01,
   "spawners": {
     "ambient": [
@@ -146,7 +137,6 @@
         "weight": 10
       }
     ],
-    "creature": [],
     "misc": [],
     "monster": [
       {
