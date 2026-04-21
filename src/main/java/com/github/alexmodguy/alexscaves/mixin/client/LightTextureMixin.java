@@ -105,6 +105,9 @@ public abstract class LightTextureMixin {
             if (clientlevel != null) {
                 for (int i = 0; i < 16; ++i) {
                     for (int j = 0; j < 16; ++j) {
+                        if (i == 15 && j == 15) {
+                            continue;
+                        }
                         int color = this.lightPixels.getPixelRGBA(j, i);
                         Vector3f vector3f = new Vector3f((color & 0xFF) / 255.0F, ((color >> 8) & 0xFF) / 255.0F,
                                 ((color >> 16) & 0xFF) / 255.0F);
@@ -115,6 +118,7 @@ public abstract class LightTextureMixin {
                         this.lightPixels.setPixelRGBA(j, i, -16777216 | i1 << 16 | l << 8 | k);
                     }
                 }
+                this.lightPixels.setPixelRGBA(15, 15, -1);
             }
         }
     }

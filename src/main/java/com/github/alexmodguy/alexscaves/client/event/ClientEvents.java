@@ -1127,6 +1127,10 @@ public class ClientEvents {
                     lastSampledFogColor = calculateBiomeFogColor(cameraEntity);
                     lastSampledWaterFogColor = calculateBiomeWaterFogColor(cameraEntity);
                 }
+            } else {
+                ClientProxy.lastBiomeLightColorPrev = ClientProxy.lastBiomeLightColor = new Vec3(1.0D, 1.0D, 1.0D);
+                ClientProxy.lastBiomeAmbientLightAmountPrev = ClientProxy.lastBiomeAmbientLightAmount = 0.0F;
+                ClientProxy.acSkyOverrideAmount = 0.0F;
             }
             if (ClientProxy.renderNukeSkyDarkFor > 0) {
                 ClientProxy.renderNukeSkyDarkFor--;
