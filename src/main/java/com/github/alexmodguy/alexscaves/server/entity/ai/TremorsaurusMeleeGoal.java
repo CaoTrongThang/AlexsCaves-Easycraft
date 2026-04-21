@@ -45,7 +45,9 @@ public class TremorsaurusMeleeGoal extends Goal {
 
             if (dist < tremorsaurus.getBbWidth() + target.getBbWidth() + 1.0D) {
                 if (tremorsaurus.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
-                    if ((tremorsaurus.getRandom().nextBoolean() || Math.max(target.getBbHeight(), target.getBbWidth()) >= 2.0F) && !grab || tremorsaurus.isBaby()) {
+                    if ((tremorsaurus.getRandom().nextBoolean()
+                            || Math.max(target.getBbHeight(), target.getBbWidth()) >= 1.5F) && !grab
+                            || tremorsaurus.isBaby()) {
                         tryAnimation(TremorsaurusEntity.ANIMATION_BITE);
                     } else {
                         tryAnimation(TremorsaurusEntity.ANIMATION_SHAKE_PREY);
@@ -61,10 +63,12 @@ public class TremorsaurusMeleeGoal extends Goal {
     }
 
     private void checkAndDealDamage(LivingEntity target) {
-        if (tremorsaurus.hasLineOfSight(target) && tremorsaurus.distanceTo(target) < tremorsaurus.getBbWidth() + target.getBbWidth() + 2.0D) {
+        if (tremorsaurus.hasLineOfSight(target)
+                && tremorsaurus.distanceTo(target) < tremorsaurus.getBbWidth() + target.getBbWidth() + 2.0D) {
             tremorsaurus.playSound(ACSoundRegistry.TREMORSAURUS_BITE.get());
-            target.hurt(target.damageSources().mobAttack(tremorsaurus), (float) tremorsaurus.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
-            target.knockback(0.5D, tremorsaurus.getX() - target.getX(), tremorsaurus.getZ() - target.getZ());
+            target.hurt(target.damageSources().mobAttack(tremorsaurus),
+                    (float) tremorsaurus.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
+            target.knockback(0.25D, tremorsaurus.getX() - target.getX(), tremorsaurus.getZ() - target.getZ());
         }
     }
 

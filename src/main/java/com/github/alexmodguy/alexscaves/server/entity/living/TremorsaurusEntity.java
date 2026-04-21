@@ -209,7 +209,7 @@ public class TremorsaurusEntity extends DinosaurEntity
                     riderHitEntity.hurt(riderHitEntity.damageSources().mobAttack(this),
                             (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
                     if (riderHitEntity instanceof LivingEntity living) {
-                        living.knockback(0.5D, this.getX() - riderHitEntity.getX(),
+                        living.knockback(0.15D, this.getX() - riderHitEntity.getX(),
                                 this.getZ() - riderHitEntity.getZ());
                     }
                     riderHitEntity = null;
@@ -226,7 +226,7 @@ public class TremorsaurusEntity extends DinosaurEntity
             if (!held && getHeldMobId() != -1) {
                 Entity entity = level().getEntity(getHeldMobId());
                 if (entity instanceof LivingEntity living) {
-                    Vec3 throwVec = this.getLookAngle().scale(0.5D).add(0, 0.4D, 0);
+                    Vec3 throwVec = this.getLookAngle().scale(0.3D).add(0, 0.2D, 0);
                     living.setDeltaMovement(throwVec);
                 }
                 this.setHeldMobId(-1);
