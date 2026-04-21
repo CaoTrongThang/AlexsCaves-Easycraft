@@ -32,7 +32,8 @@ public class SimpleChannel {
         return id;
     }
 
-    public synchronized <MSG> void registerMessage(int index, Class<MSG> type, BiConsumer<MSG, FriendlyByteBuf> writer, Function<FriendlyByteBuf, MSG> reader, BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler) {
+    public synchronized <MSG> void registerMessage(int index, Class<MSG> type, BiConsumer<MSG, FriendlyByteBuf> writer,
+            Function<FriendlyByteBuf, MSG> reader, BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler) {
         Registration<MSG> registration = new Registration<>(index, type, writer, reader, handler);
         registrationsByIndex.put(index, registration);
         registrationsByType.put(type, registration);
@@ -59,7 +60,7 @@ public class SimpleChannel {
         ServerPlayNetworking.send(player, id, buf);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void handleClientbound(FriendlyByteBuf buf) {
         int index = buf.readVarInt();
         Registration registration = registrationsByIndex.get(index);
@@ -70,7 +71,7 @@ public class SimpleChannel {
         dispatch(registration, message, null, NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void handleServerbound(ServerPlayer player, FriendlyByteBuf buf) {
         int index = buf.readVarInt();
         Registration registration = registrationsByIndex.get(index);
@@ -110,16 +111,17 @@ public class SimpleChannel {
     }
 
     private record Registration<MSG>(
-        int index,
-        Class<MSG> type,
-        BiConsumer<MSG, FriendlyByteBuf> writer,
-        Function<FriendlyByteBuf, MSG> reader,
-        BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler
-    ) {
+            int index,
+            Class<MSG> type,
+            BiConsumer<MSG, FriendlyByteBuf> writer,
+            Function<FriendlyByteBuf, MSG> reader,
+            BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler) {
     }
 
-    private static <MSG> void dispatch(Registration<MSG> registration, Object message, ServerPlayer player, NetworkDirection direction) {
-        registration.handler().accept(registration.type().cast(message), () -> new NetworkEvent.Context(player, direction));
+    private static <MSG> void dispatch(Registration<MSG> registration, Object message, ServerPlayer player,
+            NetworkDirection direction) {
+        registration.handler().accept(registration.type().cast(message),
+                () -> new NetworkEvent.Context(player, direction));
     }
 
     private static final class ClientAccess {

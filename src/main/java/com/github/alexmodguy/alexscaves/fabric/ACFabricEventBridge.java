@@ -36,12 +36,11 @@ public final class ACFabricEventBridge {
                 return InteractionResult.PASS;
             }
             PlayerInteractEvent.EntityInteract event = new PlayerInteractEvent.EntityInteract(
-                player,
-                level,
-                hand,
-                player.getItemInHand(hand),
-                entity
-            );
+                    player,
+                    level,
+                    hand,
+                    player.getItemInHand(hand),
+                    entity);
             MinecraftForge.EVENT_BUS.post(event);
             return event.isCanceled() ? event.getCancellationResult() : InteractionResult.PASS;
         });
@@ -51,11 +50,10 @@ public final class ACFabricEventBridge {
                 return InteractionResultHolder.pass(player.getItemInHand(hand));
             }
             PlayerInteractEvent.RightClickItem event = new PlayerInteractEvent.RightClickItem(
-                player,
-                level,
-                hand,
-                player.getItemInHand(hand)
-            );
+                    player,
+                    level,
+                    hand,
+                    player.getItemInHand(hand));
             MinecraftForge.EVENT_BUS.post(event);
             if (!event.isCanceled()) {
                 return InteractionResultHolder.pass(event.getItemStack());
@@ -78,9 +76,8 @@ public final class ACFabricEventBridge {
             }
         });
 
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-            MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedInEvent(handler.getPlayer()))
-        );
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> MinecraftForge.EVENT_BUS
+                .post(new PlayerEvent.PlayerLoggedInEvent(handler.getPlayer())));
 
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 2, offers -> {
             Map<Integer, List<VillagerTrades.ItemListing>> tradeMap = new HashMap<>();
@@ -88,15 +85,16 @@ public final class ACFabricEventBridge {
             MinecraftForge.EVENT_BUS.post(new VillagerTradesEvent(VillagerProfession.CARTOGRAPHER, tradeMap));
         });
 
-        TradeOfferHelper.registerWanderingTraderOffers(1, offers ->
-            MinecraftForge.EVENT_BUS.post(new WandererTradesEvent(offers))
-        );
+        TradeOfferHelper.registerWanderingTraderOffers(1,
+                offers -> MinecraftForge.EVENT_BUS.post(new WandererTradesEvent(offers)));
 
-        ServerLifecycleEvents.SERVER_STARTING.register(server ->
-            MinecraftForge.EVENT_BUS.post(new ServerAboutToStartEvent(server))
-        );
-        ServerLifecycleEvents.SERVER_STOPPING.register(server ->
-            MinecraftForge.EVENT_BUS.post(new ServerStoppingEvent(server))
-        );
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            com.github.alexmodguy.alexscaves.forge_shim.server.ServerLifecycleHooks.setCurrentServer(server);
+            MinecraftForge.EVENT_BUS.post(new ServerAboutToStartEvent(server));
+        });
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            com.github.alexmodguy.alexscaves.forge_shim.server.ServerLifecycleHooks.setCurrentServer(null);
+            MinecraftForge.EVENT_BUS.post(new ServerStoppingEvent(server));
+        });
     }
 }

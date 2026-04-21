@@ -8,7 +8,7 @@ import com.github.alexmodguy.alexscaves.forge_shim.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class UpdateBossEruptionStatus  {
+public class UpdateBossEruptionStatus {
 
     private int entityId;
     private boolean erupting;
@@ -17,7 +17,6 @@ public class UpdateBossEruptionStatus  {
         this.entityId = entityId;
         this.erupting = erupting;
     }
-
 
     public static UpdateBossEruptionStatus read(FriendlyByteBuf buf) {
         return new UpdateBossEruptionStatus(buf.readInt(), buf.readBoolean());
@@ -30,13 +29,15 @@ public class UpdateBossEruptionStatus  {
 
     public static void handle(UpdateBossEruptionStatus message, Supplier<NetworkEvent.Context> context) {
         context.get().setPacketHandled(true);
-        Player playerSided = context.get().getSender();
-        if (context.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-            playerSided = AlexsCaves.PROXY.getClientSidePlayer();
-        }
-        if(playerSided != null){
-            AlexsCaves.PROXY.setPrimordialBossActive(playerSided.level(), message.entityId, message.erupting);
-        }
+        context.get().enqueueWork(() -> {
+            Player playerSided = context.get().getSender();
+            if (context.get().getDirection().getReceptionSide() == LogicalSide.CLIENT) {
+                playerSided = AlexsCaves.PROXY.getClientSidePlayer();
+            }
+            if (playerSided != null) {
+                AlexsCaves.PROXY.setPrimordialBossActive(playerSided.level(), message.entityId, message.erupting);
+            }
+        });
     }
 
 }

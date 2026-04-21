@@ -547,8 +547,9 @@ public class LuxtructosaurusEntity extends SauropodBaseEntity implements Enemy {
             ACWorldData worldData = ACWorldData.get(level());
             if (worldData != null) {
                 worldData.trackPrimordialBoss(this.getId(), erupting);
+                boolean isActive = worldData.isPrimordialBossActive(level());
                 AlexsCaves.sendMSGToAll(
-                        new UpdateBossEruptionStatus(this.getId(), worldData.isPrimordialBossActive(level())));
+                        new UpdateBossEruptionStatus(this.getId(), isActive));
             }
         }
     }

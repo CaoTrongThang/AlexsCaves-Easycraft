@@ -43,6 +43,7 @@
     "client.ClientLevelDataMixin",
     "client.ClientLevelMixin",
     "client.ClientPacketListenerMixin",
+    "client.FogRendererMixin",
     "client.GameRendererMixin",
     "client.GuiMixin",
     "client.HumanoidArmorLayerMixin",
