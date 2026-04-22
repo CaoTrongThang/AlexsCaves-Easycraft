@@ -133,6 +133,36 @@ public class AlexsCaves {
                 NETWORK_WRAPPER.registerMessage(packetsRegistered++, SundropRainbowMessage.class,
                                 SundropRainbowMessage::write,
                                 SundropRainbowMessage::read, SundropRainbowMessage::handle);
+                NETWORK_WRAPPER.registerMessage(packetsRegistered++,
+                                com.github.alexthe666.citadel.server.message.AnimationMessage.class,
+                                com.github.alexthe666.citadel.server.message.AnimationMessage::write,
+                                com.github.alexthe666.citadel.server.message.AnimationMessage::read,
+                                com.github.alexthe666.citadel.server.message.AnimationMessage.Handler::handle);
+                NETWORK_WRAPPER.registerMessage(packetsRegistered++,
+                                com.github.alexthe666.citadel.server.message.PropertiesMessage.class,
+                                com.github.alexthe666.citadel.server.message.PropertiesMessage::write,
+                                com.github.alexthe666.citadel.server.message.PropertiesMessage::read,
+                                com.github.alexthe666.citadel.server.message.PropertiesMessage.Handler::handle);
+                NETWORK_WRAPPER.registerMessage(packetsRegistered++,
+                                com.github.alexthe666.citadel.server.message.DanceJukeboxMessage.class,
+                                com.github.alexthe666.citadel.server.message.DanceJukeboxMessage::write,
+                                com.github.alexthe666.citadel.server.message.DanceJukeboxMessage::read,
+                                com.github.alexthe666.citadel.server.message.DanceJukeboxMessage.Handler::handle);
+                NETWORK_WRAPPER.registerMessage(packetsRegistered++,
+                                com.github.alexthe666.citadel.server.message.SyncClientTickRateMessage.class,
+                                com.github.alexthe666.citadel.server.message.SyncClientTickRateMessage::write,
+                                com.github.alexthe666.citadel.server.message.SyncClientTickRateMessage::read,
+                                com.github.alexthe666.citadel.server.message.SyncClientTickRateMessage.Handler::handle);
+                NETWORK_WRAPPER.registerMessage(packetsRegistered++,
+                                com.github.alexthe666.citadel.server.message.SyncePathMessage.class,
+                                com.github.alexthe666.citadel.server.message.SyncePathMessage::write,
+                                com.github.alexthe666.citadel.server.message.SyncePathMessage::read,
+                                com.github.alexthe666.citadel.server.message.SyncePathMessage.Handler::handle);
+                NETWORK_WRAPPER.registerMessage(packetsRegistered++,
+                                com.github.alexthe666.citadel.server.message.SyncPathReachedMessage.class,
+                                com.github.alexthe666.citadel.server.message.SyncPathReachedMessage::write,
+                                com.github.alexthe666.citadel.server.message.SyncPathReachedMessage::read,
+                                com.github.alexthe666.citadel.server.message.SyncPathReachedMessage.Handler::handle);
 
                 ACPlayerCapes.setup();
                 ACBlockRegistry.setup();
