@@ -64,7 +64,8 @@
     "client.SpriteResourceLoaderMixin$PalettedPermutationsAccessor",
     "client.UnderwaterAmbientSoundHandlerMixin",
     "client.UnderwaterAmbientSoundInstancesMixin",
-    "client.CraftingRecipeWidgetMixin"
+    "client.CraftingRecipeWidgetMixin",
+    "client.ParticleEngineMixin"
   ],
   "injectors": {
     "defaultRequire": 1

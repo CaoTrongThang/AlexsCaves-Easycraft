@@ -43,9 +43,12 @@ public class NuclearExplosionEntity extends Entity {
 
     private boolean spawnedParticle = false;
     private Stack<BlockPos> destroyingChunks = new Stack<>();
-    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(NuclearExplosionEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> NO_GRIEFING = SynchedEntityData.defineId(NuclearExplosionEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> INTENTIONAL_GAME_DESIGN = SynchedEntityData.defineId(NuclearExplosionEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(NuclearExplosionEntity.class,
+            EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> NO_GRIEFING = SynchedEntityData
+            .defineId(NuclearExplosionEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> INTENTIONAL_GAME_DESIGN = SynchedEntityData
+            .defineId(NuclearExplosionEntity.class, EntityDataSerializers.BOOLEAN);
     private boolean loadingChunks = false;
 
     private Explosion dummyExplosion;
@@ -70,11 +73,23 @@ public class NuclearExplosionEntity extends Entity {
         int radius = chunksAffected * 15;
         if (!spawnedParticle) {
             spawnedParticle = true;
-            int particleY = (int) Math.ceil(this.getY());
-            while (particleY > level().getMinBuildHeight() && particleY > this.getY() - radius / 2F && isDestroyable(level().getBlockState(BlockPos.containing(this.getX(), particleY, this.getZ())))) {
-                particleY--;
+            if (!this.level().isClientSide) {
+                int particleY = (int) Math.ceil(this.getY());
+                while (particleY > level().getMinBuildHeight() && particleY > this.getY() - radius / 2F
+                        && isDestroyable(
+                                level().getBlockState(BlockPos.containing(this.getX(), particleY, this.getZ())))) {
+                    particleY--;
+                }
+                net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket packet = new net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket(
+                        ACParticleRegistry.MUSHROOM_CLOUD.get(), true, this.getX(), particleY + 2, this.getZ(),
+                        this.getSize(), isIntentionalGameDesign() ? 1.0F : 0.0F, 0F, 1.0F, 0);
+                for (net.minecraft.server.level.ServerPlayer serverplayer : ((ServerLevel) level()).players()) {
+                    if (serverplayer.level() == this.level()
+                            && serverplayer.blockPosition().closerToCenterThan(this.position(), 512.0D)) {
+                        serverplayer.connection.send(packet);
+                    }
+                }
             }
-            level().addAlwaysVisibleParticle(ACParticleRegistry.MUSHROOM_CLOUD.get(), true, this.getX(), particleY + 2, this.getZ(), this.getSize(), isIntentionalGameDesign() ? 1.0F : 0.0F, 0);
         }
         if (tickCount > 40 && destroyingChunks.isEmpty()) {
             this.remove(RemovalReason.DISCARDED);
@@ -94,7 +109,9 @@ public class NuclearExplosionEntity extends Entity {
                             }
                         }
                     }
-                    destroyingChunks.sort((blockPos1, blockPos2) -> Double.compare(blockPos2.distManhattan(this.blockPosition()), blockPos1.distManhattan(this.blockPosition())));
+                    destroyingChunks.sort(
+                            (blockPos1, blockPos2) -> Double.compare(blockPos2.distManhattan(this.blockPosition()),
+                                    blockPos1.distManhattan(this.blockPosition())));
                 } else {
                     int tickChunkCount = Math.min(destroyingChunks.size(), 3);
                     for (int i = 0; i < tickChunkCount; i++) {
@@ -116,18 +133,21 @@ public class NuclearExplosionEntity extends Entity {
                     } else if (entity.getType().is(ACTagRegistry.RESISTS_RADIATION)) {
                         damage *= 0.25F;
                         playerFling *= 0.1F;
-                        if(entity instanceof TremorzillaEntity){
+                        if (entity instanceof TremorzillaEntity) {
                             playerFling = 0;
                             damage = 0;
                         }
                     }
-                    if(damage > 0){
-                        entity.hurt(isIntentionalGameDesign() ? ACDamageTypes.causeIntentionalGameDesign(level().registryAccess()) : ACDamageTypes.causeNukeDamage(level().registryAccess()), damage);
+                    if (damage > 0) {
+                        entity.hurt(isIntentionalGameDesign()
+                                ? ACDamageTypes.causeIntentionalGameDesign(level().registryAccess())
+                                : ACDamageTypes.causeNukeDamage(level().registryAccess()), damage);
                     }
                 }
                 entity.setDeltaMovement(vec3.scale(damage * 0.1F * playerFling));
-                if(!this.isIntentionalGameDesign()){
-                    entity.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(), 48000, getSize() <= 1.5F ? 1 : 2, false, false, true));
+                if (!this.isIntentionalGameDesign()) {
+                    entity.addEffect(new MobEffectInstance(ACEffectRegistry.IRRADIATED.get(), 48000,
+                            getSize() <= 1.5F ? 1 : 2, false, false, true));
                 }
             }
         }
@@ -142,7 +162,6 @@ public class NuclearExplosionEntity extends Entity {
         super.remove(removalReason);
     }
 
-
     private int getChunksAffected() {
         return (int) Math.ceil(this.getSize());
     }
@@ -153,7 +172,8 @@ public class NuclearExplosionEntity extends Entity {
             int dist = Math.max(getChunksAffected(), serverLevel.getServer().getPlayerList().getViewDistance() / 2);
             for (int i = -dist; i <= dist; i++) {
                 for (int j = -dist; j <= dist; j++) {
-                    ForgeChunkManager.forceChunk(serverLevel, AlexsCaves.MODID, this, chunkPos.x + i, chunkPos.z + j, load, load);
+                    ForgeChunkManager.forceChunk(serverLevel, AlexsCaves.MODID, this, chunkPos.x + i, chunkPos.z + j,
+                            load, load);
                 }
             }
         }
@@ -182,19 +202,26 @@ public class NuclearExplosionEntity extends Entity {
             for (int z = 0; z < 16; z++) {
                 for (int y = 15; y >= 0; y--) {
                     boolean canSetToFire = false;
-                    carve.set(chunkCorner.getX() + x, Mth.clamp(chunkCorner.getY() + y, level().getMinBuildHeight(), level().getMaxBuildHeight()), chunkCorner.getZ() + z);
-                    float widthSimplexNoise1 = (ACMath.sampleNoise3D(carve.getX(), carve.getY(), carve.getZ(), radius) - 0.5F) * 0.45F + 0.55F;
-                    double yDist = ACMath.smin(0.6F - Math.abs(this.blockPosition().getY() - carve.getY()) / (float) radius, 0.6F, 0.2F);
-                    double distToCenter = carve.distToLowCornerSqr(this.blockPosition().getX(), carve.getY() - 1, this.blockPosition().getZ());
+                    carve.set(chunkCorner.getX() + x,
+                            Mth.clamp(chunkCorner.getY() + y, level().getMinBuildHeight(), level().getMaxBuildHeight()),
+                            chunkCorner.getZ() + z);
+                    float widthSimplexNoise1 = (ACMath.sampleNoise3D(carve.getX(), carve.getY(), carve.getZ(), radius)
+                            - 0.5F) * 0.45F + 0.55F;
+                    double yDist = ACMath.smin(
+                            0.6F - Math.abs(this.blockPosition().getY() - carve.getY()) / (float) radius, 0.6F, 0.2F);
+                    double distToCenter = carve.distToLowCornerSqr(this.blockPosition().getX(), carve.getY() - 1,
+                            this.blockPosition().getZ());
                     double targetRadius = yDist * (radius + widthSimplexNoise1 * radius) * radius;
                     if (distToCenter <= targetRadius) {
                         BlockState state = level().getBlockState(carve);
                         if ((!state.isAir() || !state.getFluidState().isEmpty()) && isDestroyable(state)) {
                             carveBelow.set(carve.getX(), carve.getY() - 1, carve.getZ());
                             canSetToFire = true;
-                            if(state.is(ACBlockRegistry.TREMORZILLA_EGG.get()) && state.getBlock() instanceof TremorzillaEggBlock tremorzillaEggBlock){
+                            if (state.is(ACBlockRegistry.TREMORZILLA_EGG.get())
+                                    && state.getBlock() instanceof TremorzillaEggBlock tremorzillaEggBlock) {
                                 tremorzillaEggBlock.spawnDinosaurs(level(), carve, state);
-                            }else if (AlexsCaves.COMMON_CONFIG.nukesSpawnItemDrops.get() && random.nextFloat() < itemDropModifier && state.getFluidState().isEmpty()) {
+                            } else if (AlexsCaves.COMMON_CONFIG.nukesSpawnItemDrops.get()
+                                    && random.nextFloat() < itemDropModifier && state.getFluidState().isEmpty()) {
                                 level().destroyBlock(carve, true);
                             } else {
                                 level().destroyBlock(carve, false);
@@ -210,7 +237,9 @@ public class NuclearExplosionEntity extends Entity {
     }
 
     private boolean isDestroyable(BlockState state) {
-        return (!state.is(ACTagRegistry.NUKE_PROOF) && state.getBlock().getExplosionResistance() < AlexsCaves.COMMON_CONFIG.nukeMaxBlockExplosionResistance.get()) || state.is(ACBlockRegistry.TREMORZILLA_EGG.get());
+        return (!state.is(ACTagRegistry.NUKE_PROOF) && state.getBlock()
+                .getExplosionResistance() < AlexsCaves.COMMON_CONFIG.nukeMaxBlockExplosionResistance.get())
+                || state.is(ACBlockRegistry.TREMORZILLA_EGG.get());
     }
 
     @Override
@@ -243,7 +272,6 @@ public class NuclearExplosionEntity extends Entity {
     public void setIntentionalGameDesign(boolean intentionalGameDesign) {
         this.entityData.set(INTENTIONAL_GAME_DESIGN, intentionalGameDesign);
     }
-
 
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {

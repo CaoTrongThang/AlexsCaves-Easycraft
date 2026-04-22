@@ -30,15 +30,18 @@ import javax.annotation.Nullable;
 
 public class NuclearBombBlock extends Block {
     public NuclearBombBlock() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(8, 1001).sound(ACSoundTypes.NUCLEAR_BOMB));
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(8, 1001)
+                .sound(ACSoundTypes.NUCLEAR_BOMB));
     }
 
-    public void onCaughtFire(BlockState state, Level level, BlockPos blockPos, @Nullable net.minecraft.core.Direction face, @Nullable LivingEntity igniter) {
+    public void onCaughtFire(BlockState state, Level level, BlockPos blockPos,
+            @Nullable net.minecraft.core.Direction face, @Nullable LivingEntity igniter) {
         if (!level.isClientSide) {
             NuclearBombEntity bomb = ACEntityRegistry.NUCLEAR_BOMB.get().create(level);
             bomb.setPos((double) blockPos.getX() + 0.5D, (double) blockPos.getY(), (double) blockPos.getZ() + 0.5D);
             level.addFreshEntity(bomb);
-            level.playSound((Player) null, bomb.getX(), bomb.getY(), bomb.getZ(), SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.playSound((Player) null, bomb.getX(), bomb.getY(), bomb.getZ(), SoundEvents.TNT_PRIMED,
+                    SoundSource.BLOCKS, 1.0F, 1.0F);
             level.gameEvent(igniter, GameEvent.PRIME_FUSE, blockPos);
         }
     }
@@ -53,7 +56,8 @@ public class NuclearBombBlock extends Block {
         }
     }
 
-    public void neighborChanged(BlockState state, Level level, BlockPos blockPos, Block block, BlockPos blockPos1, boolean forced) {
+    public void neighborChanged(BlockState state, Level level, BlockPos blockPos, Block block, BlockPos blockPos1,
+            boolean forced) {
         if (level.hasNeighborSignal(blockPos)) {
             onCaughtFire(state, level, blockPos, null, null);
             level.removeBlock(blockPos, false);
@@ -65,7 +69,8 @@ public class NuclearBombBlock extends Block {
             BlockPos blockpos = blockHitResult.getBlockPos();
             Entity entity = projectile.getOwner();
             if (projectile.isOnFire() && projectile.mayInteract(level, blockpos)) {
-                onCaughtFire(state, level, blockpos, null, entity instanceof LivingEntity ? (LivingEntity) entity : null);
+                onCaughtFire(state, level, blockpos, null,
+                        entity instanceof LivingEntity ? (LivingEntity) entity : null);
                 level.removeBlock(blockpos, false);
             }
         }
@@ -76,7 +81,8 @@ public class NuclearBombBlock extends Block {
         return false;
     }
 
-    public InteractionResult use(BlockState state, Level level, BlockPos blockPos, Player player, InteractionHand hand, BlockHitResult result) {
+    public InteractionResult use(BlockState state, Level level, BlockPos blockPos, Player player, InteractionHand hand,
+            BlockHitResult result) {
         ItemStack itemstack = player.getItemInHand(hand);
         if (!itemstack.is(Items.FLINT_AND_STEEL) && !itemstack.is(Items.FIRE_CHARGE)) {
             return super.use(state, level, blockPos, player, hand, result);
