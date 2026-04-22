@@ -97,7 +97,7 @@ public class DarkArrowEntity extends AbstractArrow {
         // === START OF % MAX HEALTH DAMAGE ===
         if (entity instanceof LivingEntity livingTarget) {
             // Calculate 0.5% of the target's max health
-            float percentHealthDamage = livingTarget.getMaxHealth() * 0.005F;
+            float percentHealthDamage = livingTarget.getMaxHealth() * 0.05F;
 
             // Cap the bonus damage at 100 max
             float cappedBonusDamage = Math.min(percentHealthDamage, 100.0F);

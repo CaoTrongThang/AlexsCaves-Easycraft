@@ -587,7 +587,7 @@ public class TremorsaurusEntity extends DinosaurEntity
             AlexsCaves.sendMSGToAll(new UpdateEffectVisualityEntityMessage(this.getId(), this.getId(), 3, 0, true));
             if (!level().isClientSide) {
                 this.setTameAttempts(this.getTameAttempts() + 1);
-                if (this.getTameAttempts() > 3 && this.getRandom().nextInt(2) == 0 || this.getTameAttempts() > 8) {
+                if (this.getTameAttempts() > 6 && this.getRandom().nextInt(2) == 0 || this.getTameAttempts() > 10) {
                     this.tame(player);
                     this.level().broadcastEntityEvent(this, (byte) 7);
                 } else {
