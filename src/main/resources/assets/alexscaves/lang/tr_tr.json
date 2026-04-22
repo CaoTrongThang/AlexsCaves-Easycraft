@@ -281,6 +281,7 @@
   "item.alexscaves.cave_codex.end": "Bu biyom hakkında öğrenilecek başka bir şey yok.",
   "item.alexscaves.cave_book": "Mağara Kitabı",
   "item.alexscaves.cave_book.desc": "Prof. Dr. Alexander Caverns, PhD. Tarafından",
+  "item.alexscaves.cave_book.desc_1": "Easycraft Portu",
   "item.alexscaves.cave_book.general": "Giriş",
   "item.alexscaves.cave_book.resources": "Kaynaklar",
   "item.alexscaves.cave_book.mobs": "Yerliler",
@@ -1250,7 +1251,7 @@
   "alexscaves.sound.subtitle.darkness_incarnate_exit": "Karanlığın Enkarnesi deaktive oldu",
   "alexscaves.sound.subtitle.darkness_incarnate_idle": "Karanlığın Enkarnesi zangırdıyor",
   "alexscaves.sound.subtitle.disappointment": "Vah vah vah",
-  "alexscaves.sound.subtitle.nuclear_siren": "Nükleer Siren bağırıyor", 
+  "alexscaves.sound.subtitle.nuclear_siren": "Nükleer Siren bağırıyor",
   "alexscaves.startup_warning.generation_incompatible": "Alex'in Mağaraları dünya oluşumu (ID:%s) adlı modla uyumlu değil. Mağara biyomları dünyada hiç ortaya çıkmayabilir. Bu nezaket uyarı mesajı Alex's Caves yapılandırmasında devre dışı bırakılabilir.",
   "enchantment.alexscaves.field_extension": "Alan Uzatması",
   "enchantment.alexscaves.field_extension.desc": "Galen Eldiven eşyaları daha uzağa taşıyabilir",
@@ -1330,5 +1331,4 @@
   "enchantment.alexscaves.twilight_perfection.desc": "Dehşet Yayı okları kırmızı renkte parlar ve yayın tam dolum zamanında atılırsa iki kat hasar verir",
   "enchantment.alexscaves.shaded_respite": "Gölgeli Mola",
   "enchantment.alexscaves.shaded_respite.desc": "Dehşet Yayı karanlıkta ateşlendiğinde normal okları veya dayanıklılığı tüketmez"
-  }
-
+}

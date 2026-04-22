@@ -73,26 +73,10 @@ public abstract class LightTextureMixin {
     private static void ac_getBrightness(DimensionType dimensionType, int lightTextureIndex,
             CallbackInfoReturnable<Float> cir) {
         if (AlexsCaves.CLIENT_CONFIG.biomeAmbientLight.get()) {
-            float f = ClientProxy.lastBiomeAmbientLightAmountPrev
-                    + (ClientProxy.lastBiomeAmbientLightAmount - ClientProxy.lastBiomeAmbientLightAmountPrev)
-                            * Minecraft.getInstance().getFrameTime();
             float primordialBossAmount = AlexsCaves.PROXY
                     .getPrimordialBossActiveAmount(Minecraft.getInstance().getFrameTime());
-            if (Minecraft.getInstance().getCameraEntity() instanceof PossessesCamera
-                    || Minecraft.getInstance().getCameraEntity() instanceof LivingEntity afflicted
-                            && afflicted.hasEffect(ACEffectRegistry.DARKNESS_INCARNATE.get())) {
-                f = Math.max(f, 0.35F);
-            }
-            if (Minecraft.getInstance().player.hasEffect(ACEffectRegistry.DEEPSIGHT.get())
-                    && Minecraft.getInstance().player.isUnderWater()) {
-                f = Math.min(1.0F, f + 0.05F * DeepsightEffect.getIntensity(Minecraft.getInstance().player,
-                        Minecraft.getInstance().getFrameTime()));
-            }
-            float light = f + cir.getReturnValue();
             if (primordialBossAmount > 0.0F) {
-                cir.setReturnValue(Math.max(0.0F, light - primordialBossAmount * 0.06F));
-            } else if (f != 0) {
-                cir.setReturnValue(light);
+                cir.setReturnValue(Math.max(0.0F, cir.getReturnValue() - primordialBossAmount * 0.06F));
             }
         }
     }
@@ -103,32 +87,53 @@ public abstract class LightTextureMixin {
         if (AlexsCaves.CLIENT_CONFIG.biomeAmbientLightColoring.get() && !ACLoadedMods.isDistantHorizonsLoaded()) {
             ClientLevel clientlevel = this.minecraft.level;
             if (clientlevel != null) {
+                float biomeAmbientLight = ClientProxy.lastBiomeAmbientLightAmountPrev
+                        + (ClientProxy.lastBiomeAmbientLightAmount - ClientProxy.lastBiomeAmbientLightAmountPrev)
+                                * partialTicks;
+                if (this.minecraft.getCameraEntity() instanceof PossessesCamera
+                        || (this.minecraft.getCameraEntity() instanceof LivingEntity afflicted
+                                && afflicted.hasEffect(ACEffectRegistry.DARKNESS_INCARNATE.get()))) {
+                    biomeAmbientLight = Math.max(biomeAmbientLight, 0.35F);
+                }
+                if (this.minecraft.player.hasEffect(ACEffectRegistry.DEEPSIGHT.get())
+                        && this.minecraft.player.isUnderWater()) {
+                    biomeAmbientLight = Math.min(1.0F, biomeAmbientLight
+                            + 0.05F * DeepsightEffect.getIntensity(this.minecraft.player, partialTicks));
+                }
+                Vec3 to = ClientProxy.lastBiomeLightColorPrev.add(ClientProxy.lastBiomeLightColor
+                        .subtract(ClientProxy.lastBiomeLightColorPrev).scale(partialTicks));
+
                 for (int i = 0; i < 16; ++i) {
                     for (int j = 0; j < 16; ++j) {
+                        // This i = 15 and j = 15 fix font colors issue
                         if (i == 15 && j == 15) {
                             continue;
                         }
                         int color = this.lightPixels.getPixelRGBA(j, i);
-                        Vector3f vector3f = new Vector3f((color & 0xFF) / 255.0F, ((color >> 8) & 0xFF) / 255.0F,
-                                ((color >> 16) & 0xFF) / 255.0F);
-                        this.applyACLightingColors(clientlevel, vector3f);
-                        int k = (int) (vector3f.x * 255.0F);
-                        int l = (int) (vector3f.y * 255.0F);
-                        int i1 = (int) (vector3f.z * 255.0F);
+                        float r = (color & 0xFF) / 255.0F;
+                        float g = ((color >> 8) & 0xFF) / 255.0F;
+                        float b = ((color >> 16) & 0xFF) / 255.0F;
+
+                        if (!clientlevel.effects().forceBrightLightmap()) {
+                            r = (float) Math.sqrt(r * r * (float) to.x);
+                            g = (float) Math.sqrt(g * g * (float) to.y);
+                            b = (float) Math.sqrt(b * b * (float) to.z);
+                        }
+
+                        if (biomeAmbientLight > 0) {
+                            r = r + biomeAmbientLight * (1.0F - r);
+                            g = g + biomeAmbientLight * (1.0F - g);
+                            b = b + biomeAmbientLight * (1.0F - b);
+                        }
+
+                        int k = (int) (Mth.clamp(r, 0, 1) * 255.0F);
+                        int l = (int) (Mth.clamp(g, 0, 1) * 255.0F);
+                        int i1 = (int) (Mth.clamp(b, 0, 1) * 255.0F);
                         this.lightPixels.setPixelRGBA(j, i, -16777216 | i1 << 16 | l << 8 | k);
                     }
                 }
                 this.lightPixels.setPixelRGBA(15, 15, -1);
             }
-        }
-    }
-
-    private void applyACLightingColors(ClientLevel clientLevel, Vector3f vector3f) {
-        if (!clientLevel.effects().forceBrightLightmap()) {
-            Vec3 in = new Vec3(vector3f);
-            Vec3 to = ClientProxy.lastBiomeLightColorPrev.add(ClientProxy.lastBiomeLightColor
-                    .subtract(ClientProxy.lastBiomeLightColorPrev).scale(Minecraft.getInstance().getFrameTime()));
-            vector3f.set(to.x * in.x, to.y * in.y, to.z * in.z);
         }
     }
 

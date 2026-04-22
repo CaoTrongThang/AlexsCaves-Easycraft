@@ -12,14 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(MultifaceGrowthFeature.class)
 public class MultifaceGrowthFeatureMixin {
 
-    @Inject(
-            method = {"Lnet/minecraft/world/level/levelgen/feature/MultifaceGrowthFeature;place(Lnet/minecraft/world/level/levelgen/feature/FeaturePlaceContext;)Z"},
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/level/levelgen/feature/MultifaceGrowthFeature;place(Lnet/minecraft/world/level/levelgen/feature/FeaturePlaceContext;)Z" }, cancellable = true, at = @At(value = "HEAD"))
     private void ac_place(FeaturePlaceContext context, CallbackInfoReturnable<Boolean> cir) {
         if (FeaturePositionValidator.isBiome(context, ACBiomeRegistry.ABYSSAL_CHASM)) {
-            cir.cancel();
+            cir.setReturnValue(false);
         }
     }
 }

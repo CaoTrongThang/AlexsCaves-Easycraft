@@ -18,6 +18,7 @@
     "FrogMixin",
     "JigsawStructureMixin",
     "KelpFeatureMixin",
+    "LakeFeatureMixin",
     "LivingEntityMixin",
     "MapDecorationTypeMixin",
     "MobMixin",
@@ -31,7 +32,8 @@
     "PotionUtilsMixin",
     "SeagrassFeatureMixin",
     "ShipwreckStructureMixin",
-    "SwampHutPieceMixin"
+    "SwampHutPieceMixin",
+    "NoiseGeneratorSettingsMixin"
   ],
   "client": [
     "client.AdvancementTabMixin",
