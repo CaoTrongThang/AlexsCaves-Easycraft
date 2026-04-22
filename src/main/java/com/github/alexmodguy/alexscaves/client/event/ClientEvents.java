@@ -7,7 +7,6 @@ import com.github.alexmodguy.alexscaves.client.render.blockentity.AmbersolBlockR
 import com.github.alexmodguy.alexscaves.client.render.blockentity.HologramProjectorBlockRenderer;
 import com.github.alexmodguy.alexscaves.client.render.entity.CorrodentRenderer;
 import com.github.alexmodguy.alexscaves.client.render.entity.LicowitchRenderer;
-import com.github.alexmodguy.alexscaves.client.render.entity.SubmarineRenderer;
 import com.github.alexmodguy.alexscaves.client.render.item.RaygunRenderHelper;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
 import com.github.alexmodguy.alexscaves.server.block.fluid.ACFluidRegistry;
@@ -238,8 +237,9 @@ public class ClientEvents {
                         multibuffersource$buffersource, event.getPartialTick(), true, 2);
             }
             GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-            if (firstPerson && player.isPassenger() && player.getVehicle() instanceof SubmarineEntity submarine
-                    && SubmarineRenderer.isFirstPersonFloodlightsMode(submarine)) {
+            boolean inSubmarine = player.isPassenger() && player.getVehicle() instanceof SubmarineEntity submarine
+                    && submarine.areLightsOn();
+            if (inSubmarine) {
                 if (renderer.currentEffect() == null
                         || !SUBMARINE_SHADER.toString().equals(renderer.currentEffect().getName())) {
                     attemptLoadShader(SUBMARINE_SHADER);

@@ -19,12 +19,15 @@ import org.jetbrains.annotations.Nullable;
 public class AmbersolBlock extends BaseEntityBlock {
 
     public AmbersolBlock() {
-        super(Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(3F, 10.0F).randomTicks().sound(ACSoundTypes.AMBER).lightLevel((i) -> 15).emissiveRendering((state, level, pos) -> true));
+        super(Properties.of().mapColor(MapColor.COLOR_YELLOW).requiresCorrectToolForDrops().strength(3F, 10.0F)
+                .randomTicks().sound(ACSoundTypes.AMBER).lightLevel((i) -> 15)
+                .emissiveRendering((state, level, pos) -> true));
     }
 
     public static BlockPos fillWithLights(BlockPos current, LevelAccessor level) {
         current = current.below();
-        while (current.getY() > level.getMinBuildHeight() && AmbersolLightBlock.testSkylight(level, level.getBlockState(current), current)) {
+        while (current.getY() > level.getMinBuildHeight()
+                && AmbersolLightBlock.testSkylight(level, level.getBlockState(current), current)) {
             if (level.getBlockState(current).isAir()) {
                 level.setBlock(current, ACBlockRegistry.AMBERSOL_LIGHT.get().defaultBlockState(), 3);
             }
@@ -33,8 +36,8 @@ public class AmbersolBlock extends BaseEntityBlock {
         return current;
     }
 
-
-    public BlockState updateShape(BlockState state, Direction direction, BlockState state1, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos1) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState state1, LevelAccessor levelAccessor,
+            BlockPos blockPos, BlockPos blockPos1) {
         fillWithLights(blockPos, levelAccessor);
         return super.updateShape(state, direction, state1, levelAccessor, blockPos, blockPos1);
     }

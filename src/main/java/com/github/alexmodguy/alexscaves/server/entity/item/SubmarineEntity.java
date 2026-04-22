@@ -2,8 +2,6 @@ package com.github.alexmodguy.alexscaves.server.entity.item;
 
 import com.github.alexmodguy.alexscaves.AlexsCaves;
 import com.github.alexmodguy.alexscaves.server.block.ACBlockRegistry;
-import com.github.alexmodguy.alexscaves.server.block.LightSourceBlock;
-import com.github.alexmodguy.alexscaves.server.block.blockentity.LightSourceBlockEntity;
 import com.github.alexmodguy.alexscaves.server.entity.ACEntityRegistry;
 import com.github.alexmodguy.alexscaves.server.entity.util.KeybindUsingMount;
 import com.github.alexmodguy.alexscaves.server.message.MountedEntityKeyMessage;
@@ -288,39 +286,6 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         prevRightPropellerRot = rightPropellerRot;
         prevBackPropellerRot = backPropellerRot;
 
-        boolean lightsOn = this.areLightsOn();
-        this.tickSubmarineLight(lightsOn);
-    }
-
-    private void tickSubmarineLight(boolean lightsOn) {
-        if (lightsOn) {
-            Entity rider = this.getFirstPassenger();
-            Vec3 lookVec = rider != null ? rider.getLookAngle() : this.getViewVector(1.0F);
-            Vec3 eyePos = (rider != null ? rider.getEyePosition() : this.getEyePosition());
-            Vec3 endPos = eyePos.add(lookVec.scale(32.0F));
-            BlockHitResult hitResult = this.level()
-                    .clip(new ClipContext(eyePos, endPos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-            BlockPos pos;
-            if (hitResult.getType() != HitResult.Type.MISS) {
-                pos = hitResult.getBlockPos().relative(hitResult.getDirection());
-            } else {
-                pos = BlockPos.containing(endPos);
-            }
-            if (!this.level().isClientSide) {
-                BlockState stateAtPos = level().getBlockState(pos);
-                if (stateAtPos.isAir() || stateAtPos.is(Blocks.WATER)
-                        || stateAtPos.is(ACBlockRegistry.LIGHT_SOURCE.get())) {
-                    if (!stateAtPos.is(ACBlockRegistry.LIGHT_SOURCE.get())) {
-                        boolean waterlogged = level().getFluidState(pos).getType() == Fluids.WATER;
-                        level().setBlock(pos, ACBlockRegistry.LIGHT_SOURCE.get().defaultBlockState()
-                                .setValue(LightSourceBlock.WATERLOGGED, waterlogged), 2);
-                    }
-                }
-            }
-            if (level().getBlockEntity(pos) instanceof LightSourceBlockEntity lightSource) {
-                lightSource.refresh();
-            }
-        }
     }
 
     public void remove(Entity.RemovalReason removalReason) {
@@ -471,10 +436,8 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
         } else if (b == 48) {
             shakeTime = 10;
         } else if (b == 49) {
-            AlexsCaves.LOGGER.info("CLIENT: Received EVENT 49 (LIGHTS ON)");
             this.entityData.set(LIGHTS, true);
         } else if (b == 50) {
-            AlexsCaves.LOGGER.info("CLIENT: Received EVENT 50 (LIGHTS OFF)");
             this.entityData.set(LIGHTS, false);
         } else {
             super.handleEntityEvent(b);

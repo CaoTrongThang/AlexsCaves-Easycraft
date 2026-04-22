@@ -968,14 +968,6 @@ public class ACBlockRegistry {
                         ACFoods.GINGERBREAD_HALF);
         public static final RegistryObject<Block> CONFECTION_OVEN = registerBlockAndItem("confection_oven",
                         () -> new ConfectionOvenBlock());
-        public static final RegistryObject<Block> LIGHT_SOURCE = registerBlock("light_source",
-                        () -> new LightSourceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.NONE)
-                                        .noOcclusion().noCollission().lightLevel((state) -> 15).replaceable()
-                                        .pushReaction(PushReaction.DESTROY).noLootTable()));
-
-        private static RegistryObject<Block> registerBlock(String name, Supplier<Block> block) {
-                return DEF_REG.register(name, block);
-        }
 
         private static RegistryObject<Block> registerBlockAndItem(String name, Supplier<Block> block) {
                 return registerBlockAndItem(name, block, 0);

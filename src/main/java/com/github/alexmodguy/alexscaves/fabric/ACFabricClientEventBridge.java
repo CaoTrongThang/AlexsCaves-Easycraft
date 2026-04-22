@@ -20,9 +20,22 @@ public final class ACFabricClientEventBridge {
             com.github.alexthe666.citadel.client.shader.PostEffectRegistry
                     .beginFrame(net.minecraft.client.Minecraft.getInstance().getMainRenderTarget());
         });
+        WorldRenderEvents.BEFORE_ENTITIES.register(context -> {
+            MinecraftForge.EVENT_BUS.post(new RenderLevelStageEvent(RenderLevelStageEvent.Stage.AFTER_SKY,
+                    context.worldRenderer(), context.matrixStack(), 0, context.camera(), context.tickDelta()));
+        });
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftForge.EVENT_BUS.post(new RenderLevelStageEvent(RenderLevelStageEvent.Stage.AFTER_ENTITIES,
                     context.worldRenderer(), context.matrixStack(), 0, context.camera(), context.tickDelta()));
+        });
+        WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
+            MinecraftForge.EVENT_BUS.post(new RenderLevelStageEvent(RenderLevelStageEvent.Stage.AFTER_CUTOUT_BLOCKS,
+                    context.worldRenderer(), context.matrixStack(), 0, context.camera(), context.tickDelta()));
+        });
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
+            MinecraftForge.EVENT_BUS
+                    .post(new RenderLevelStageEvent(RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS,
+                            context.worldRenderer(), context.matrixStack(), 0, context.camera(), context.tickDelta()));
         });
         WorldRenderEvents.END.register(context -> {
             com.github.alexthe666.citadel.client.shader.PostEffectRegistry

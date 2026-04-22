@@ -36,7 +36,8 @@ public final class ClientAccess {
     }
 
     public static boolean hasCurrentEffect(GameRenderer renderer, ResourceLocation resourceLocation) {
-        return renderer.currentEffect() != null && resourceLocation.toString().equals(renderer.currentEffect().getName());
+        return renderer.currentEffect() != null
+                && resourceLocation.toString().equals(renderer.currentEffect().getName());
     }
 
     public static void moveCamera(Camera camera, double x, double y, double z) {
