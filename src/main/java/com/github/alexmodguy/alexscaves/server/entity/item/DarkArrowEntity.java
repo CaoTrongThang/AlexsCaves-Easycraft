@@ -22,8 +22,10 @@ public class DarkArrowEntity extends AbstractArrow {
     private boolean startFading = false;
     private float arrowR = 0;
     private float prevArrowR = 0;
-    private static final EntityDataAccessor<Float> SHADOW_ARROW_DAMAGE = SynchedEntityData.defineId(DarkArrowEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> PERFECT_SHOT = SynchedEntityData.defineId(DarkArrowEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Float> SHADOW_ARROW_DAMAGE = SynchedEntityData
+            .defineId(DarkArrowEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> PERFECT_SHOT = SynchedEntityData.defineId(DarkArrowEntity.class,
+            EntityDataSerializers.BOOLEAN);
 
     public DarkArrowEntity(EntityType entityType, Level level) {
         super(entityType, level);
@@ -73,7 +75,7 @@ public class DarkArrowEntity extends AbstractArrow {
                 this.discard();
             }
         }
-        if(this.isPerfectShot() && this.arrowR < 1.0F){
+        if (this.isPerfectShot() && this.arrowR < 1.0F) {
             this.arrowR = Math.min(arrowR + 0.15F, 1.0F);
         }
     }
@@ -82,15 +84,32 @@ public class DarkArrowEntity extends AbstractArrow {
         return 0.9F;
     }
 
+    @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
         Entity owner = this.getOwner();
         float damage = this.getShadowArrowDamage();
-        if(this.isPerfectShot()){
+
+        if (this.isPerfectShot()) {
             damage *= 2;
         }
+
+        // === START OF % MAX HEALTH DAMAGE ===
+        if (entity instanceof LivingEntity livingTarget) {
+            // Calculate 0.5% of the target's max health
+            float percentHealthDamage = livingTarget.getMaxHealth() * 0.005F;
+
+            // Cap the bonus damage at 100 max
+            float cappedBonusDamage = Math.min(percentHealthDamage, 100.0F);
+
+            // Add it to the total arrow damage
+            damage += cappedBonusDamage;
+        }
+        // === END OF % MAX HEALTH DAMAGE ===
+
         DamageSource damageSource = ACDamageTypes.causeDarkArrowDamage(entity.level().registryAccess(), owner);
-        if ((owner == null || !entity.is(owner) && !entity.isAlliedTo(owner) && !owner.isAlliedTo(entity)) && !this.startFading) {
+        if ((owner == null || !entity.is(owner) && !entity.isAlliedTo(owner) && !owner.isAlliedTo(entity))
+                && !this.startFading) {
             if (entity.hurt(damageSource, damage)) {
                 this.startFading = true;
             }
@@ -110,12 +129,13 @@ public class DarkArrowEntity extends AbstractArrow {
     }
 
     public boolean isPerfectShot() {
-       return this.entityData.get(PERFECT_SHOT);
+        return this.entityData.get(PERFECT_SHOT);
     }
 
     public float getFadeOut(float partialTicks) {
         return prevFadeOut + (fadeOut - prevFadeOut) * partialTicks;
     }
+
     public float getArrowRed(float partialTicks) {
         return prevArrowR + (arrowR - prevArrowR) * partialTicks;
     }

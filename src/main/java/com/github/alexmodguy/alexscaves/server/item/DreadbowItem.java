@@ -38,7 +38,7 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
 
     @Nullable
     public static EntityType getTypeOfArrow(ItemStack itemStackIn) {
-        if(itemStackIn.getTag() != null && itemStackIn.getTag().contains("LastUsedArrowType")) {
+        if (itemStackIn.getTag() != null && itemStackIn.getTag().contains("LastUsedArrowType")) {
             String str = itemStackIn.getTag().getString("LastUsedArrowType");
             return ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation(str));
         }
@@ -53,13 +53,14 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
         ItemStack itemstack = player.getItemInHand(interactionHand);
         ItemStack ammo = player.getProjectile(itemstack);
         boolean flag = player.isCreative();
-        if(flag || !ammo.isEmpty()){
+        if (flag || !ammo.isEmpty()) {
             AbstractArrow lastArrow = createArrow(player, itemstack, ItemStack.EMPTY);
             EntityType lastArrowType = lastArrow == null ? EntityType.ARROW : lastArrow.getType();
-            itemstack.getOrCreateTag().putString("LastUsedArrowType", ForgeRegistries.ENTITY_TYPES.getKey(lastArrowType).toString());
+            itemstack.getOrCreateTag().putString("LastUsedArrowType",
+                    ForgeRegistries.ENTITY_TYPES.getKey(lastArrowType).toString());
             player.startUsingItem(interactionHand);
             return InteractionResultHolder.consume(itemstack);
-        }else{
+        } else {
             return InteractionResultHolder.fail(itemstack);
         }
     }
@@ -82,23 +83,25 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
                 setPerfectShotTicks(stack, getPerfectShotTicks(stack) - 1);
                 AlexsCaves.sendMSGToServer(new UpdateItemTagMessage(entity.getId(), stack));
             }
-            boolean relentless = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0;
-            int twilightPerfection = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TWILIGHT_PERFECTION.get());
+            boolean relentless = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                    ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0;
+            int twilightPerfection = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                    ACEnchantmentRegistry.TWILIGHT_PERFECTION.get());
             int maxLoadTime = getMaxLoadTime(stack);
             if (using && useTime < maxLoadTime) {
                 int set = useTime + (relentless ? 3 : 1);
                 setUseTime(stack, set);
-                if(twilightPerfection > 0){
-                    if(set >= maxLoadTime && useTime <= maxLoadTime){
+                if (twilightPerfection > 0) {
+                    if (set >= maxLoadTime && useTime <= maxLoadTime) {
                         setPerfectShotTicks(stack, 4 + (twilightPerfection - 1) * 3);
                         AlexsCaves.sendMSGToServer(new UpdateItemTagMessage(entity.getId(), stack));
-                    }else{
+                    } else {
                         setPerfectShotTicks(stack, 0);
                         AlexsCaves.sendMSGToServer(new UpdateItemTagMessage(entity.getId(), stack));
                     }
                 }
             }
-            if(relentless){
+            if (relentless) {
                 if (using && useTime >= maxLoadTime) {
                     setUseTime(stack, 0);
                 }
@@ -107,18 +110,22 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
                 setUseTime(stack, Math.max(0, useTime - 5));
                 setPerfectShotTicks(stack, 0);
             }
-            if(using){
-                Vec3 particlePos = entity.position().add((level.random.nextFloat() - 0.5F) * 2.5F, 0F, (level.random.nextFloat() - 0.5F) * 2.5F);
-                level.addParticle(ACParticleRegistry.UNDERZEALOT_MAGIC.get(), particlePos.x, particlePos.y, particlePos.z, entity.getX(), entity.getY(0.5F), entity.getZ());
+            if (using) {
+                Vec3 particlePos = entity.position().add((level.random.nextFloat() - 0.5F) * 2.5F, 0F,
+                        (level.random.nextFloat() - 0.5F) * 2.5F);
+                level.addParticle(ACParticleRegistry.UNDERZEALOT_MAGIC.get(), particlePos.x, particlePos.y,
+                        particlePos.z, entity.getX(), entity.getY(0.5F), entity.getZ());
             }
         }
     }
 
     private static int getMaxLoadTime(ItemStack stack) {
-        if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0) {
+        if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0) {
             return 5;
         } else {
-            return 40 - 8 * com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.DARK_NOCK.get());
+            return 40 - 8 * com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                    ACEnchantmentRegistry.DARK_NOCK.get());
         }
     }
 
@@ -132,6 +139,7 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
         tag.putInt("PrevUseTime", getUseTime(stack));
         tag.putInt("UseTime", useTime);
     }
+
     public static int getPerfectShotTicks(ItemStack stack) {
         CompoundTag compoundtag = stack.getTag();
         return compoundtag != null ? compoundtag.getInt("PerfectShotTicks") : 0;
@@ -149,17 +157,16 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
         return prev + f * (current - prev);
     }
 
-    public static float getPullingAmount(ItemStack itemStack, float partialTicks){
+    public static float getPullingAmount(ItemStack itemStack, float partialTicks) {
         return Math.min(getLerpedUseTime(itemStack, partialTicks) / (float) getMaxLoadTime(itemStack), 1F);
     }
-
 
     public UseAnim getUseAnimation(ItemStack stack) {
         return UseAnim.BOW;
     }
 
     public static float getPowerForTime(int i, ItemStack itemStack) {
-        float f = (float) i / (float)getMaxLoadTime(itemStack);
+        float f = (float) i / (float) getMaxLoadTime(itemStack);
         f = (f * f + f * 2.0F) / 3.0F;
         if (f > 1.0F) {
             f = 1.0F;
@@ -179,75 +186,89 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
     }
 
     public void releaseUsing(ItemStack itemStack, Level level, LivingEntity livingEntity, int i1) {
-        if (livingEntity instanceof Player player && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) <= 0) {
+        if (livingEntity instanceof Player player && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat
+                .getEnchantmentLevel(itemStack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) <= 0) {
             int i = this.getUseDuration(itemStack) - i1;
             float f = getPowerForTime(i, itemStack);
-            boolean precise = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.PRECISE_VOLLEY.get()) > 0;
-            boolean respite = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(player, 11);
-            boolean perfectShot = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.TWILIGHT_PERFECTION.get()) > 0 && getPerfectShotTicks(itemStack) > 0;
+            boolean precise = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack,
+                    ACEnchantmentRegistry.PRECISE_VOLLEY.get()) > 0;
+            boolean respite = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack,
+                    ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(player, 11);
+            boolean perfectShot = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack,
+                    ACEnchantmentRegistry.TWILIGHT_PERFECTION.get()) > 0 && getPerfectShotTicks(itemStack) > 0;
             if (f > 0.1D) {
                 player.playSound(ACSoundRegistry.DREADBOW_RELEASE.get());
                 ItemStack ammoStack = player.getProjectile(itemStack);
-                if(respite && ammoStack.isEmpty()){
+                if (respite && ammoStack.isEmpty()) {
                     ammoStack = new ItemStack(Items.ARROW);
                 }
                 AbstractArrow abstractArrow = createArrow(player, itemStack, ammoStack);
-                if(abstractArrow != null){
+                if (abstractArrow != null) {
                     float maxDist = 128 * f;
-                    HitResult realHitResult = ProjectileUtil.getHitResultOnViewVector(player, Entity::canBeHitByProjectile, maxDist);
-                    if(realHitResult.getType() == HitResult.Type.MISS){
-                        realHitResult = ProjectileUtil.getHitResultOnViewVector(player, Entity::canBeHitByProjectile, f * 42);
+                    HitResult realHitResult = ProjectileUtil.getHitResultOnViewVector(player,
+                            Entity::canBeHitByProjectile, maxDist);
+                    if (realHitResult.getType() == HitResult.Type.MISS) {
+                        realHitResult = ProjectileUtil.getHitResultOnViewVector(player, Entity::canBeHitByProjectile,
+                                f * 42);
                     }
-                    BlockPos mutableSkyPos = new BlockPos.MutableBlockPos(realHitResult.getLocation().x, realHitResult.getLocation().y + 1.5, realHitResult.getLocation().z);
+                    BlockPos mutableSkyPos = new BlockPos.MutableBlockPos(realHitResult.getLocation().x,
+                            realHitResult.getLocation().y + 1.5, realHitResult.getLocation().z);
                     int maxFallHeight = 15;
                     int k = 0;
-                    while(mutableSkyPos.getY() < level.getMaxBuildHeight() && level.isEmptyBlock(mutableSkyPos) && k < maxFallHeight){
+                    while (mutableSkyPos.getY() < level.getMaxBuildHeight() && level.isEmptyBlock(mutableSkyPos)
+                            && k < maxFallHeight) {
                         mutableSkyPos = mutableSkyPos.above();
                         k++;
                     }
                     boolean darkArrows = isConvertibleArrow(abstractArrow);
                     int maxArrows = darkArrows ? 30 : 8;
                     abstractArrow.pickup = AbstractArrow.Pickup.ALLOWED;
-                    for(int j = 0; j < Math.ceil(maxArrows * f); j++){
-                        if(darkArrows){
+                    for (int j = 0; j < Math.ceil(maxArrows * f); j++) {
+                        if (darkArrows) {
                             DarkArrowEntity darkArrowEntity = new DarkArrowEntity(level, livingEntity);
                             darkArrowEntity.setShadowArrowDamage(precise ? 2.0F : 3.0F);
                             darkArrowEntity.setPerfectShot(perfectShot);
                             abstractArrow = darkArrowEntity;
-                        }else if(perfectShot){
+                        } else if (perfectShot) {
                             abstractArrow.setBaseDamage(abstractArrow.getBaseDamage() * 2.0F);
                         }
-                        Vec3 vec3 = mutableSkyPos.getCenter().add(level.random.nextFloat() * 16 - 8, level.random.nextFloat() * 4 - 2, level.random.nextFloat() * 16 - 8);
+                        Vec3 vec3 = mutableSkyPos.getCenter().add(level.random.nextFloat() * 16 - 8,
+                                level.random.nextFloat() * 4 - 2, level.random.nextFloat() * 16 - 8);
                         int clearTries = 0;
-                        while (clearTries < 6 && !level.isEmptyBlock(BlockPos.containing(vec3)) && level.getFluidState(BlockPos.containing(vec3)).isEmpty()){
+                        while (clearTries < 6 && !level.isEmptyBlock(BlockPos.containing(vec3))
+                                && level.getFluidState(BlockPos.containing(vec3)).isEmpty()) {
                             clearTries++;
-                            vec3 = mutableSkyPos.getCenter().add(level.random.nextFloat() * 16 - 8, level.random.nextFloat() * 4 - 2, level.random.nextFloat() * 16 - 8);
+                            vec3 = mutableSkyPos.getCenter().add(level.random.nextFloat() * 16 - 8,
+                                    level.random.nextFloat() * 4 - 2, level.random.nextFloat() * 16 - 8);
                         }
-                        if(!level.isEmptyBlock(BlockPos.containing(vec3)) && level.getFluidState(BlockPos.containing(vec3)).isEmpty()){
+                        if (!level.isEmptyBlock(BlockPos.containing(vec3))
+                                && level.getFluidState(BlockPos.containing(vec3)).isEmpty()) {
                             vec3 = mutableSkyPos.getCenter();
                         }
                         abstractArrow.setPos(vec3);
                         Vec3 vec31 = realHitResult.getLocation().subtract(vec3);
                         float randomness = precise ? 0.0F : (darkArrows ? 20F : 5F) + level.random.nextFloat() * 10F;
-                        if(!precise && level.random.nextFloat() < 0.25F){
+                        if (!precise && level.random.nextFloat() < 0.25F) {
                             randomness = level.random.nextFloat();
                         }
-                        abstractArrow.shoot(vec31.x, vec31.y, vec31.z, 0.5F + 1.5F * level.random.nextFloat(),  randomness);
+                        abstractArrow.shoot(vec31.x, vec31.y, vec31.z, 0.5F + 1.5F * level.random.nextFloat(),
+                                randomness);
                         level.addFreshEntity(abstractArrow);
                         abstractArrow = createArrow(player, itemStack, ammoStack);
                         abstractArrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     }
-                    if(darkArrows){
+                    if (darkArrows) {
                         Vec3 vec3 = realHitResult.getLocation();
-                        level.playSound((Player)null, vec3.x, vec3.y, vec3.z, ACSoundRegistry.DREADBOW_RAIN.get(), SoundSource.PLAYERS, 12.0F, 1.0F);
+                        level.playSound((Player) null, vec3.x, vec3.y, vec3.z, ACSoundRegistry.DREADBOW_RAIN.get(),
+                                SoundSource.PLAYERS, 12.0F, 1.0F);
                     }
-                    if(!player.isCreative()){
-                        if(!respite){
+                    if (!player.isCreative()) {
+                        if (!respite) {
                             itemStack.hurtAndBreak(1, player, (player1) -> {
                                 player1.broadcastBreakEvent(player1.getUsedItemHand());
                             });
                         }
-                        if(!respite || !ammoStack.is(Items.ARROW)){
+                        if (!respite || !ammoStack.is(Items.ARROW)) {
                             ammoStack.shrink(1);
                         }
                     }
@@ -256,42 +277,45 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
         }
     }
 
-
     public void onUseTick(Level level, LivingEntity living, ItemStack itemStack, int timeUsing) {
         super.onUseTick(level, living, itemStack, timeUsing);
-        if(living instanceof Player player && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0 && timeUsing % 3 == 0){
-            boolean respite = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack, ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(living, 11);
+        if (living instanceof Player player && com.github.alexmodguy.alexscaves.fabric.ItemStackCompat
+                .getEnchantmentLevel(itemStack, ACEnchantmentRegistry.RELENTLESS_DARKNESS.get()) > 0
+                && timeUsing % 3 == 0) {
+            boolean respite = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(itemStack,
+                    ACEnchantmentRegistry.SHADED_RESPITE.get()) > 0 && !DarknessIncarnateEffect.isInLight(living, 11);
             player.playSound(ACSoundRegistry.DREADBOW_RELEASE.get());
             ItemStack ammoStack = player.getProjectile(itemStack);
-            if(respite && ammoStack.isEmpty()){
+            if (respite && ammoStack.isEmpty()) {
                 ammoStack = new ItemStack(Items.ARROW);
             }
             AbstractArrow abstractArrow = createArrow(player, itemStack, ammoStack);
             boolean darkArrows = isConvertibleArrow(abstractArrow);
             int maxArrows = darkArrows ? 1 + living.getRandom().nextInt(2) : 1;
             float randomness = 0.5F;
-            for(int i = 0; i < maxArrows; i++){
+            for (int i = 0; i < maxArrows; i++) {
                 abstractArrow.pickup = AbstractArrow.Pickup.ALLOWED;
-                if(darkArrows){
+                if (darkArrows) {
                     DarkArrowEntity darkArrowEntity = new DarkArrowEntity(level, living);
                     darkArrowEntity.setShadowArrowDamage(2.0F);
                     abstractArrow = darkArrowEntity;
                 }
-                abstractArrow.setPos(abstractArrow.position().add(level.random.nextFloat() - 0.5F, level.random.nextFloat() - 0.5F, level.random.nextFloat() - 0.5F));
+                abstractArrow.setPos(abstractArrow.position().add(level.random.nextFloat() - 0.5F,
+                        level.random.nextFloat() - 0.5F, level.random.nextFloat() - 0.5F));
                 Vec3 vec3 = player.getViewVector(1.0F);
-                abstractArrow.shoot(vec3.x, vec3.y, vec3.z, 4F + 3F * level.random.nextFloat(),  randomness);
+                abstractArrow.shoot(vec3.x, vec3.y, vec3.z, 4F + 3F * level.random.nextFloat(), randomness);
                 randomness += 2.0F;
                 level.addFreshEntity(abstractArrow);
                 abstractArrow = createArrow(player, itemStack, ammoStack);
                 abstractArrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
             }
-            if(!player.isCreative()){
-                if(!respite){
+            if (!player.isCreative()) {
+                if (!respite) {
                     itemStack.hurtAndBreak(1, player, (player1) -> {
                         player1.broadcastBreakEvent(player1.getUsedItemHand());
                     });
                 }
-                if(!respite || !ammoStack.is(Items.ARROW)){
+                if (!respite || !ammoStack.is(Items.ARROW)) {
                     ammoStack.shrink(1);
                 }
             }
@@ -300,15 +324,16 @@ public class DreadbowItem extends ProjectileWeaponItem implements UpdatesStackTa
 
     private AbstractArrow createArrow(Player player, ItemStack bowStack, ItemStack ammoIn) {
         ItemStack ammo = ammoIn.isEmpty() ? player.getProjectile(bowStack) : ammoIn;
-        ArrowItem arrowitem = (ArrowItem)(ammo.getItem() instanceof ArrowItem ? ammo.getItem() : Items.ARROW);
-        AbstractArrow abstractArrow =  arrowitem.createArrow(player.level(), ammo, player);
+        ArrowItem arrowitem = (ArrowItem) (ammo.getItem() instanceof ArrowItem ? ammo.getItem() : Items.ARROW);
+        AbstractArrow abstractArrow = arrowitem.createArrow(player.level(), ammo, player);
         return abstractArrow;
     }
 
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return !oldStack.is(ACItemRegistry.DREADBOW.get()) || !newStack.is(ACItemRegistry.DREADBOW.get());
     }
-    public static boolean isConvertibleArrow(Entity arrowEntity){
+
+    public static boolean isConvertibleArrow(Entity arrowEntity) {
         return arrowEntity instanceof Arrow arrow && arrow.getColor() == -1;
     }
 
