@@ -35,7 +35,7 @@ public class LightningRender {
         if (refresh) {
             refreshTimestamp = timestamp;
         }
-        for (Iterator<Map.Entry<Object, BoltOwnerData>> iter = boltOwners.entrySet().iterator(); iter.hasNext(); ) {
+        for (Iterator<Map.Entry<Object, BoltOwnerData>> iter = boltOwners.entrySet().iterator(); iter.hasNext();) {
             Map.Entry<Object, BoltOwnerData> entry = iter.next();
             BoltOwnerData data = entry.getValue();
             // tick our bolts based on the refresh rate, removing if they're now finished
@@ -60,7 +60,8 @@ public class LightningRender {
         BoltOwnerData data = boltOwners.computeIfAbsent(owner, o -> new BoltOwnerData());
         data.lastBolt = newBoltData;
         Timestamp timestamp = new Timestamp(minecraft.level.getGameTime(), partialTicks);
-        if ((!data.lastBolt.getSpawnFunction().isConsecutive() || data.bolts.isEmpty()) && timestamp.isPassed(data.lastBoltTimestamp, data.lastBoltDelay)) {
+        if ((!data.lastBolt.getSpawnFunction().isConsecutive() || data.bolts.isEmpty())
+                && timestamp.isPassed(data.lastBoltTimestamp, data.lastBoltDelay)) {
             data.addBolt(new BoltInstance(newBoltData, timestamp), timestamp);
         }
         data.lastUpdateTimestamp = timestamp;
@@ -98,7 +99,8 @@ public class LightningRender {
             Pair<Integer, Integer> bounds = bolt.getFadeFunction().getRenderBounds(renderQuads.size(), lifeScale);
             for (int i = bounds.getLeft(); i < bounds.getRight(); i++) {
                 renderQuads.get(i).getVecs().forEach(v -> buffer.vertex(matrix, (float) v.x, (float) v.y, (float) v.z)
-                        .color(bolt.getColor().x(), bolt.getColor().y(), bolt.getColor().z(), bolt.getColor().w()));
+                        .color(bolt.getColor().x(), bolt.getColor().y(), bolt.getColor().z(), bolt.getColor().w())
+                        .endVertex());
             }
         }
 
