@@ -1,5 +1,8 @@
 package com.github.alexmodguy.alexscaves.mixin;
 
+import com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge;
+import com.github.alexmodguy.alexscaves.forge_shim.event.entity.living.LivingEvent;
+
 import com.github.alexmodguy.alexscaves.server.entity.util.*;
 import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
 import net.minecraft.core.Direction;
@@ -23,7 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements HeadRotationEntityAccessor, WatcherPossessionAccessor, DarknessIncarnateUserAccessor, EntityDropChanceAccessor, FrostmintFreezableAccessor {
+public abstract class LivingEntityMixin extends Entity implements HeadRotationEntityAccessor, WatcherPossessionAccessor,
+        DarknessIncarnateUserAccessor, EntityDropChanceAccessor, FrostmintFreezableAccessor {
 
     @Shadow
     public abstract float getYHeadRot();
@@ -37,11 +41,14 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
     @Shadow
     @Final
     public WalkAnimationState walkAnimation;
-    @Shadow public float yHeadRot;
+    @Shadow
+    public float yHeadRot;
 
-    @Shadow public abstract boolean addEffect(MobEffectInstance p_21165_);
+    @Shadow
+    public abstract boolean addEffect(MobEffectInstance p_21165_);
 
-    @Shadow public abstract boolean canFreeze();
+    @Shadow
+    public abstract boolean canFreeze();
 
     private float prevHeadYaw;
     private float prevHeadYaw0;
@@ -56,14 +63,11 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
         super(entityType, level);
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/LivingEntity;calculateEntityAnimation(Z)V"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/LivingEntity;calculateEntityAnimation(Z)V" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     public void ac_calculateEntityAnimation(boolean b, CallbackInfo ci) {
-        if (MagnetUtil.isPulledByMagnets(this) && ((MagneticEntityAccessor) this).getMagneticAttachmentFace() != Direction.DOWN) {
+        if (MagnetUtil.isPulledByMagnets(this)
+                && ((MagneticEntityAccessor) this).getMagneticAttachmentFace() != Direction.DOWN) {
             ci.cancel();
             float f1 = (float) Mth.length(this.getX() - this.xo, this.getY() - this.yo, this.getZ() - this.zo);
             float f2 = Math.min(f1 * 6, 1.0F);
@@ -71,33 +75,28 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
         }
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/LivingEntity;tick()V"},
-            remap = true,
-            at = @At(value = "TAIL")
-    )
+    @Inject(method = { "Lnet/minecraft/world/entity/LivingEntity;tick()V" }, remap = true, at = @At(value = "TAIL"))
     public void ac_livingTick(CallbackInfo ci) {
-        if(hasSlowFallingFlag()){
+        if (hasSlowFallingFlag()) {
             setSlowFallingFlag(false);
             addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 80, 0, false, false, false));
         }
-        if(frostmintFreezingFlag){
-            if(this.getTicksFrozen() > 0 && this.canFreeze()){
-                if(!level().isClientSide && this.getTicksFrozen() > this.getTicksRequiredToFreeze() && level() instanceof ServerLevel serverLevel){
-                    serverLevel.sendParticles(ParticleTypes.SNOWFLAKE, this.getRandomX(1.0F), this.getRandomY(), this.getRandomZ(1.0F), 0, 0, 0, 0, 1D);
+        if (frostmintFreezingFlag) {
+            if (this.getTicksFrozen() > 0 && this.canFreeze()) {
+                if (!level().isClientSide && this.getTicksFrozen() > this.getTicksRequiredToFreeze()
+                        && level() instanceof ServerLevel serverLevel) {
+                    serverLevel.sendParticles(ParticleTypes.SNOWFLAKE, this.getRandomX(1.0F), this.getRandomY(),
+                            this.getRandomZ(1.0F), 0, 0, 0, 0, 1D);
                 }
-            }else{
+            } else {
                 frostmintFreezingFlag = false;
             }
         }
+        MinecraftForge.EVENT_BUS.post(new LivingEvent.LivingTickEvent((LivingEntity) (Object) this));
     }
 
-    @Inject(
-            method = {"Lnet/minecraft/world/entity/LivingEntity;increaseAirSupply(I)I"},
-            remap = true,
-            cancellable = true,
-            at = @At(value = "HEAD")
-    )
+    @Inject(method = {
+            "Lnet/minecraft/world/entity/LivingEntity;increaseAirSupply(I)I" }, remap = true, cancellable = true, at = @At(value = "HEAD"))
     protected void ac_increaseAirSupply(int air, CallbackInfoReturnable<Integer> cir) {
         if (this.hasEffect(ACEffectRegistry.BUBBLED.get())) {
             cir.setReturnValue(air);
@@ -112,7 +111,6 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
         MagnetUtil.rotateHead((LivingEntity) (Entity) this);
     }
 
-
     public void resetMagnetHeadRotation() {
         this.yHeadRot = prevHeadYaw;
         this.yHeadRotO = prevHeadYaw0;
@@ -120,27 +118,27 @@ public abstract class LivingEntityMixin extends Entity implements HeadRotationEn
         this.xRotO = prevHeadPitch0;
     }
 
-    public void setPossessedByWatcher(boolean possessedByWatcher){
+    public void setPossessedByWatcher(boolean possessedByWatcher) {
         this.watcherPossessionFlag = possessedByWatcher;
     }
 
-    public boolean isPossessedByWatcher(){
+    public boolean isPossessedByWatcher() {
         return watcherPossessionFlag;
     }
 
-    public void setSlowFallingFlag(boolean slowFallingFlag){
+    public void setSlowFallingFlag(boolean slowFallingFlag) {
         this.slowFallingFlag = slowFallingFlag;
     }
 
-    public boolean hasSlowFallingFlag(){
+    public boolean hasSlowFallingFlag() {
         return slowFallingFlag;
     }
 
-
-    public void setFrostmintFreezing(boolean frostmintFreezingFlag){
+    public void setFrostmintFreezing(boolean frostmintFreezingFlag) {
         this.frostmintFreezingFlag = frostmintFreezingFlag;
     }
-    public boolean isFreezingFromFrostmint(){
+
+    public boolean isFreezingFromFrostmint() {
         return frostmintFreezingFlag;
     }
 }

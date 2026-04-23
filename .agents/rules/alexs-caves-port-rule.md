@@ -6,7 +6,10 @@ The user's making improvements for the port version of Alex's Caves to Fabric th
 
 When fixing Fabric port issues, prioritize automated/centralized fixes within the `forge_shim` or `FabricRegistryBootstrap` over manual changes in the mod's main source code. The user wants to make this a better version of Alexs Caves so they're good with adding new things but remember it should work and fix the issue globally, no manually, or too hardcoded fixes.
 
-The User
+You can reply them with the:
+Short explain about the problem:
+Github short commit:
+Performance:
 
 Remember these rules:
 

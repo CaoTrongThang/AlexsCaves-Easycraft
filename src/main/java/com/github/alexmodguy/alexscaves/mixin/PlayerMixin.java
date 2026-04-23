@@ -11,6 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import com.github.alexmodguy.alexscaves.forge_shim.common.IForgeItem;
+import com.github.alexmodguy.alexscaves.forge_shim.common.MinecraftForge;
+import com.github.alexmodguy.alexscaves.forge_shim.event.TickEvent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,5 +62,6 @@ public abstract class PlayerMixin extends LivingEntity implements IModifiesTime 
                 }
             }
         }
+        MinecraftForge.EVENT_BUS.post(new TickEvent.PlayerTickEvent((Player) (Object) this, TickEvent.Phase.END));
     }
 }
