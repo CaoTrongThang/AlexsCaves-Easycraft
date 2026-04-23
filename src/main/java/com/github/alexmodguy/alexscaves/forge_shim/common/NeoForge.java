@@ -36,9 +36,11 @@ public class NeoForge {
                 }));
             }
 
-            registrations.sort(Comparator.comparing((RegisteredHandler handler) -> handler.priority().ordinal()).reversed());
+            registrations
+                    .sort(Comparator.comparing((RegisteredHandler handler) -> handler.priority().ordinal()).reversed());
             for (RegisteredHandler registration : registrations) {
-                listeners.computeIfAbsent(registration.eventType(), ignored -> new ArrayList<>()).add(registration.consumer());
+                listeners.computeIfAbsent(registration.eventType(), ignored -> new ArrayList<>())
+                        .add(registration.consumer());
             }
         }
 
@@ -70,7 +72,9 @@ public class NeoForge {
         }
     };
 
-    private record RegisteredHandler(Class<?> eventType, com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.EventPriority priority, Consumer<Object> consumer) {
+    private record RegisteredHandler(Class<?> eventType,
+            com.github.alexmodguy.alexscaves.forge_shim.eventbus.api.EventPriority priority,
+            Consumer<Object> consumer) {
     }
 
     private NeoForge() {
