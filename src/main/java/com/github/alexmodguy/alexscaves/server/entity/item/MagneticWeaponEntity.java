@@ -49,11 +49,16 @@ import java.util.UUID;
 
 public class MagneticWeaponEntity extends Entity {
 
-    private static final EntityDataAccessor<ItemStack> ITEMSTACK = SynchedEntityData.defineId(MagneticWeaponEntity.class, EntityDataSerializers.ITEM_STACK);
-    private static final EntityDataAccessor<Optional<UUID>> CONTROLLER_UUID = SynchedEntityData.defineId(MagneticWeaponEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> CONTROLLER_ID = SynchedEntityData.defineId(MagneticWeaponEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(MagneticWeaponEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> IDLING = SynchedEntityData.defineId(MagneticWeaponEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ItemStack> ITEMSTACK = SynchedEntityData
+            .defineId(MagneticWeaponEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Optional<UUID>> CONTROLLER_UUID = SynchedEntityData
+            .defineId(MagneticWeaponEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Integer> CONTROLLER_ID = SynchedEntityData
+            .defineId(MagneticWeaponEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(MagneticWeaponEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IDLING = SynchedEntityData.defineId(MagneticWeaponEntity.class,
+            EntityDataSerializers.BOOLEAN);
     private float prevStrikeProgress;
     private float strikeProgress;
     private float prevReturnProgress;
@@ -91,7 +96,6 @@ public class MagneticWeaponEntity extends Entity {
         this.entityData.define(IDLING, true);
     }
 
-
     public void tick() {
         super.tick();
         prevStrikeProgress = strikeProgress;
@@ -105,7 +109,7 @@ public class MagneticWeaponEntity extends Entity {
                 this.noPhysics = false;
             }
             if (controller == null && this.tickCount > 20 || this.getItemStack().isEmpty()) {
-                if(hadPlayerController){
+                if (hadPlayerController) {
                     this.plopItem();
                     hadPlayerController = false;
                 }
@@ -155,14 +159,18 @@ public class MagneticWeaponEntity extends Entity {
             if (isOwnerWearingGauntlet()) {
                 hadPlayerController = true;
                 float maxDist = 30F;
-                if(getController() instanceof LivingEntity living && living.getUseItem().is(ACItemRegistry.GALENA_GAUNTLET.get())){
+                if (getController() instanceof LivingEntity living
+                        && living.getUseItem().is(ACItemRegistry.GALENA_GAUNTLET.get())) {
                     ItemStack useItem = living.getUseItem();
-                    haste = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(useItem, ACEnchantmentRegistry.FERROUS_HASTE.get()) > 0;
-                    int fieldExtension = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(useItem, ACEnchantmentRegistry.FIELD_EXTENSION.get());
+                    haste = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(useItem,
+                            ACEnchantmentRegistry.FERROUS_HASTE.get()) > 0;
+                    int fieldExtension = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat
+                            .getEnchantmentLevel(useItem, ACEnchantmentRegistry.FIELD_EXTENSION.get());
                     maxDist += fieldExtension * 5F;
                 }
                 BlockPos miningBlock = null;
-                HitResult hitresult = ProjectileUtil.getHitResultOnViewVector(player, Entity::canBeHitByProjectile, maxDist);
+                HitResult hitresult = ProjectileUtil.getHitResultOnViewVector(player, Entity::canBeHitByProjectile,
+                        maxDist);
                 if (hitresult instanceof EntityHitResult entityHitResult && playerUseCooldown == 0) {
                     Entity entity = entityHitResult.getEntity();
                     moveTo = entity.position().add(0, entity.getBbHeight() * 0.5F, 0);
@@ -178,7 +186,8 @@ public class MagneticWeaponEntity extends Entity {
                     }
                 } else {
                     moveTo = player.getEyePosition().add(player.getViewVector(1.0F).scale(maxDist - 20F));
-                    if (hitresult.getType() == HitResult.Type.BLOCK || hitresult.getLocation().subtract(player.getEyePosition()).length() < maxDist) {
+                    if (hitresult.getType() == HitResult.Type.BLOCK
+                            || hitresult.getLocation().subtract(player.getEyePosition()).length() < maxDist) {
                         if (hitresult instanceof BlockHitResult blockHitResult) {
                             if (this.distanceToSqr(Vec3.atCenterOf(blockHitResult.getBlockPos())) < 2.25F) {
                                 miningBlock = blockHitResult.getBlockPos();
@@ -203,28 +212,31 @@ public class MagneticWeaponEntity extends Entity {
                     float itemDestroySpeed = getDigSpeed(player, miningState, miningBlock);
                     if (itemDestroySpeed > 1.0F) {
                         if (totalMiningTime % 4 == 0) {
-                            this.playSound(soundType.getHitSound(), (soundType.getVolume() + 1.0F) / 8.0F, soundType.getPitch() * 0.5F);
+                            this.playSound(soundType.getHitSound(), (soundType.getVolume() + 1.0F) / 8.0F,
+                                    soundType.getPitch() * 0.5F);
                         }
                         totalMiningTime++;
                         strikeProgress = (float) Math.abs(Math.sin(tickCount * 0.6F) * 1.2F - 0.2F);
                         float j = itemDestroySpeed / f / (float) (haste ? 8 : 10);
                         destroyBlockProgress += j;
-                        this.level().destroyBlockProgress(player.getId(), lastSelectedBlock, (int) (destroyBlockProgress * 10F));
+                        this.level().destroyBlockProgress(player.getId(), lastSelectedBlock,
+                                (int) (destroyBlockProgress * 10F));
                         if (destroyBlockProgress >= 1.0F && !level().isClientSide) {
                             damageItem(1);
                             ItemStack itemStack = getItemStack();
                             itemStack.mineBlock(this.level(), miningState, miningBlock, player);
                             int exp = ACBlockCompat.getExpDrop(miningState, level(), miningBlock, player, itemStack);
-                            com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onPlayerDestroyItem(player, itemStack, InteractionHand.MAIN_HAND);
+                            com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory
+                                    .onPlayerDestroyItem(player, itemStack, InteractionHand.MAIN_HAND);
                             boolean flag;
                             if (miningState.getBlock() instanceof ShulkerBoxBlock) {
                                 flag = level().destroyBlock(miningBlock, true);
                                 player.awardStat(Stats.BLOCK_MINED.get(miningState.getBlock()));
                                 player.causeFoodExhaustion(0.005F);
-                            }
-                            else {
+                            } else {
                                 flag = level().destroyBlock(miningBlock, false);
-                                miningState.getBlock().playerDestroy(level(), player, miningBlock, miningState, level().getBlockEntity(miningBlock), itemStack);
+                                miningState.getBlock().playerDestroy(level(), player, miningBlock, miningState,
+                                        level().getBlockEntity(miningBlock), itemStack);
                             }
                             if (flag && exp > 0 && level() instanceof ServerLevel serverLevel) {
                                 ACBlockCompat.awardExperience(serverLevel, miningBlock, exp);
@@ -244,11 +256,19 @@ public class MagneticWeaponEntity extends Entity {
                 moveTo = player.position().add(0, 1, 0);
                 if (distanceTo(controller) < 1.4) {
                     if (!this.isRemoved()) {
-                        if(!spawnedItem && player.addItem(this.getItemStack())){
-                            spawnedItem = true;
+                        if (!spawnedItem) {
+                            if (player.getItemInHand(InteractionHand.OFF_HAND).isEmpty()) {
+                                player.setItemInHand(InteractionHand.OFF_HAND, this.getItemStack());
+                                spawnedItem = true;
+                                this.remove(RemovalReason.DISCARDED);
+                            } else if (player.addItem(this.getItemStack())) {
+                                spawnedItem = true;
+                                this.remove(RemovalReason.DISCARDED);
+                            } else {
+                                plopItem();
+                            }
+                        } else {
                             this.remove(RemovalReason.DISCARDED);
-                        }else{
-                            plopItem();
                         }
                     }
                 }
@@ -264,8 +284,8 @@ public class MagneticWeaponEntity extends Entity {
         this.setDeltaMovement(this.getDeltaMovement().scale(0.9F));
     }
 
-    private void plopItem(){
-        if(!spawnedItem){
+    private void plopItem() {
+        if (!spawnedItem) {
             spawnedItem = true;
             ItemEntity itementity = this.spawnAtLocation(this.getItemStack());
             if (itementity != null) {
@@ -276,13 +296,14 @@ public class MagneticWeaponEntity extends Entity {
     }
 
     public void damageItem(int damageAmount) {
-        if (getController() instanceof LivingEntity living && !(living instanceof Player player && player.isCreative())) {
+        if (getController() instanceof LivingEntity living
+                && !(living instanceof Player player && player.isCreative())) {
             ItemStack stack = getItemStack();
-            if(stack.isDamageableItem()){
+            if (stack.isDamageableItem()) {
                 stack.hurtAndBreak(damageAmount, living, (player1) -> {
                     player1.broadcastBreakEvent(player1.getUsedItemHand());
                 });
-                if(stack.getDamageValue() >= stack.getMaxDamage()){
+                if (stack.getDamageValue() >= stack.getMaxDamage()) {
                     this.remove(RemovalReason.DISCARDED);
                 }
             }
@@ -337,31 +358,35 @@ public class MagneticWeaponEntity extends Entity {
 
     private void hurtEntity(LivingEntity holder, Entity target) {
         ItemStack itemStack = this.getItemStack();
-        float f = (float)holder.getAttributeValue(Attributes.ATTACK_DAMAGE) + (float) getDamageForItem(itemStack);
-        float f1 = (float)holder.getAttributeValue(Attributes.ATTACK_KNOCKBACK);
+        float f = (float) holder.getAttributeValue(Attributes.ATTACK_DAMAGE) + (float) getDamageForItem(itemStack);
+        float f1 = holder.getAttribute(Attributes.ATTACK_KNOCKBACK) != null
+                ? (float) holder.getAttributeValue(Attributes.ATTACK_KNOCKBACK)
+                : 0F;
         if (target instanceof LivingEntity) {
-            f += EnchantmentHelper.getDamageBonus(itemStack, ((LivingEntity)target).getMobType());
+            f += EnchantmentHelper.getDamageBonus(itemStack, ((LivingEntity) target).getMobType());
             f1 += EnchantmentHelper.getKnockbackBonus(holder);
         }
         int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, itemStack);
         if (i > 0) {
             target.setSecondsOnFire(i * 4);
         }
-        if(target.hurt(damageSources().mobAttack(holder), f)){
+        if (target.hurt(damageSources().mobAttack(holder), f)) {
             holder.doEnchantDamageEffects(holder, target);
             damageItem(1);
             if (f1 > 0.0F && target instanceof LivingEntity) {
-                ((LivingEntity)target).knockback((double)(f1 * 0.5F), (double)Mth.sin(this.getYRot() * ((float)Math.PI / 180F)), (double)(-Mth.cos(this.getYRot() * ((float)Math.PI / 180F))));
+                ((LivingEntity) target).knockback((double) (f1 * 0.5F),
+                        (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)),
+                        (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
                 this.setDeltaMovement(this.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D));
             }
         }
-        if(this.isOnFire()){
+        if (this.isOnFire()) {
             target.setSecondsOnFire(5);
         }
         if (holder instanceof Player player && target instanceof LivingEntity living) {
             itemStack.hurtEnemy(living, player);
             living.setLastHurtByPlayer(player);
-            if(living.getHealth() <= 0.0F && player.distanceTo(target) >= 19.5F){
+            if (living.getHealth() <= 0.0F && player.distanceTo(target) >= 19.5F) {
                 ACAdvancementTriggerRegistry.KILL_MOB_WITH_GALENA_GAUNTLET.triggerForEntity(player);
             }
         }
@@ -372,7 +397,8 @@ public class MagneticWeaponEntity extends Entity {
         if (want.length() > 1F) {
             want = want.normalize();
         }
-        float targetXRot = (float) (-(Mth.atan2(want.y, want.horizontalDistance()) * (double) (180F / (float) Math.PI)));
+        float targetXRot = (float) (-(Mth.atan2(want.y, want.horizontalDistance())
+                * (double) (180F / (float) Math.PI)));
         float targetYRot = (float) (-Mth.atan2(want.x, want.z) * (double) (180F / (float) Math.PI));
         if (isIdling()) {
             targetXRot = this.getXRot();
@@ -385,7 +411,8 @@ public class MagneticWeaponEntity extends Entity {
     }
 
     private boolean isOwnerWearingGauntlet() {
-        return getController() instanceof LivingEntity living && living.getUseItem().is(ACItemRegistry.GALENA_GAUNTLET.get()) && living.isAlive() && !returnFlag;
+        return getController() instanceof LivingEntity living
+                && living.getUseItem().is(ACItemRegistry.GALENA_GAUNTLET.get()) && living.isAlive() && !returnFlag;
     }
 
     @Override
@@ -469,7 +496,8 @@ public class MagneticWeaponEntity extends Entity {
     public Vec3 getControllerHandPos(Player controller, float partialTicks) {
         float yBodyRot = Mth.lerp(partialTicks, controller.yBodyRotO, controller.yBodyRot);
         boolean mainHand = controller.getItemInHand(InteractionHand.MAIN_HAND).is(ACItemRegistry.GALENA_GAUNTLET.get());
-        Vec3 offset = new Vec3(controller.getBbWidth()  * (mainHand ? -0.75F : 0.75F), controller.getBbHeight() * 0.68F, controller.getBbWidth() * -0.1F).yRot((float) Math.toRadians(-yBodyRot));
+        Vec3 offset = new Vec3(controller.getBbWidth() * (mainHand ? -0.75F : 0.75F), controller.getBbHeight() * 0.68F,
+                controller.getBbWidth() * -0.1F).yRot((float) Math.toRadians(-yBodyRot));
         Vec3 armViewExtra = controller.getViewVector(partialTicks).normalize().scale(0.75F);
         return controller.getPosition(partialTicks).add(offset).add(armViewExtra);
     }
