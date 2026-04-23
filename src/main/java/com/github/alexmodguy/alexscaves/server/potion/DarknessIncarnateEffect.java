@@ -24,7 +24,6 @@ public class DarknessIncarnateEffect extends MobEffect {
         super(MobEffectCategory.BENEFICIAL, 0X510E0E);
     }
 
-
     public void applyEffectTick(LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
         toggleFlight(entity, true);
@@ -51,7 +50,6 @@ public class DarknessIncarnateEffect extends MobEffect {
         return firstDuration - lastDuration;
     }
 
-
     public void addAttributeModifiers(LivingEntity entity, AttributeMap map, int i) {
         lastDuration = -1;
         firstDuration = -1;
@@ -70,10 +68,10 @@ public class DarknessIncarnateEffect extends MobEffect {
         return duration > 0;
     }
 
-
     public void toggleFlight(LivingEntity living, boolean flight) {
         if (!living.level().isClientSide && living instanceof ServerPlayer player) {
             boolean prevFlying = player.getAbilities().flying;
+            boolean prevMayfly = player.getAbilities().mayfly;
             boolean trueFlight = isCreativePlayer(living) || flight;
             player.getAbilities().mayfly = trueFlight;
             player.getAbilities().flying = trueFlight;
@@ -84,15 +82,15 @@ public class DarknessIncarnateEffect extends MobEffect {
                 player.getAbilities().setFlyingSpeed(defaultFlightSpeed);
                 if (!player.isSpectator()) {
                     player.getAbilities().flying = false;
-                    if(!player.isCreative()){
+                    if (!player.isCreative()) {
                         player.getAbilities().mayfly = false;
                     }
-                    if(player instanceof DarknessIncarnateUserAccessor darknessIncarnateUserAccessor){
+                    if (player instanceof DarknessIncarnateUserAccessor darknessIncarnateUserAccessor) {
                         darknessIncarnateUserAccessor.setSlowFallingFlag(true);
                     }
                 }
             }
-            if (prevFlying != flight) {
+            if (prevFlying != player.getAbilities().flying || prevMayfly != player.getAbilities().mayfly) {
                 player.onUpdateAbilities();
             }
         }
@@ -116,7 +114,7 @@ public class DarknessIncarnateEffect extends MobEffect {
     public static boolean isInLight(LivingEntity living, int threshold) {
         BlockPos samplePos = living.getRootVehicle().blockPosition();
         int lightLevel = living.level().getBrightness(LightLayer.BLOCK, samplePos);
-        float timeOfDay = living.level().getTimeOfDay(1.0F); //night starts at 0.259 and ends at 0.74
+        float timeOfDay = living.level().getTimeOfDay(1.0F); // night starts at 0.259 and ends at 0.74
         if (living.level().canSeeSky(samplePos) && (timeOfDay < 0.259 || timeOfDay > 0.74)) {
             lightLevel = 15;
         }

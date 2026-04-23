@@ -247,8 +247,7 @@ public class ClientEvents {
             } else if (renderer.currentEffect() != null
                     && SUBMARINE_SHADER.toString().equals(renderer.currentEffect().getName())) {
                 renderer.checkEntityPostEffect(null);
-            } else if (firstPerson && player instanceof PossessesCamera || player instanceof LivingEntity afflicted
-                    && afflicted.hasEffect(ACEffectRegistry.DARKNESS_INCARNATE.get())) {
+            } else if (firstPerson && player instanceof PossessesCamera) {
                 if (renderer.currentEffect() == null
                         || !WATCHER_SHADER.toString().equals(renderer.currentEffect().getName())) {
                     attemptLoadShader(WATCHER_SHADER);
@@ -738,13 +737,8 @@ public class ClientEvents {
         if (event.getOverlay().id().equals(VanillaGuiOverlay.CROSSHAIR.id()) && DarknessArmorItem.hasMeter(player)) {
             ItemStack stack = player.getItemBySlot(EquipmentSlot.CHEST);
             int screenWidth = event.getWindow().getGuiScaledWidth();
-            int screenHeight = event.getWindow().getGuiScaledHeight();
-            int forgeGuiY = 0;
-            if (forgeGuiY < 53) {
-                forgeGuiY = 53;
-            }
-            int j = screenWidth / 2 - AlexsCaves.CLIENT_CONFIG.subterranodonIndicatorX.get() + 13;
-            int k = screenHeight - forgeGuiY - AlexsCaves.CLIENT_CONFIG.subterranodonIndicatorY.get() + 9 - hudY;
+            int j = screenWidth / 2 - 9;
+            int k = 2;
             float f = DarknessArmorItem.getMeterProgress(stack);
             float invProgress = 1 - f;
             int uvOffset = DarknessArmorItem.canChargeUp(stack) && f >= 1.0F ? 0 : 18;

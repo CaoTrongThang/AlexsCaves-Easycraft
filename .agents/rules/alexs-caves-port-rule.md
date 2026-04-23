@@ -10,6 +10,7 @@ You can reply them with the:
 Short explain about the problem:
 Github short commit:
 Performance:
+Bugs Potential:
 
 Remember these rules:
 

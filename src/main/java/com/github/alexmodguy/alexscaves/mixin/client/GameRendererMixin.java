@@ -20,6 +20,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import net.minecraft.client.Camera;
+import com.github.alexmodguy.alexscaves.server.potion.DarknessIncarnateEffect;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
@@ -68,6 +71,15 @@ public abstract class GameRendererMixin {
                     .bufferSource();
             ACPotionEffectLayer.renderBubbledFirstPerson(poseStack);
             multibuffersource$buffersource.endBatch();
+        }
+    }
+
+    @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
+    public void ac_getFov(Camera camera, float partialTicks, boolean useConfig, CallbackInfoReturnable<Double> cir) {
+        if (Minecraft.getInstance().player != null
+                && Minecraft.getInstance().player.hasEffect(ACEffectRegistry.DARKNESS_INCARNATE.get())) {
+            float intensity = DarknessIncarnateEffect.getIntensity(Minecraft.getInstance().player, partialTicks, 1.0F);
+            cir.setReturnValue(cir.getReturnValue() + intensity * 12.0D);
         }
     }
 }

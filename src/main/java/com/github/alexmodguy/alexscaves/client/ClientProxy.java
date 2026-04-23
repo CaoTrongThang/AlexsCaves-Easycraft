@@ -32,6 +32,8 @@ import com.github.alexmodguy.alexscaves.server.item.*;
 import com.github.alexmodguy.alexscaves.server.item.tooltip.SackOfSatingTooltip;
 import com.github.alexmodguy.alexscaves.server.misc.ACKeybindRegistry;
 import com.github.alexmodguy.alexscaves.server.misc.ACSoundRegistry;
+import com.github.alexmodguy.alexscaves.server.potion.ACEffectRegistry;
+import com.github.alexmodguy.alexscaves.server.potion.DarknessIncarnateEffect;
 import com.github.alexthe666.citadel.client.shader.PostEffectRegistry;
 import com.github.alexthe666.citadel.client.tick.ClientTickRateTracker;
 import com.google.common.collect.ImmutableList;
@@ -1192,6 +1194,33 @@ public class ClientProxy extends CommonProxy {
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, watcherPossessionStrength * screenEffectIntensity);
+            RenderSystem.setShaderTexture(0, ClientProxy.WATCHER_EFFECT);
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder bufferbuilder = tesselator.getBuilder();
+            bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+            bufferbuilder.vertex(0.0D, screenHeight, -90.0D).uv(0.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(screenWidth, screenHeight, -90.0D).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(screenWidth, 0.0D, -90.0D).uv(1.0F, 0.0F).endVertex();
+            bufferbuilder.vertex(0.0D, 0.0D, -90.0D).uv(0.0F, 0.0F).endVertex();
+            tesselator.end();
+            RenderSystem.depthMask(true);
+            RenderSystem.enableDepthTest();
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        }
+        float darknessIntensity = 0;
+        if (Minecraft.getInstance().cameraEntity instanceof LivingEntity living
+                && living.hasEffect(ACEffectRegistry.DARKNESS_INCARNATE.get())) {
+            darknessIntensity = DarknessIncarnateEffect.getIntensity(living, partialTick, 1.0F);
+        }
+        if (darknessIntensity > 0) {
+            int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+            int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, darknessIntensity * screenEffectIntensity * 0.35F);
             RenderSystem.setShaderTexture(0, ClientProxy.WATCHER_EFFECT);
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder bufferbuilder = tesselator.getBuilder();
