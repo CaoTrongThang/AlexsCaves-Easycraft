@@ -51,3 +51,12 @@ mutable field net/minecraft/client/renderer/RenderStateShard setupState Ljava/la
 accessible field net/minecraft/client/Minecraft timer Lnet/minecraft/client/Timer;
 accessible field net/minecraft/client/Timer msPerTick F
 mutable field net/minecraft/client/Timer msPerTick F
+
+# alex's caves shader and camera access
+accessible method net/minecraft/client/renderer/GameRenderer loadEffect (Lnet/minecraft/resources/ResourceLocation;)V
+accessible method net/minecraft/client/Camera move (DDD)V
+accessible method net/minecraft/client/Camera getMaxZoom (D)D
+accessible field net/minecraft/client/gui/screens/advancements/AdvancementsScreen selectedTab Lnet/minecraft/client/gui/screens/advancements/AdvancementTab;
+accessible method net/minecraft/client/gui/screens/advancements/AdvancementTab getAdvancement ()Lnet/minecraft/advancements/Advancement;
+accessible field net/minecraft/client/gui/screens/advancements/AdvancementWidget parent Lnet/minecraft/client/gui/screens/advancements/AdvancementWidget;
+accessible field net/minecraft/client/gui/screens/advancements/AdvancementWidget progress Lnet/minecraft/advancements/AdvancementProgress;

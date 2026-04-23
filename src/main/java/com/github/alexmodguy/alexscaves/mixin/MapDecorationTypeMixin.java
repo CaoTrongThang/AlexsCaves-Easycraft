@@ -3,12 +3,14 @@ package com.github.alexmodguy.alexscaves.mixin;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Invoker;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 @Mixin(MapDecoration.Type.class)
-@Unique
 public class MapDecorationTypeMixin {
 
     @Shadow
@@ -16,18 +18,16 @@ public class MapDecorationTypeMixin {
     @Mutable
     private static MapDecoration.Type[] $VALUES;
 
-    private static final MapDecoration.Type AC_UNDERGROUND_CABIN = ac_addType("AC_UNDERGROUND_CABIN", true, 0X6B6B6B, false);
-
     @Invoker("<init>")
-    public static MapDecoration.Type ac_invokeInit(String internalName, int internalId, boolean renderOnFrame, int mapColor, boolean trackCount) {
+    public static MapDecoration.Type ac_invokeInit(String internalName, int internalId, boolean renderOnFrame,
+            int mapColor, boolean trackCount) {
         throw new AssertionError();
     }
 
-    private static MapDecoration.Type ac_addType(String internalName, boolean renderOnFrame, int mapColor, boolean trackCount) {
+    @Inject(method = "<clinit>", at = @At("RETURN"))
+    private static void ac_addCustomValues(CallbackInfo ci) {
         ArrayList<MapDecoration.Type> variants = new ArrayList<MapDecoration.Type>(Arrays.asList($VALUES));
-        MapDecoration.Type instrument = ac_invokeInit(internalName, variants.get(variants.size() - 1).ordinal() + 1, renderOnFrame, mapColor, trackCount);
-        variants.add(instrument);
-        MapDecorationTypeMixin.$VALUES = variants.toArray(new MapDecoration.Type[0]);
-        return instrument;
+        variants.add(ac_invokeInit("AC_UNDERGROUND_CABIN", $VALUES.length, true, 0X6B6B6B, false));
+        $VALUES = variants.toArray(new MapDecoration.Type[0]);
     }
 }
