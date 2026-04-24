@@ -654,6 +654,12 @@ public class SubmarineEntity extends Entity implements KeybindUsingMount {
             return false;
         } else {
             damageSustained += damageValue;
+            if (damageSource
+                    .getEntity() instanceof com.github.alexmodguy.alexscaves.server.entity.living.HullbreakerEntity hullbreaker
+                    && hullbreaker
+                            .getAnimation() == com.github.alexmodguy.alexscaves.server.entity.living.HullbreakerEntity.ANIMATION_BITE) {
+                this.setLightsOn(false);
+            }
             boolean flag = false;
             this.level().broadcastEntityEvent(this, (byte) 48);
             if (damageSustained >= 10) {

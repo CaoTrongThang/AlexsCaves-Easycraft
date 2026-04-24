@@ -21,17 +21,22 @@ public class VerticalSwimmingMoveControl extends MoveControl {
 
     public void tick() {
         if (this.operation == Operation.MOVE_TO && !this.mob.getNavigation().isDone()) {
-            //Vec3 ed = this.mob.getNavigation().getTargetPos().getCenter();
-            //((ServerLevel)mob.level()).sendParticles(ParticleTypes.HEART, ed.x, ed.y, ed.z, 0, 0, 0, 0, 1);
-            //((ServerLevel)mob.level()).sendParticles(ParticleTypes.SNEEZE, wantedX, wantedY, wantedZ, 0, 0, 0, 0, 1);
+            // Vec3 ed = this.mob.getNavigation().getTargetPos().getCenter();
+            // ((ServerLevel)mob.level()).sendParticles(ParticleTypes.HEART, ed.x, ed.y,
+            // ed.z, 0, 0, 0, 0, 1);
+            // ((ServerLevel)mob.level()).sendParticles(ParticleTypes.SNEEZE, wantedX,
+            // wantedY, wantedZ, 0, 0, 0, 0, 1);
             double d0 = this.wantedX - this.mob.getX();
             double d1 = this.wantedY - this.mob.getY();
             double d2 = this.wantedZ - this.mob.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d1 * d1 + d2 * d2));
             double d4 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
             d1 /= d3;
-            this.mob.yBodyRot = this.mob.getYRot();
-            float f1 = (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED) * secondSpeedModifier);
+            if (!(this.mob instanceof com.github.alexmodguy.alexscaves.server.entity.util.KaijuMob)) {
+                this.mob.yBodyRot = this.mob.getYRot();
+            }
+            float f1 = (float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)
+                    * secondSpeedModifier);
             float rotBy = this.maxRotChange;
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0D, (double) f1 * d1 * 0.4D, 0.0D));
             if (d4 < this.mob.getBbWidth() + 1.4F) {

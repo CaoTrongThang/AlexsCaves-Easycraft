@@ -34,6 +34,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.WaterAnimal;
@@ -135,10 +136,19 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         this.goalSelector.addGoal(3, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 16.0F));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false,
+                HullbreakerEntity.GLOWING_TARGET));
+        this.targetSelector.addGoal(3,
+                new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (mob) -> {
+                    return this.distanceTo(mob) < 12.0D && mob.isInWaterOrBubble()
+                            && !(mob instanceof HullbreakerEntity)
+                            && !mob.getType().is(ACTagRegistry.SEAFLOOR_DENIZENS);
+                }));
     }
 
-    protected PathNavigation createNavigation(Level level) {
-        return new WaterBoundPathNavigation(this, level);
+    protected net.minecraft.world.entity.ai.navigation.PathNavigation createNavigation(
+            net.minecraft.world.level.Level level) {
+        return new com.github.alexmodguy.alexscaves.server.entity.ai.KaijuSwimmingNavigation(this, level);
     }
 
     public void travel(Vec3 travelVector) {
@@ -250,9 +260,8 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
     }
 
     public void tick() {
-        tickMultipart();
         super.tick();
-        this.yBodyRot = Mth.approachDegrees(this.yBodyRotO, yBodyRot, getHeadRotSpeed());
+        tickMultipart();
         prevLandProgress = landProgress;
         prevFishPitch = fishPitch;
         prevPulseAmount = pulseAmount;
@@ -261,7 +270,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         if (!isAlive()) {
             targetFishPitch = 0.0F;
         }
-        fishPitch = Mth.approachDegrees(fishPitch, targetFishPitch, 2.5F);
+        fishPitch = Mth.approachDegrees(fishPitch, targetFishPitch, 1.5F);
         boolean grounded = this.onGround() && !isInWaterOrBubble();
         if (grounded && landProgress < 5F) {
             landProgress++;
@@ -309,7 +318,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
     }
 
     public int getHeadRotSpeed() {
-        return 5;
+        return 20;
     }
 
     public void breakBlock() {
@@ -405,7 +414,7 @@ public class HullbreakerEntity extends WaterAnimal implements IAnimatedEntity, K
         int i = this.yawPointer - pointer & 127;
         int j = this.yawPointer - pointer - 1 & 127;
         float d0 = this.yawBuffer[j];
-        float d1 = this.yawBuffer[i] - d0;
+        float d1 = Mth.wrapDegrees(this.yawBuffer[i] - d0);
         return d0 + d1 * partialTick;
     }
 
