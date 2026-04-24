@@ -34,8 +34,10 @@ public class OrtholanceItem extends Item implements Vanishable {
     public OrtholanceItem(Item.Properties properties) {
         super(properties);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 5.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", (double) -2.4F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 8.0D,
+                AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier",
+                (double) -2.4F, AttributeModifier.Operation.ADDITION));
         this.defaultModifiers = builder.build();
     }
 
@@ -44,7 +46,8 @@ public class OrtholanceItem extends Item implements Vanishable {
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot equipmentSlot) {
-        return equipmentSlot == EquipmentSlot.MAINHAND ? this.defaultModifiers : super.getDefaultAttributeModifiers(equipmentSlot);
+        return equipmentSlot == EquipmentSlot.MAINHAND ? this.defaultModifiers
+                : super.getDefaultAttributeModifiers(equipmentSlot);
     }
 
     public int getEnchantmentValue() {
@@ -57,18 +60,22 @@ public class OrtholanceItem extends Item implements Vanishable {
 
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int useTime) {
         int i = Mth.clamp(this.getUseDuration(stack) - useTime, 0, 60);
-        int flinging = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.FLINGING.get());
-        boolean tsunami = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.TSUNAMI.get()) > 0;
+        int flinging = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                ACEnchantmentRegistry.FLINGING.get());
+        boolean tsunami = com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                ACEnchantmentRegistry.TSUNAMI.get()) > 0;
         if (i > 0) {
             float f = 0.1F * i + flinging * 0.1F;
-            Vec3 vec3 = livingEntity.getDeltaMovement().add(livingEntity.getViewVector(1.0F).normalize().multiply(f, f * 0.15F, f));
+            Vec3 vec3 = livingEntity.getDeltaMovement()
+                    .add(livingEntity.getViewVector(1.0F).normalize().multiply(f, f * 0.15F, f));
             if (i >= 10 && !level.isClientSide) {
-                level.playSound(null, livingEntity, ACSoundRegistry.ORTHOLANCE_WAVE.get(), SoundSource.NEUTRAL, 4.0F, 1.0F);
+                level.playSound(null, livingEntity, ACSoundRegistry.ORTHOLANCE_WAVE.get(), SoundSource.NEUTRAL, 4.0F,
+                        1.0F);
                 stack.hurtAndBreak(1, livingEntity, (player1) -> {
                     player1.broadcastBreakEvent(player1.getUsedItemHand());
                 });
                 int maxWaves = i / 5;
-                if(tsunami){
+                if (tsunami) {
                     maxWaves = 5;
                     Vec3 waveCenterPos = livingEntity.position().add(vec3);
                     WaveEntity tsunamiWaveEntity = new WaveEntity(level, livingEntity);
@@ -78,7 +85,7 @@ public class OrtholanceItem extends Item implements Vanishable {
                     tsunamiWaveEntity.setWaitingTicks(2);
                     tsunamiWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)));
                     level.addFreshEntity(tsunamiWaveEntity);
-                }else{
+                } else {
                     for (int wave = 0; wave < maxWaves; wave++) {
                         float f1 = (float) wave / maxWaves;
                         int lifespan = 3 + (int) ((1F - f1) * 3);
@@ -86,15 +93,18 @@ public class OrtholanceItem extends Item implements Vanishable {
                         WaveEntity leftWaveEntity = new WaveEntity(level, livingEntity);
                         leftWaveEntity.setPos(waveCenterPos.x, livingEntity.getY(), waveCenterPos.z);
                         leftWaveEntity.setLifespan(lifespan);
-                        leftWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)) + 60 - 15 * wave);
+                        leftWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI))
+                                + 60 - 15 * wave);
                         level.addFreshEntity(leftWaveEntity);
                         WaveEntity rightWaveEntity = new WaveEntity(level, livingEntity);
                         rightWaveEntity.setPos(waveCenterPos.x, livingEntity.getY(), waveCenterPos.z);
                         rightWaveEntity.setLifespan(lifespan);
-                        rightWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)) - 60 + 15 * wave);
+                        rightWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI))
+                                - 60 + 15 * wave);
                         level.addFreshEntity(rightWaveEntity);
                     }
-                    if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SECOND_WAVE.get()) > 0) {
+                    if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                            ACEnchantmentRegistry.SECOND_WAVE.get()) > 0) {
                         int maxSecondWaves = Math.max(1, maxWaves - 1);
                         for (int wave = 0; wave < maxSecondWaves; wave++) {
                             float f1 = (float) wave / maxSecondWaves;
@@ -103,26 +113,33 @@ public class OrtholanceItem extends Item implements Vanishable {
                             WaveEntity leftWaveEntity = new WaveEntity(level, livingEntity);
                             leftWaveEntity.setPos(waveCenterPos.x, livingEntity.getY(), waveCenterPos.z);
                             leftWaveEntity.setLifespan(lifespan);
-                            leftWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)) + 60 - 15 * wave);
+                            leftWaveEntity
+                                    .setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI))
+                                            + 60 - 15 * wave);
                             leftWaveEntity.setWaitingTicks(8);
                             level.addFreshEntity(leftWaveEntity);
                             WaveEntity rightWaveEntity = new WaveEntity(level, livingEntity);
                             rightWaveEntity.setPos(waveCenterPos.x, livingEntity.getY(), waveCenterPos.z);
                             rightWaveEntity.setLifespan(lifespan);
-                            rightWaveEntity.setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI)) - 60 + 15 * wave);
+                            rightWaveEntity
+                                    .setYRot(-(float) (Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) Math.PI))
+                                            - 60 + 15 * wave);
                             rightWaveEntity.setWaitingTicks(8);
                             level.addFreshEntity(rightWaveEntity);
                         }
                     }
                 }
-                AABB aabb = new AABB(livingEntity.position(), livingEntity.position().add(vec3.scale(maxWaves))).inflate(1);
+                AABB aabb = new AABB(livingEntity.position(), livingEntity.position().add(vec3.scale(maxWaves)))
+                        .inflate(1);
                 DamageSource source = livingEntity.damageSources().mobAttack(livingEntity);
                 double d = 0;
-                for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
+                for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlot.MAINHAND)
+                        .get(Attributes.ATTACK_DAMAGE)) {
                     d += modifier.getAmount();
                 }
                 for (LivingEntity entity : level.getEntitiesOfClass(LivingEntity.class, aabb)) {
-                    if (!livingEntity.isAlliedTo(entity) && !livingEntity.equals(entity) && livingEntity.hasLineOfSight(entity)) {
+                    if (!livingEntity.isAlliedTo(entity) && !livingEntity.equals(entity)
+                            && livingEntity.hasLineOfSight(entity)) {
                         entity.hurt(source, (float) d);
                         entity.stopRiding();
                     }
@@ -147,7 +164,8 @@ public class OrtholanceItem extends Item implements Vanishable {
             entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
         });
         Vec3 vec3 = player.getViewVector(1.0F);
-        if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack, ACEnchantmentRegistry.SEA_SWING.get()) > 0) {
+        if (com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getEnchantmentLevel(stack,
+                ACEnchantmentRegistry.SEA_SWING.get()) > 0) {
             WaveEntity waveEntity = new WaveEntity(hurt.level(), player);
             waveEntity.setPos(player.getX(), hurt.getY(), player.getZ());
             waveEntity.setLifespan(5);
@@ -157,7 +175,8 @@ public class OrtholanceItem extends Item implements Vanishable {
         return true;
     }
 
-    public boolean mineBlock(ItemStack itemStack, Level level, BlockState state, BlockPos blockPos, LivingEntity livingEntity) {
+    public boolean mineBlock(ItemStack itemStack, Level level, BlockState state, BlockPos blockPos,
+            LivingEntity livingEntity) {
         if ((double) state.getDestroySpeed(level, blockPos) != 0.0D) {
             itemStack.hurtAndBreak(2, livingEntity, (entity) -> {
                 entity.broadcastBreakEvent(EquipmentSlot.MAINHAND);
@@ -166,7 +185,6 @@ public class OrtholanceItem extends Item implements Vanishable {
 
         return true;
     }
-
 
     public void initializeClient(java.util.function.Consumer<IClientItemExtensions> consumer) {
         consumer.accept((IClientItemExtensions) AlexsCaves.PROXY.getISTERProperties());

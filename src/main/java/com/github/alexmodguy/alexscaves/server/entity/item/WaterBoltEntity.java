@@ -36,8 +36,10 @@ import java.util.UUID;
 
 public class WaterBoltEntity extends Projectile {
 
-    private static final EntityDataAccessor<Optional<UUID>> ARC_TOWARDS_ENTITY_UUID = SynchedEntityData.defineId(WaterBoltEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Boolean> BUBBLING = SynchedEntityData.defineId(WaterBoltEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Optional<UUID>> ARC_TOWARDS_ENTITY_UUID = SynchedEntityData
+            .defineId(WaterBoltEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Boolean> BUBBLING = SynchedEntityData.defineId(WaterBoltEntity.class,
+            EntityDataSerializers.BOOLEAN);
     private int lSteps;
     private double lx;
     private double ly;
@@ -88,17 +90,22 @@ public class WaterBoltEntity extends Projectile {
         super.tick();
         if (!level().isClientSide) {
             Entity arcTowards = getArcingTowards();
-            if (arcTowards != null && (tickCount > 3 || seekAmount > 0.3) && dieIn == -1 && this.distanceTo(arcTowards) > 1.5F && (tickCount < 20 || seekAmount > 0.3 && tickCount < 40)) {
-                Vec3 arcVec = arcTowards.position().add(0, 0.85F * arcTowards.getBbHeight(), 0).subtract(this.position()).normalize();
+            if (arcTowards != null && (tickCount > 3 || seekAmount > 0.3) && dieIn == -1
+                    && this.distanceTo(arcTowards) > 1.5F && (tickCount < 20 || seekAmount > 0.3 && tickCount < 40)) {
+                Vec3 arcVec = arcTowards.position().add(0, 0.85F * arcTowards.getBbHeight(), 0)
+                        .subtract(this.position()).normalize();
                 float prevDeltaScale = 1.0F - (seekAmount - 0.3F) * 0.3F;
                 this.setDeltaMovement(this.getDeltaMovement().scale(prevDeltaScale).add(arcVec.scale(seekAmount)));
             }
         } else {
             for (int j = 0; j < 3 + random.nextInt(2); ++j) {
-                this.level().addParticle(this.isInWaterOrBubble() || isBubbling() ? ParticleTypes.BUBBLE_COLUMN_UP : ParticleTypes.FALLING_WATER, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, -0.1F, 0);
+                this.level().addParticle(
+                        this.isInWaterOrBubble() || isBubbling() ? ParticleTypes.BUBBLE_COLUMN_UP
+                                : ParticleTypes.FALLING_WATER,
+                        this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0, -0.1F, 0);
             }
         }
-        if(wooshSoundTime <= 0){
+        if (wooshSoundTime <= 0) {
             wooshSoundTime = 30 + level().random.nextInt(30);
             this.playSound(ACSoundRegistry.SEA_STAFF_WOOSH.get());
         }
@@ -109,7 +116,8 @@ public class WaterBoltEntity extends Projectile {
         this.updateRotation();
         float f = 0.99F;
         float f1 = 0.06F;
-        if (this.level().getBlockStates(this.getBoundingBox()).noneMatch(BlockBehaviour.BlockStateBase::isAir) && !this.isInWaterOrBubble()) {
+        if (this.level().getBlockStates(this.getBoundingBox()).noneMatch(BlockBehaviour.BlockStateBase::isAir)
+                && !this.isInWaterOrBubble()) {
             this.discard();
         } else {
             this.setDeltaMovement(vec3.scale((double) 0.9F));
@@ -145,7 +153,9 @@ public class WaterBoltEntity extends Projectile {
         this.trailPositions[this.trailPointer] = trailAt;
 
         HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        if (hitresult.getType() != HitResult.Type.MISS && !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
+        if (hitresult.getType() != HitResult.Type.MISS
+                && !com.github.alexmodguy.alexscaves.forge_shim.event.ForgeEventFactory.onProjectileImpact(this,
+                        hitresult)) {
             this.onHit(hitresult);
         }
         if (dieIn > 0) {
@@ -164,7 +174,8 @@ public class WaterBoltEntity extends Projectile {
             while (level().isEmptyBlock(pos) && pos.getY() > level().getMinBuildHeight()) {
                 pos = pos.below();
             }
-            serverLevel.sendParticles(ACParticleRegistry.BIG_SPLASH.get(), this.getX(), pos.getY() + 1.5F, this.getZ(), 0, 1.3F, 1, 0, 1.0D);
+            serverLevel.sendParticles(ACParticleRegistry.BIG_SPLASH.get(), this.getX(), pos.getY() + 1.5F, this.getZ(),
+                    0, 1.3F, 1, 0, 1.0D);
         }
     }
 
@@ -198,10 +209,9 @@ public class WaterBoltEntity extends Projectile {
         this.setDeltaMovement(this.lxd, this.lyd, this.lzd);
     }
 
-
     protected void onHitEntity(EntityHitResult hitResult) {
         super.onHitEntity(hitResult);
-        if(!playedSplashSound){
+        if (!playedSplashSound) {
             playedSplashSound = true;
             this.playSound(ACSoundRegistry.SEA_STAFF_HIT.get());
         }
@@ -215,21 +225,25 @@ public class WaterBoltEntity extends Projectile {
 
     private void damageMobs() {
         Entity owner = this.getOwner();
-        DamageSource source = damageSources().mobProjectile(this, (owner instanceof LivingEntity living1 ? living1 : null));
+        DamageSource source = (owner instanceof LivingEntity living1) ? damageSources().mobAttack(living1)
+                : damageSources().generic();
         AABB bashBox = this.getBoundingBox().inflate(2.0D, 2, 2.0D);
         Entity lastHitMob = null;
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, bashBox)) {
-            if (!isAlliedTo(entity) && !(entity instanceof DeepOneBaseEntity) && (owner == null || !entity.is(owner) && !entity.isAlliedTo(owner))) {
+            if (!isAlliedTo(entity) && !(entity instanceof DeepOneBaseEntity)
+                    && (owner == null || !entity.is(owner) && !entity.isAlliedTo(owner))) {
                 lastHitMob = entity;
-                if (entity.hurt(source, 3.0F) && this.isBubbling()) {
+                float damage = Math.min(50.0F, 6.0F + 0.03F * entity.getMaxHealth());
+                if (entity.hurt(source, damage) && this.isBubbling()) {
                     entity.addEffect(new MobEffectInstance(ACEffectRegistry.BUBBLED.get(), 200));
                     if (!entity.level().isClientSide) {
-                        AlexsCaves.sendMSGToAll(new UpdateEffectVisualityEntityMessage(entity.getId(), this.getId(), 1, 200));
+                        AlexsCaves.sendMSGToAll(
+                                new UpdateEffectVisualityEntityMessage(entity.getId(), this.getId(), 1, 200));
                     }
                 }
             }
         }
-        if(ricochet && lastHitMob != null){
+        if (ricochet && lastHitMob != null) {
             ricochet = false;
             onRicochetHit(lastHitMob);
         }
@@ -240,17 +254,20 @@ public class WaterBoltEntity extends Projectile {
         AABB searchBox = hitBy.getBoundingBox().inflate(32.0D, 32.0D, 32.0D);
         Entity ricochetTo = null;
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, searchBox)) {
-            if (!isAlliedTo(entity) && !(entity instanceof DeepOneBaseEntity) && !entity.is(hitBy) && (owner == null || !entity.is(owner) && !entity.isAlliedTo(owner)) && entity.distanceTo(hitBy) > 3.0D) {
-                if(ricochetTo == null || ricochetTo.distanceTo(hitBy) > entity.distanceTo(hitBy)){
+            if (!isAlliedTo(entity) && !(entity instanceof DeepOneBaseEntity) && !entity.is(hitBy)
+                    && (owner == null || !entity.is(owner) && !entity.isAlliedTo(owner))
+                    && entity.distanceTo(hitBy) > 3.0D) {
+                if (ricochetTo == null || ricochetTo.distanceTo(hitBy) > entity.distanceTo(hitBy)) {
                     ricochetTo = entity;
                 }
             }
         }
-        if(ricochetTo != null && owner instanceof LivingEntity living){
+        if (ricochetTo != null && owner instanceof LivingEntity living) {
             WaterBoltEntity bolt = new WaterBoltEntity(level(), living);
             bolt.copyPosition(this);
             bolt.setArcingTowards(ricochetTo.getUUID());
-            Vec3 arcVec = ricochetTo.position().add(0, 0.3F + 1 * ricochetTo.getBbHeight(), 0).subtract(this.position()).normalize();
+            Vec3 arcVec = ricochetTo.position().add(0, 0.3F + 1 * ricochetTo.getBbHeight(), 0).subtract(this.position())
+                    .normalize();
             bolt.setDeltaMovement(bolt.getDeltaMovement().add(arcVec));
             bolt.setBubbling(this.isBubbling());
             level().addFreshEntity(bolt);
@@ -267,7 +284,7 @@ public class WaterBoltEntity extends Projectile {
 
     protected void onHitBlock(BlockHitResult hitResult) {
         super.onHitBlock(hitResult);
-        if(!playedSplashSound){
+        if (!playedSplashSound) {
             playedSplashSound = true;
             this.playSound(ACSoundRegistry.SEA_STAFF_HIT.get());
         }
