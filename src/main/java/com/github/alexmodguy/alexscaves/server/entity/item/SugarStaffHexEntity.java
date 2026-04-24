@@ -23,8 +23,10 @@ import java.util.UUID;
 
 public class SugarStaffHexEntity extends Entity {
 
-    private static final EntityDataAccessor<Integer> LIFESPAN = SynchedEntityData.defineId(SugarStaffHexEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> HEX_SCALE = SynchedEntityData.defineId(SugarStaffHexEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> LIFESPAN = SynchedEntityData.defineId(SugarStaffHexEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> HEX_SCALE = SynchedEntityData.defineId(SugarStaffHexEntity.class,
+            EntityDataSerializers.FLOAT);
 
     private int despawnsIn = -1;
     private int prevDespawnsIn;
@@ -73,7 +75,7 @@ public class SugarStaffHexEntity extends Entity {
 
     public void tick() {
         super.tick();
-        if(despawnsIn == -1){
+        if (despawnsIn == -1) {
             despawnsIn = this.getLifespan();
         }
         prevDespawnsIn = despawnsIn;
@@ -83,15 +85,18 @@ public class SugarStaffHexEntity extends Entity {
             this.discard();
         }
         if (level().isClientSide) {
-            if(despawnsIn < 5){
-                for(int i = 0; i < 8 + random.nextInt(8); i++){
-                    this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_EXPLOSION.get(), this.getRandomX(0.45F), this.getRandomY(), this.getRandomZ(0.45F), 0,0,0);
+            if (despawnsIn < 5) {
+                for (int i = 0; i < 8 + random.nextInt(8); i++) {
+                    this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_EXPLOSION.get(), this.getRandomX(0.45F),
+                            this.getRandomY(), this.getRandomZ(0.45F), 0, 0, 0);
                 }
-            }else if(random.nextFloat() < 0.6F){
-                Vec3 ambientParticlePos = new Vec3((random.nextFloat() * 4F - 2F) * getHexScale(), 0.1F, (random.nextFloat() * 4F - 2F)  * getHexScale());
+            } else if (random.nextFloat() < 0.6F) {
+                Vec3 ambientParticlePos = new Vec3((random.nextFloat() * 4F - 2F) * getHexScale(), 0.1F,
+                        (random.nextFloat() * 4F - 2F) * getHexScale());
                 Vec3 vec3 = this.position().add(ambientParticlePos);
                 Vec3 vec31 = this.position().add(ambientParticlePos.scale(1.5F).add(0, random.nextFloat(), 0));
-                this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_MAGIC.get(), vec3.x, vec3.y, vec3.z, vec31.x, vec31.y, vec31.z);
+                this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_MAGIC.get(), vec3.x, vec3.y, vec3.z, vec31.x,
+                        vec31.y, vec31.z);
             }
         }
         hurtEntities(despawnsIn < 5);
@@ -128,7 +133,6 @@ public class SugarStaffHexEntity extends Entity {
         }
     }
 
-
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         compoundTag.putInt("DespawnsIn", this.despawnsIn);
@@ -140,16 +144,20 @@ public class SugarStaffHexEntity extends Entity {
 
     private void hurtEntities(boolean finalExplosion) {
         AABB bashBox = this.getBoundingBox();
+        DamageSource source = this.damageSources().mobProjectile(this, owner);
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, bashBox)) {
-            if (!isAlliedTo(entity) && entity.distanceTo(this) <= 4.0F && (owner != null && !entity.is(owner) && (!(owner instanceof LicowitchEntity) && !entity.isAlliedTo(owner) || owner instanceof LicowitchEntity licowitch && !licowitch.isFriendlyFire(entity)))) {
-                entity.hurt(this.damageSources().indirectMagic(this, owner), finalExplosion ? 6.0F : 1.0F);
-                if(finalExplosion){
-                    entity.knockback(0.9F, this.getX() - entity.getX(), this.getZ() - entity.getZ());
+            if (!isAlliedTo(entity) && entity.distanceTo(this) <= 4.0F && (owner != null && !entity.is(owner)
+                    && (!(owner instanceof LicowitchEntity) && !entity.isAlliedTo(owner)
+                            || owner instanceof LicowitchEntity licowitch && !licowitch.isFriendlyFire(entity)))) {
+                float damage = Math.max(finalExplosion ? 6.0F : 1.0F, Math.min(45.0F, entity.getMaxHealth() * 0.03F));
+                if (entity.hurt(source, damage)) {
+                    if (finalExplosion) {
+                        entity.knockback(0.9F, this.getX() - entity.getX(), this.getZ() - entity.getZ());
+                    }
                 }
             }
         }
     }
-
 
     public void onSyncedDataUpdated(EntityDataAccessor<?> entityDataAccessor) {
         if (HEX_SCALE.equals(entityDataAccessor)) {
@@ -167,10 +175,10 @@ public class SugarStaffHexEntity extends Entity {
         this.entityData.set(HEX_SCALE, f);
     }
 
-
     public EntityDimensions getDimensions(Pose pose) {
         return EntityDimensions.scalable(this.getHexScale() * 4.0F, 0.25F);
     }
+
     public float getYRenderOffset() {
         return yRenderOffset;
     }

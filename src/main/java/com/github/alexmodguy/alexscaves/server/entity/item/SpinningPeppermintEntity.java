@@ -28,13 +28,20 @@ import java.util.UUID;
 
 public class SpinningPeppermintEntity extends Entity {
 
-    private static EntityDataAccessor<Optional<Vec3>> SPIN_AROUND = SynchedEntityData.defineId(SpinningPeppermintEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
-    private static final EntityDataAccessor<Float> SPIN_RADIUS = SynchedEntityData.defineId(SpinningPeppermintEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> SPIN_SPEED = SynchedEntityData.defineId(SpinningPeppermintEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> START_ANGLE = SynchedEntityData.defineId(SpinningPeppermintEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> STRAIGHT = SynchedEntityData.defineId(SpinningPeppermintEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> LIFESPAN = SynchedEntityData.defineId(SpinningPeppermintEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> SEEKING_ENTITY = SynchedEntityData.defineId(SpinningPeppermintEntity.class, EntityDataSerializers.INT);
+    private static EntityDataAccessor<Optional<Vec3>> SPIN_AROUND = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
+    private static final EntityDataAccessor<Float> SPIN_RADIUS = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> SPIN_SPEED = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> START_ANGLE = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> STRAIGHT = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> LIFESPAN = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> SEEKING_ENTITY = SynchedEntityData
+            .defineId(SpinningPeppermintEntity.class, EntityDataSerializers.INT);
     public ItemStack peppermintRenderStack = new ItemStack(ACBlockRegistry.SMALL_PEPPERMINT.get());
     private int despawnsIn = -1;
     private int prevDespawnsIn;
@@ -99,7 +106,7 @@ public class SpinningPeppermintEntity extends Entity {
 
     public void tick() {
         super.tick();
-        if(despawnsIn == -1){
+        if (despawnsIn == -1) {
             despawnsIn = this.getLifespan();
         }
         prevDespawnsIn = despawnsIn;
@@ -136,17 +143,17 @@ public class SpinningPeppermintEntity extends Entity {
                     }
                     this.setSpinAroundPosition(encirclePos.add(add.scale(0.05F)));
                 }
-            }else if(owner instanceof Player player){
+            } else if (owner instanceof Player player) {
                 Vec3 playerPos = player.position().add(0, player.getBbHeight() * 0.45F, 0);
                 Entity seeking = this.getSeekingEntityId() == -1 ? null : level().getEntity(this.getSeekingEntityId());
-                if(seeking != null){
+                if (seeking != null) {
                     Vec3 add = seeking.getEyePosition().subtract(this.position());
                     if (add.length() > 1.0F) {
                         add = add.normalize();
                     }
                     this.setSpinRadius(4.0F - 4.0F * Math.min(1F, tickCount / 30F));
                     this.setSpinAroundPosition(this.position().add(add));
-                }else{
+                } else {
                     this.setSpinAroundPosition(playerPos);
                 }
             }
@@ -169,7 +176,8 @@ public class SpinningPeppermintEntity extends Entity {
             } else if (!level().isClientSide) {
                 this.move(MoverType.SELF, getDeltaMovement());
                 float f = Math.min(1.0F, tickCount / 30F);
-                Vec3 angle = new Vec3(0, 0, f * this.getSpinRadius()).yRot((float) -Math.toRadians(this.getStartAngle() + spinAngle));
+                Vec3 angle = new Vec3(0, 0, f * this.getSpinRadius())
+                        .yRot((float) -Math.toRadians(this.getStartAngle() + spinAngle));
                 Vec3 encircle = encirclePos.add(angle);
                 Vec3 newDelta = encircle.subtract(this.position());
                 this.setDeltaMovement(newDelta.scale(0.05 * getSpinSpeed()));
@@ -244,7 +252,6 @@ public class SpinningPeppermintEntity extends Entity {
         return this.entityData.get(SEEKING_ENTITY);
     }
 
-
     @Override
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
         this.setStraight(compoundTag.getBoolean("Straight"));
@@ -256,7 +263,8 @@ public class SpinningPeppermintEntity extends Entity {
             this.ownerUUID = compoundTag.getUUID("Owner");
         }
         if (compoundTag.contains("AroundX") && compoundTag.contains("AroundY") && compoundTag.contains("AroundZ")) {
-            this.setSpinAroundPosition(new Vec3(compoundTag.getDouble("AroundX"), compoundTag.getDouble("AroundZ"), compoundTag.getDouble("AroundZ")));
+            this.setSpinAroundPosition(new Vec3(compoundTag.getDouble("AroundX"), compoundTag.getDouble("AroundZ"),
+                    compoundTag.getDouble("AroundZ")));
         }
         this.setSpinSpeed(compoundTag.getFloat("SpinSpeed"));
         this.setSpinRadius(compoundTag.getFloat("SpinRadius"));
@@ -289,14 +297,17 @@ public class SpinningPeppermintEntity extends Entity {
         DamageSource source = damageSources().mobProjectile(this, owner);
         boolean flag = false;
         for (LivingEntity entity : this.level().getEntitiesOfClass(LivingEntity.class, bashBox)) {
-            if (!isAlliedTo(entity) && (owner != null && !entity.is(owner) && (!(owner instanceof LicowitchEntity) && !entity.isAlliedTo(owner) || owner instanceof LicowitchEntity licowitch && !licowitch.isFriendlyFire(entity)))) {
-                if (entity.hurt(source, 3.0F)) {
+            if (!isAlliedTo(entity) && (owner != null && !entity.is(owner)
+                    && (!(owner instanceof LicowitchEntity) && !entity.isAlliedTo(owner)
+                            || owner instanceof LicowitchEntity licowitch && !licowitch.isFriendlyFire(entity)))) {
+                float damage = Math.max(3.0F, Math.min(45.0F, entity.getMaxHealth() * 0.03F));
+                if (entity.hurt(source, damage)) {
                     flag = true;
                     entity.knockback(0.3F, this.getX() - entity.getX(), this.getZ() - entity.getZ());
                 }
             }
         }
-        if(flag && this.getSeekingEntityId() != -1){
+        if (flag && this.getSeekingEntityId() != -1) {
             this.discard();
         }
     }
