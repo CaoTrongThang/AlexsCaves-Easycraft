@@ -67,12 +67,18 @@ import java.util.UUID;
 
 public class LicowitchEntity extends Monster implements IAnimatedEntity {
 
-    private static final EntityDataAccessor<Boolean> CROSSED_ARMS = SynchedEntityData.defineId(LicowitchEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Optional<UUID>> POSSESSED_UUID_0 = SynchedEntityData.defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Optional<UUID>> POSSESSED_UUID_1 = SynchedEntityData.defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Optional<UUID>> POSSESSED_UUID_2 = SynchedEntityData.defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Optional<BlockPos>> CRUCIBLE_POS = SynchedEntityData.defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
-    private static EntityDataAccessor<Optional<Vec3>> TELEPORTING_TO_POS = SynchedEntityData.defineId(TremorzillaEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
+    private static final EntityDataAccessor<Boolean> CROSSED_ARMS = SynchedEntityData.defineId(LicowitchEntity.class,
+            EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Optional<UUID>> POSSESSED_UUID_0 = SynchedEntityData
+            .defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> POSSESSED_UUID_1 = SynchedEntityData
+            .defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<UUID>> POSSESSED_UUID_2 = SynchedEntityData
+            .defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<BlockPos>> CRUCIBLE_POS = SynchedEntityData
+            .defineId(LicowitchEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
+    private static EntityDataAccessor<Optional<Vec3>> TELEPORTING_TO_POS = SynchedEntityData
+            .defineId(TremorzillaEntity.class, ACEntityDataRegistry.OPTIONAL_VEC_3.get());
     public static final Animation ANIMATION_SWING_LEFT = Animation.create(20);
     public static final Animation ANIMATION_SWING_RIGHT = Animation.create(20);
     public static final Animation ANIMATION_EAT = Animation.create(100);
@@ -91,7 +97,8 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
 
     private int eatCooldown = 0;
     private int teleportCooldown = 0;
-    public static ItemStack hungerPotion = ACEffectRegistry.createSplashPotion(ACEffectRegistry.STRONG_HUNGER_POTION.get());
+    public static ItemStack hungerPotion = ACEffectRegistry
+            .createSplashPotion(ACEffectRegistry.STRONG_HUNGER_POTION.get());
 
     public LicowitchEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -99,23 +106,33 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.MAX_HEALTH, 40.0D).add(Attributes.ATTACK_DAMAGE, 3.0F).add(Attributes.FOLLOW_RANGE, 48.0D);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).add(Attributes.MAX_HEALTH, 40.0D)
+                .add(Attributes.ATTACK_DAMAGE, 3.0F).add(Attributes.FOLLOW_RANGE, 48.0D);
     }
 
-    public static boolean checkLicowitchSpawnRules(EntityType<? extends Monster> entityType, ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
+    public static boolean checkLicowitchSpawnRules(EntityType<? extends Monster> entityType,
+            ServerLevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos,
+            RandomSource randomSource) {
         if (LicowitchEntity.isWithinTowerSpawnBounds(levelAccessor, blockPos)) {
-            return checkAnyLightMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource) && randomSource.nextInt(2) == 0 && getWitchCountInStructure(levelAccessor, blockPos, true) < 4;
+            return checkAnyLightMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource)
+                    && randomSource.nextInt(2) == 0 && getWitchCountInStructure(levelAccessor, blockPos, true) < 4;
         } else {
-            return checkMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource) && randomSource.nextInt(2) == 0;
+            return checkMonsterSpawnRules(entityType, levelAccessor, mobSpawnType, blockPos, randomSource)
+                    && randomSource.nextInt(2) == 0;
         }
     }
 
     public static boolean isWithinTowerSpawnBounds(ServerLevelAccessor level, BlockPos pos) {
-        Structure structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE).get(ACStructureRegistry.LICOWITCH_TOWER.getId().location());
+        Structure structure = level.registryAccess().registryOrThrow(Registries.STRUCTURE)
+                .get(ACStructureRegistry.LICOWITCH_TOWER.getId().location());
+        if (structure == null) {
+            return false;
+        }
         StructureStart structureStart = level.getLevel().structureManager().getStructureAt(pos, structure);
-        if (structure != null && structureStart.isValid()) {
-            //stop spawning on the roof and floor
-            return pos.getY() < structureStart.getBoundingBox().maxY() - 9 && pos.getY() > structureStart.getBoundingBox().minY() + 2;
+        if (structureStart.isValid()) {
+            // stop spawning on the roof and floor
+            return pos.getY() < structureStart.getBoundingBox().maxY() - 9
+                    && pos.getY() > structureStart.getBoundingBox().minY() + 2;
         }
         return false;
     }
@@ -185,7 +202,8 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
         if (this.getAnimation() == ANIMATION_SPELL_1) {
             float f = this.getAnimationTick() < 10 ? 0.2F : this.getAnimationTick() > 40 ? -0.2F : 0;
             float backAmount = this.getAnimationTick() > 40 ? 0.0F : 0.1F;
-            this.setDeltaMovement(new Vec3(0, f, 0).add(new Vec3(0, 0, -backAmount).yRot((float) -Math.toRadians(this.getYRot()))));
+            this.setDeltaMovement(
+                    new Vec3(0, f, 0).add(new Vec3(0, 0, -backAmount).yRot((float) -Math.toRadians(this.getYRot()))));
             this.fallDistance = 0.0F;
         }
         if (updateHeldItems && !level().isClientSide) {
@@ -205,7 +223,9 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
             }
         }
         if (updateFoldedArms) {
-            boolean unfold = this.teleportingProgress > 0 || this.getAnimation() == ANIMATION_SPELL_0 || this.getAnimation() == ANIMATION_SPELL_1 || this.getAnimation() == ANIMATION_SWING_LEFT || this.getAnimation() == ANIMATION_SWING_RIGHT;
+            boolean unfold = this.teleportingProgress > 0 || this.getAnimation() == ANIMATION_SPELL_0
+                    || this.getAnimation() == ANIMATION_SPELL_1 || this.getAnimation() == ANIMATION_SWING_LEFT
+                    || this.getAnimation() == ANIMATION_SWING_RIGHT;
             this.setArmsCrossed(!unfold);
         }
         if (!level().isClientSide) {
@@ -218,7 +238,8 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
                     }
                 }
             }
-            if (this.getHealth() < this.getMaxHealth() && this.getAnimation() == NO_ANIMATION && tickCount % 20 == 8 && eatCooldown == 0) {
+            if (this.getHealth() < this.getMaxHealth() && this.getAnimation() == NO_ANIMATION && tickCount % 20 == 8
+                    && eatCooldown == 0) {
                 this.setAnimation(ANIMATION_EAT);
                 eatCooldown = 200;
             }
@@ -230,12 +251,18 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
             }
         } else {
             if (this.getTeleportingToPos() != null && this.getTeleportingProgress(1.0F) < 1.0F) {
-                Vec3 angle = new Vec3(random.nextBoolean() ? 0.5F : -0.5F, 2.0F, 0.0F).yRot((float) -Math.toRadians(this.yBodyRot));
-                Vec3 delta = new Vec3(random.nextGaussian() * 2.0F, 4.0F, random.nextGaussian()).yRot((float) -Math.toRadians(this.yBodyRot)).add(this.position());
-                this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_MAGIC.get(), this.getX() + angle.x, this.getY() + angle.y, this.getZ() + angle.z, delta.x, delta.y, delta.z);
+                Vec3 angle = new Vec3(random.nextBoolean() ? 0.5F : -0.5F, 2.0F, 0.0F)
+                        .yRot((float) -Math.toRadians(this.yBodyRot));
+                Vec3 delta = new Vec3(random.nextGaussian() * 2.0F, 4.0F, random.nextGaussian())
+                        .yRot((float) -Math.toRadians(this.yBodyRot)).add(this.position());
+                this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_MAGIC.get(), this.getX() + angle.x,
+                        this.getY() + angle.y, this.getZ() + angle.z, delta.x, delta.y, delta.z);
             } else if (this.random.nextFloat() < 0.003F) {
                 for (int i = 0; i < this.random.nextInt(2) + 2; ++i) {
-                    this.level().addParticle(ACParticleRegistry.WITCH_COOKIE.get(), this.getX() + this.random.nextGaussian() * (double) 0.13F, this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double) 0.13F, this.getZ() + this.random.nextGaussian() * (double) 0.13F, 0.0D, 0.0D, 0.0D);
+                    this.level().addParticle(ACParticleRegistry.WITCH_COOKIE.get(),
+                            this.getX() + this.random.nextGaussian() * (double) 0.13F,
+                            this.getBoundingBox().maxY + 0.5D + this.random.nextGaussian() * (double) 0.13F,
+                            this.getZ() + this.random.nextGaussian() * (double) 0.13F, 0.0D, 0.0D, 0.0D);
                 }
             }
         }
@@ -246,7 +273,10 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
                 this.setTeleportingToPos(null);
             } else {
                 for (int i = 0; i < this.random.nextInt(8) + 8; ++i) {
-                    this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_EXPLOSION.get(), this.getX() + this.random.nextGaussian() * (double) 0.3F, this.getY() + this.random.nextGaussian() * (double) 1.5F, this.getZ() + this.random.nextGaussian() * (double) 0.3F, 0.0D, 0.0D, 0.0D);
+                    this.level().addParticle(ACParticleRegistry.PURPLE_WITCH_EXPLOSION.get(),
+                            this.getX() + this.random.nextGaussian() * (double) 0.3F,
+                            this.getY() + this.random.nextGaussian() * (double) 1.5F,
+                            this.getZ() + this.random.nextGaussian() * (double) 0.3F, 0.0D, 0.0D, 0.0D);
                 }
             }
             this.setOldPosAndRot();
@@ -270,7 +300,8 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
     }
 
     public boolean isUsingItem() {
-        return this.getAnimation() == ANIMATION_EAT && this.getAnimationTick() > 10 && this.getAnimationTick() < 90 || super.isUsingItem();
+        return this.getAnimation() == ANIMATION_EAT && this.getAnimationTick() > 10 && this.getAnimationTick() < 90
+                || super.isUsingItem();
     }
 
     private void tickPossessedEntity(Entity possessedEntity) {
@@ -304,7 +335,6 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
         super.remove(removalReason);
     }
 
-
     public void addAdditionalSaveData(CompoundTag compoundTag) {
         super.addAdditionalSaveData(compoundTag);
         List<UUID> list = this.getPossessedUUIDs();
@@ -331,8 +361,10 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
         for (int i = 0; i < listtag.size(); ++i) {
             this.addPossessedUUID(NbtUtils.loadUUID(listtag.get(i)));
         }
-        if (compoundTag.contains("CrucibleX") && compoundTag.contains("CrucibleY") && compoundTag.contains("CrucibleZ")) {
-            this.setLastCruciblePos(new BlockPos(compoundTag.getInt("CrucibleX"), compoundTag.getInt("CrucibleY"), compoundTag.getInt("CrucibleZ")));
+        if (compoundTag.contains("CrucibleX") && compoundTag.contains("CrucibleY")
+                && compoundTag.contains("CrucibleZ")) {
+            this.setLastCruciblePos(new BlockPos(compoundTag.getInt("CrucibleX"), compoundTag.getInt("CrucibleY"),
+                    compoundTag.getInt("CrucibleZ")));
         }
         teleportCooldown = compoundTag.getInt("TeleportCooldown");
     }
@@ -392,7 +424,8 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{ANIMATION_SWING_LEFT, ANIMATION_SWING_RIGHT, ANIMATION_EAT, ANIMATION_SPELL_0, ANIMATION_SPELL_1};
+        return new Animation[] { ANIMATION_SWING_LEFT, ANIMATION_SWING_RIGHT, ANIMATION_EAT, ANIMATION_SPELL_0,
+                ANIMATION_SPELL_1 };
     }
 
     public boolean isFriendlyFire(LivingEntity entity) {
@@ -404,12 +437,14 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
     }
 
     public Vec3 getStaffPosition() {
-        Vec3 angle = new Vec3(this.getMainArm() == HumanoidArm.LEFT ? 0.18F : -0.18F, 1.625F, 1.625F).yRot((float) -Math.toRadians(this.yBodyRot));
+        Vec3 angle = new Vec3(this.getMainArm() == HumanoidArm.LEFT ? 0.18F : -0.18F, 1.625F, 1.625F)
+                .yRot((float) -Math.toRadians(this.yBodyRot));
         return this.position().add(angle);
     }
 
     public Vec3 getSwingArmPosition() {
-        Vec3 angle = new Vec3(this.getAnimation() == ANIMATION_SWING_LEFT ? 0.25F : -0.25F, 1.45F, 0.45F).yRot((float) -Math.toRadians(this.yBodyRot));
+        Vec3 angle = new Vec3(this.getAnimation() == ANIMATION_SWING_LEFT ? 0.25F : -0.25F, 1.45F, 0.45F)
+                .yRot((float) -Math.toRadians(this.yBodyRot));
         return this.position().add(angle);
     }
 
@@ -443,11 +478,14 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
     }
 
     public void removePossessedUUID(@Nullable UUID uuid) {
-        if (this.entityData.get(POSSESSED_UUID_0).isPresent() && uuid.equals(this.entityData.get(POSSESSED_UUID_0).get())) {
+        if (this.entityData.get(POSSESSED_UUID_0).isPresent()
+                && uuid.equals(this.entityData.get(POSSESSED_UUID_0).get())) {
             this.entityData.set(POSSESSED_UUID_0, Optional.empty());
-        } else if (this.entityData.get(POSSESSED_UUID_1).isPresent() && uuid.equals(this.entityData.get(POSSESSED_UUID_1).get())) {
+        } else if (this.entityData.get(POSSESSED_UUID_1).isPresent()
+                && uuid.equals(this.entityData.get(POSSESSED_UUID_1).get())) {
             this.entityData.set(POSSESSED_UUID_1, Optional.empty());
-        } else if (this.entityData.get(POSSESSED_UUID_2).isPresent() && uuid.equals(this.entityData.get(POSSESSED_UUID_2).get())) {
+        } else if (this.entityData.get(POSSESSED_UUID_2).isPresent()
+                && uuid.equals(this.entityData.get(POSSESSED_UUID_2).get())) {
             this.entityData.set(POSSESSED_UUID_2, Optional.empty());
         }
     }
@@ -476,10 +514,11 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
     @Override
     public void awardKillScore(Entity entity, int deathScore, DamageSource damageSource) {
         super.awardKillScore(entity, deathScore, damageSource);
-        this.level().playSound((Player) null, this.blockPosition(), ACSoundRegistry.LICOWITCH_CELEBRATE.get(), SoundSource.HOSTILE, 0.3F, 0.9F + this.level().random.nextFloat() * 0.2F);
+        this.level().playSound((Player) null, this.blockPosition(), ACSoundRegistry.LICOWITCH_CELEBRATE.get(),
+                SoundSource.HOSTILE, 0.3F, 0.9F + this.level().random.nextFloat() * 0.2F);
     }
 
-        public boolean canReach(BlockPos pos) {
+    public boolean canReach(BlockPos pos) {
         Path path = this.getNavigation().createPath(pos, 0);
         if (path == null) {
             return false;
@@ -521,7 +560,6 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
         }
     }
 
-
     protected SoundEvent getAmbientSound() {
         return ACSoundRegistry.LICOWITCH_IDLE.get();
     }
@@ -545,11 +583,13 @@ public class LicowitchEntity extends Monster implements IAnimatedEntity {
         @Override
         public boolean canUse() {
             LivingEntity target = LicowitchEntity.this.getTarget();
-            if (LicowitchEntity.this.random.nextInt(1000) == 0 && LicowitchEntity.this.canTeleport() && LicowitchEntity.this.getTeleportingToPos() == null && (target == null || !target.isAlive())) {
+            if (LicowitchEntity.this.random.nextInt(1000) == 0 && LicowitchEntity.this.canTeleport()
+                    && LicowitchEntity.this.getTeleportingToPos() == null && (target == null || !target.isAlive())) {
                 teleportVec = LandRandomPos.getPos(LicowitchEntity.this, 16, 16);
                 if (teleportVec != null) {
                     teleportVec = teleportVec.add(0, 1, 0);
-                    AABB aabb = LicowitchEntity.this.getBoundingBox().move(teleportVec.subtract(LicowitchEntity.this.position()));
+                    AABB aabb = LicowitchEntity.this.getBoundingBox()
+                            .move(teleportVec.subtract(LicowitchEntity.this.position()));
                     return LicowitchEntity.this.level().isUnobstructed(LicowitchEntity.this, Shapes.create(aabb));
                 }
             }

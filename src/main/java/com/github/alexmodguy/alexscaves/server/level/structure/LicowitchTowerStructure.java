@@ -29,10 +29,11 @@ import java.util.function.Consumer;
 
 public class LicowitchTowerStructure extends Structure {
 
-    public static final Codec<LicowitchTowerStructure> CODEC = simpleCodec((settings) -> new LicowitchTowerStructure(settings));
+    public static final Codec<LicowitchTowerStructure> CODEC = simpleCodec(
+            (settings) -> new LicowitchTowerStructure(settings));
 
     private static final ResourceLocation TOWER_NBT = new ResourceLocation(AlexsCaves.MODID, "licowitch_tower");
-    private static final int Y = 0;
+    private static final int Y = -30;
 
     public LicowitchTowerStructure(StructureSettings settings) {
         super(settings);
@@ -41,23 +42,25 @@ public class LicowitchTowerStructure extends Structure {
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         int i = context.chunkPos().getBlockX(9);
         int j = context.chunkPos().getBlockZ(9);
-        for (Holder<Biome> holder : ACMath.getBiomesWithinAtY(context.biomeSource(), i, -30, j, 20, context.randomState().sampler())) {
+        for (Holder<Biome> holder : ACMath.getBiomesWithinAtY(context.biomeSource(), i, -30, j, 20,
+                context.randomState().sampler())) {
             if (!holder.is(ACBiomeRegistry.CANDY_CAVITY)) {
                 return Optional.empty();
             }
         }
         Rotation rotation = Rotation.getRandom(context.random());
         BlockPos blockpos = new BlockPos(context.chunkPos().getMinBlockX(), Y, context.chunkPos().getMinBlockZ());
-        return atYCaveBiomePoint(context, piecesBuilder -> piecesBuilder.addPiece(new LicowitchTowerStructurePiece(context.structureTemplateManager(), TOWER_NBT, blockpos, rotation)));
+        return atYCaveBiomePoint(context, piecesBuilder -> piecesBuilder.addPiece(
+                new LicowitchTowerStructurePiece(context.structureTemplateManager(), TOWER_NBT, blockpos, rotation)));
     }
 
-    protected Optional<GenerationStub> atYCaveBiomePoint(GenerationContext context, Consumer<StructurePiecesBuilder> builderConsumer) {
+    protected Optional<GenerationStub> atYCaveBiomePoint(GenerationContext context,
+            Consumer<StructurePiecesBuilder> builderConsumer) {
         ChunkPos chunkpos = context.chunkPos();
         int i = chunkpos.getMiddleBlockX();
         int j = chunkpos.getMiddleBlockZ();
         return Optional.of(new GenerationStub(new BlockPos(i, Y, j), builderConsumer));
     }
-
 
     @Override
     public StructureType<?> type() {

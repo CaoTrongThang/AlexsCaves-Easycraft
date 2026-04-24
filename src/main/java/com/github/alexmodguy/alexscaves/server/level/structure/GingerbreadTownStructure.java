@@ -33,9 +33,10 @@ import java.util.function.Consumer;
 
 public class GingerbreadTownStructure extends Structure {
 
-    public static final Codec<GingerbreadTownStructure> CODEC = simpleCodec((settings) -> new GingerbreadTownStructure(settings));
+    public static final Codec<GingerbreadTownStructure> CODEC = simpleCodec(
+            (settings) -> new GingerbreadTownStructure(settings));
 
-    private static final int Y = 0;
+    private static final int Y = -30;
 
     public GingerbreadTownStructure(StructureSettings settings) {
         super(settings);
@@ -44,7 +45,8 @@ public class GingerbreadTownStructure extends Structure {
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         int i = context.chunkPos().getBlockX(9);
         int j = context.chunkPos().getBlockZ(9);
-        for (Holder<Biome> holder : ACMath.getBiomesWithinAtY(context.biomeSource(), i, -30, j, 20, context.randomState().sampler())) {
+        for (Holder<Biome> holder : ACMath.getBiomesWithinAtY(context.biomeSource(), i, -30, j, 20,
+                context.randomState().sampler())) {
             if (!holder.is(ACBiomeRegistry.CANDY_CAVITY)) {
                 return Optional.empty();
             }
@@ -55,32 +57,36 @@ public class GingerbreadTownStructure extends Structure {
 
     private void buildTown(GenerationContext context, BlockPos blockpos, StructurePiecesBuilder piecesBuilder) {
         Rotation rotation = Rotation.getRandom(context.random());
-        StructureTemplate centerTemplate = context.structureTemplateManager().getOrCreate(GingerbreadHousePiece.TOWN_CENTER_TEMPLATE);
+        StructureTemplate centerTemplate = context.structureTemplateManager()
+                .getOrCreate(GingerbreadHousePiece.TOWN_CENTER_TEMPLATE);
         Vec3i centerSize = centerTemplate.getSize(rotation);
         BlockPos townCenterPos1 = blockpos.offset(-centerSize.getX() / 2, 0, -centerSize.getZ() / 2);
         BlockPos townCenterPos2 = centerTemplate.getZeroPositionWithTransform(townCenterPos1, Mirror.NONE, rotation);
-        GingerbreadRoadPiece roadPiece = new GingerbreadRoadPiece(context.structureTemplateManager(), blockpos, 30, 5, rotation.rotate(Direction.NORTH));
+        GingerbreadRoadPiece roadPiece = new GingerbreadRoadPiece(context.structureTemplateManager(), blockpos, 30, 5,
+                rotation.rotate(Direction.NORTH));
         piecesBuilder.addPiece(roadPiece);
-        GingerbreadHousePiece townCenterPiece = new GingerbreadHousePiece(context.structureTemplateManager(), GingerbreadHousePiece.TOWN_CENTER_TEMPLATE, townCenterPos2, rotation);
-        //add to pending children just so that the bounding boxes pick up on the town center
+        GingerbreadHousePiece townCenterPiece = new GingerbreadHousePiece(context.structureTemplateManager(),
+                GingerbreadHousePiece.TOWN_CENTER_TEMPLATE, townCenterPos2, rotation);
+        // add to pending children just so that the bounding boxes pick up on the town
+        // center
         roadPiece.pendingChildren.add(townCenterPiece);
         piecesBuilder.addPiece(townCenterPiece);
         roadPiece.addChildren(roadPiece, piecesBuilder, context.random());
         List<StructurePiece> list = roadPiece.pendingChildren;
-        while(!list.isEmpty()) {
+        while (!list.isEmpty()) {
             int i = context.random().nextInt(list.size());
             StructurePiece structurepiece = list.remove(i);
             structurepiece.addChildren(roadPiece, piecesBuilder, context.random());
         }
     }
 
-    protected Optional<GenerationStub> atYCaveBiomePoint(GenerationContext context, Consumer<StructurePiecesBuilder> builderConsumer) {
+    protected Optional<GenerationStub> atYCaveBiomePoint(GenerationContext context,
+            Consumer<StructurePiecesBuilder> builderConsumer) {
         ChunkPos chunkpos = context.chunkPos();
         int i = chunkpos.getMiddleBlockX();
         int j = chunkpos.getMiddleBlockZ();
         return Optional.of(new GenerationStub(new BlockPos(i, Y, j), builderConsumer));
     }
-
 
     @Override
     public StructureType<?> type() {
@@ -91,6 +97,5 @@ public class GingerbreadTownStructure extends Structure {
     public GenerationStep.Decoration step() {
         return GenerationStep.Decoration.UNDERGROUND_STRUCTURES;
     }
-
 
 }
