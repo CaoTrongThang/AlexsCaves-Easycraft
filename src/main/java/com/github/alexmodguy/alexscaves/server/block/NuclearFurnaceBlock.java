@@ -32,8 +32,10 @@ import org.jetbrains.annotations.Nullable;
 public class NuclearFurnaceBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+
     public NuclearFurnaceBlock() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5, 1001).sound(ACSoundTypes.NUCLEAR_BOMB).noOcclusion());
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5, 1001).sound(ACSoundTypes.NUCLEAR_BOMB)
+                .noOcclusion());
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
     }
 
@@ -48,27 +50,31 @@ public class NuclearFurnaceBlock extends BaseEntityBlock {
     }
 
     @javax.annotation.Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> entityType) {
-        return createTickerHelper(entityType, ACBlockEntityRegistry.NUCLEAR_FURNACE.get(), NuclearFurnaceBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+            BlockEntityType<T> entityType) {
+        return createTickerHelper(entityType, ACBlockEntityRegistry.NUCLEAR_FURNACE.get(),
+                NuclearFurnaceBlockEntity::tick);
     }
 
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        return NuclearFurnaceComponentBlock.isCornerForFurnace(level, pos, false, true);
+        return NuclearFurnaceComponentBlock.isCornerForFurnace(level, pos, false, null);
     }
 
-    public BlockState updateShape(BlockState state, Direction direction, BlockState state1, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos1) {
-        if(!state.canSurvive(levelAccessor, blockPos)){
+    public BlockState updateShape(BlockState state, Direction direction, BlockState state1, LevelAccessor levelAccessor,
+            BlockPos blockPos, BlockPos blockPos1) {
+        if (!state.canSurvive(levelAccessor, blockPos)) {
             checkCriticalityExplosion(levelAccessor, blockPos);
             return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(state, direction, state1, levelAccessor, blockPos, blockPos1);
     }
 
-    public InteractionResult use(BlockState state, Level level, BlockPos blockPos, Player player, InteractionHand hand, BlockHitResult result) {
-        if(!player.isShiftKeyDown()){
+    public InteractionResult use(BlockState state, Level level, BlockPos blockPos, Player player, InteractionHand hand,
+            BlockHitResult result) {
+        if (!player.isShiftKeyDown()) {
             if (level.isClientSide) {
                 return InteractionResult.SUCCESS;
-            } else if(canSurvive(state, level, blockPos)){
+            } else if (canSurvive(state, level, blockPos)) {
                 BlockEntity blockentity = level.getBlockEntity(blockPos);
                 if (blockentity instanceof NuclearFurnaceBlockEntity nuclearFurnaceBlockEntity) {
                     player.openMenu(nuclearFurnaceBlockEntity);
@@ -81,13 +87,15 @@ public class NuclearFurnaceBlock extends BaseEntityBlock {
         return InteractionResult.PASS;
     }
 
-    public void playerDestroy(Level level, Player player, BlockPos blockPos, BlockState state, @javax.annotation.Nullable BlockEntity entity, ItemStack itemStack) {
+    public void playerDestroy(Level level, Player player, BlockPos blockPos, BlockState state,
+            @javax.annotation.Nullable BlockEntity entity, ItemStack itemStack) {
         checkCriticalityExplosion(level, blockPos);
         super.playerDestroy(level, player, blockPos, state, entity, itemStack);
     }
 
     private void checkCriticalityExplosion(LevelReader level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof NuclearFurnaceBlockEntity nuclearFurnaceBlockEntity && nuclearFurnaceBlockEntity.getCriticality() >= 2F) {
+        if (level.getBlockEntity(pos) instanceof NuclearFurnaceBlockEntity nuclearFurnaceBlockEntity
+                && nuclearFurnaceBlockEntity.getCriticality() >= 2F) {
             nuclearFurnaceBlockEntity.destroyWhileCritical(false);
         }
     }
@@ -96,7 +104,7 @@ public class NuclearFurnaceBlock extends BaseEntityBlock {
         if (!blockState.is(blockState1.getBlock())) {
             BlockEntity blockentity = level.getBlockEntity(blockPos);
             if (blockentity instanceof Container) {
-                Containers.dropContents(level, blockPos, (Container)blockentity);
+                Containers.dropContents(level, blockPos, (Container) blockentity);
                 level.updateNeighbourForOutputSignal(blockPos, this);
             }
             super.onRemove(blockState, level, blockPos, blockState1, idk);

@@ -208,7 +208,7 @@ public class ACEntityRegistry {
         public static final RegistryObject<EntityType<HullbreakerEntity>> HULLBREAKER = DEF_REG.register("hullbreaker",
                         () -> (EntityType) EntityType.Builder
                                         .of(HullbreakerEntity::new, MobCategory.UNDERGROUND_WATER_CREATURE)
-                                        .sized(7F, 4.5F).clientTrackingRange(20).build(entityId("hullbreaker")));
+                                        .sized(6.5F, 4.5F).clientTrackingRange(20).build(entityId("hullbreaker")));
         public static final RegistryObject<EntityType<GossamerWormEntity>> GOSSAMER_WORM = DEF_REG.register(
                         "gossamer_worm",
                         () -> (EntityType) EntityType.Builder.of(GossamerWormEntity::new, DEEP_SEA_CREATURE)
