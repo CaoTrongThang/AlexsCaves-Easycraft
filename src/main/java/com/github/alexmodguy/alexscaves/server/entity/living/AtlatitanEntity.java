@@ -45,10 +45,14 @@ import java.util.Optional;
 
 public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingMount {
 
-    private static final EntityDataAccessor<Optional<BlockPos>> EATING_POS = SynchedEntityData.defineId(AtlatitanEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
-    private static final EntityDataAccessor<Optional<BlockState>> LAST_EATEN_BLOCK = SynchedEntityData.defineId(AtlatitanEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_STATE);
-    private static final EntityDataAccessor<Integer> RIDEABLE_FOR = SynchedEntityData.defineId(AtlatitanEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> METER_AMOUNT = SynchedEntityData.defineId(AtlatitanEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Optional<BlockPos>> EATING_POS = SynchedEntityData
+            .defineId(AtlatitanEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
+    private static final EntityDataAccessor<Optional<BlockState>> LAST_EATEN_BLOCK = SynchedEntityData
+            .defineId(AtlatitanEntity.class, EntityDataSerializers.OPTIONAL_BLOCK_STATE);
+    private static final EntityDataAccessor<Integer> RIDEABLE_FOR = SynchedEntityData.defineId(AtlatitanEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> METER_AMOUNT = SynchedEntityData.defineId(AtlatitanEntity.class,
+            EntityDataSerializers.FLOAT);
 
     public AtlatitanEntity(EntityType entityType, Level level) {
         super(entityType, level);
@@ -83,12 +87,14 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.325D).add(Attributes.MAX_HEALTH, 400.0D).add(Attributes.KNOCKBACK_RESISTANCE, 1.0D).add(Attributes.ATTACK_DAMAGE, 8);
+        return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.325D)
+                .add(Attributes.MAX_HEALTH, 29250.0D).add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(Attributes.ATTACK_DAMAGE, 60);
     }
 
     @Override
     protected void onStep() {
-        if(!this.isBaby()){
+        if (!this.isBaby()) {
             if (screenShakeAmount <= 1.0F) {
                 this.playSound(ACSoundRegistry.ATLATITAN_STEP.get(), 2, 1);
             }
@@ -102,16 +108,29 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
     public void tick() {
         super.tick();
         if (level().isClientSide) {
-            if (this.getAnimation() == ANIMATION_EAT_LEAVES && this.getAnimationTick() > 35 && this.getAnimationTick() < 90) {
+            if (this.getAnimation() == ANIMATION_EAT_LEAVES && this.getAnimationTick() > 35
+                    && this.getAnimationTick() < 90) {
                 BlockState lastEatenBlock = getLastEatenBlock();
                 if (lastEatenBlock != null) {
-                    Vec3 crumbPos = this.headPart.position().add((random.nextFloat() - 0.5F) * 2.0F * this.getScale(), (0.5F + (random.nextFloat() - 0.5F) * 0.2F) * this.getScale(), (random.nextFloat() - 0.5F) * 2.0F * this.getScale());
-                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, lastEatenBlock), crumbPos.x, crumbPos.y, crumbPos.z, ((double) this.random.nextFloat() - 0.5D) * 0.1D, ((double) this.random.nextFloat() - 0.5D) * 0.1D, ((double) this.random.nextFloat() - 0.5D) * 0.1D);
+                    Vec3 crumbPos = this.headPart.position().add((random.nextFloat() - 0.5F) * 2.0F * this.getScale(),
+                            (0.5F + (random.nextFloat() - 0.5F) * 0.2F) * this.getScale(),
+                            (random.nextFloat() - 0.5F) * 2.0F * this.getScale());
+                    this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, lastEatenBlock), crumbPos.x,
+                            crumbPos.y, crumbPos.z, ((double) this.random.nextFloat() - 0.5D) * 0.1D,
+                            ((double) this.random.nextFloat() - 0.5D) * 0.1D,
+                            ((double) this.random.nextFloat() - 0.5D) * 0.1D);
                 }
             }
-            if(this.getRideableFor() > 0 && level().random.nextInt(2) == 0 && !this.isDancing()){
-                Vec3 particlePos = this.headPart.position().add((random.nextFloat() - 0.5F) * 2.0F * this.getScale(), random.nextFloat() * 2.0F * this.getScale(), (random.nextFloat() - 0.5F) * 2.0F * this.getScale()).add(this.getDeltaMovement());
-                this.level().addParticle(ACParticleRegistry.HAPPINESS.get(), particlePos.x, particlePos.y, particlePos.z, ((double) this.random.nextFloat() - 0.5D) * 0.1D, ((double) this.random.nextFloat() - 0.5D) * 0.1D, ((double) this.random.nextFloat() - 0.5D) * 0.1D);
+            if (this.getRideableFor() > 0 && level().random.nextInt(2) == 0 && !this.isDancing()) {
+                Vec3 particlePos = this.headPart.position()
+                        .add((random.nextFloat() - 0.5F) * 2.0F * this.getScale(),
+                                random.nextFloat() * 2.0F * this.getScale(),
+                                (random.nextFloat() - 0.5F) * 2.0F * this.getScale())
+                        .add(this.getDeltaMovement());
+                this.level().addParticle(ACParticleRegistry.HAPPINESS.get(), particlePos.x, particlePos.y,
+                        particlePos.z, ((double) this.random.nextFloat() - 0.5D) * 0.1D,
+                        ((double) this.random.nextFloat() - 0.5D) * 0.1D,
+                        ((double) this.random.nextFloat() - 0.5D) * 0.1D);
             }
             Player player = AlexsCaves.PROXY.getClientSidePlayer();
             if (player != null && player.isPassengerOfSameVehicle(this)) {
@@ -119,35 +138,39 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
                     AlexsCaves.sendMSGToServer(new MountedEntityKeyMessage(this.getId(), player.getId(), 2));
                 }
             }
-        }else{
-            if(this.getAnimation() == ANIMATION_STOMP && this.getAnimationTick() == 30){
+        } else {
+            if (this.getAnimation() == ANIMATION_STOMP && this.getAnimationTick() == 30) {
                 this.playSound(ACSoundRegistry.ATLATITAN_STOMP.get(), 3.0F, 1.0F);
-                if(this.screenShakeAmount < 4.0F){
+                if (this.screenShakeAmount < 4.0F) {
                     this.screenShakeAmount = 4.0F;
                 }
                 crushBlocksInRing(15, this.getBlockX(), this.getBlockZ(), 1.0F);
-                if(this.isVehicle() && !this.level().isClientSide){
-                    for(Entity passenger : this.getPassengers()){
+                if (this.isVehicle() && !this.level().isClientSide) {
+                    for (Entity passenger : this.getPassengers()) {
                         ACAdvancementTriggerRegistry.ATLATITAN_STOMP.triggerForEntity(passenger);
                     }
                 }
             }
-            if(this.getRideableFor() > 0){
+            if (this.getRideableFor() > 0) {
                 this.setRideableFor(this.getRideableFor() - 1);
             }
             if (this.tickCount % 100 == 0 && this.getHealth() < this.getMaxHealth()) {
                 this.heal(2);
             }
-            if(this.getAnimation() == ANIMATION_RIGHT_KICK && this.getAnimationTick() == 8){
+            if (this.getAnimation() == ANIMATION_RIGHT_KICK && this.getAnimationTick() == 8) {
                 Vec3 armPos = this.position().add(rotateOffsetVec(new Vec3(-2, 0, 2.5F), 0, this.yBodyRot));
-                this.hurtEntitiesAround(armPos, 5.0F,  (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F, 1.0F, false, false);
+                this.hurtEntitiesAround(armPos, 5.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F,
+                        1.0F, false, false);
             }
-            if(this.getAnimation() == ANIMATION_LEFT_KICK && this.getAnimationTick() == 8){
+            if (this.getAnimation() == ANIMATION_LEFT_KICK && this.getAnimationTick() == 8) {
                 Vec3 armPos = this.position().add(rotateOffsetVec(new Vec3(2, 0, 2.5F), 0, this.yBodyRot));
-                this.hurtEntitiesAround(armPos, 5.0F,  (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F, 1.0F, false, false);
+                this.hurtEntitiesAround(armPos, 5.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.8F,
+                        1.0F, false, false);
             }
-            if((this.getAnimation() == ANIMATION_LEFT_WHIP || this.getAnimation() == ANIMATION_RIGHT_WHIP) && this.getAnimationTick() > 20 && this.getAnimationTick() < 30){
-                this.hurtEntitiesAround(this.tailPart2.position(), 12.0F, (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE), 1.0F, false, false);
+            if ((this.getAnimation() == ANIMATION_LEFT_WHIP || this.getAnimation() == ANIMATION_RIGHT_WHIP)
+                    && this.getAnimationTick() > 20 && this.getAnimationTick() < 30) {
+                this.hurtEntitiesAround(this.tailPart2.position(), 12.0F,
+                        (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE), 1.0F, false, false);
             }
         }
         if (this.isVehicle()) {
@@ -201,18 +224,17 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
         this.setRideableFor(compound.getInt("RideableTime"));
     }
 
-
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("RideableTime", this.getRideableFor());
     }
 
-
     @Override
     public void onKeyPacket(Entity keyPresser, int type) {
         if (keyPresser.isPassengerOfSameVehicle(this)) {
             if (type == 2) {
-                if (this.getMeterAmount() >= 1.0F && (this.getAnimation() == NO_ANIMATION || this.getAnimation() == null)) {
+                if (this.getMeterAmount() >= 1.0F
+                        && (this.getAnimation() == NO_ANIMATION || this.getAnimation() == null)) {
                     this.yBodyRot = keyPresser.getYHeadRot();
                     this.setYRot(keyPresser.getYHeadRot());
                     this.setAnimation(ANIMATION_STOMP);
@@ -226,12 +248,15 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
         InteractionResult prev = super.mobInteract(player, hand);
         ItemStack itemstack = player.getItemInHand(hand);
         if (!prev.consumesAction() && itemstack.is(ACItemRegistry.SERENE_SALAD.get()) && !this.isBaby()) {
-            if (!com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack).isEmpty()) {
-                this.spawnAtLocation(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack).copy());
+            if (!com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack)
+                    .isEmpty()) {
+                this.spawnAtLocation(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat
+                        .getCraftingRemainingItem(itemstack).copy());
             }
             this.usePlayerItem(player, hand, itemstack);
             return InteractionResult.SUCCESS;
-        }else if(!prev.consumesAction() && this.getRideableFor() > 0 && !this.isBaby() && this.canAddPassenger(player)){
+        } else if (!prev.consumesAction() && this.getRideableFor() > 0 && !this.isBaby()
+                && this.canAddPassenger(player)) {
             player.startRiding(this);
         }
         return prev;
@@ -284,7 +309,8 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
         if (vec31.distanceToSqr(this.getX(), vec31.y, this.getZ()) > 1.0F) {
             this.getMoveControl().setWantedPosition(vec31.x, this.getY(), vec31.z, 1.0D);
         }
-        return this.distanceToSqr(vec31.x, this.getY(), vec31.z) < headDistToBody && Mth.degreesDifferenceAbs(this.yBodyRot, dir.toYRot()) < 7;
+        return this.distanceToSqr(vec31.x, this.getY(), vec31.z) < headDistToBody
+                && Mth.degreesDifferenceAbs(this.yBodyRot, dir.toYRot()) < 7;
     }
 
     protected Vec3 getRiddenInput(Player player, Vec3 deltaIn) {
@@ -298,15 +324,14 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
             this.setRot(player.getYRot(), player.getXRot() * 0.25F);
             this.setTarget(null);
             this.entityData.set(WALKING, true);
-        }else{
+        } else {
             this.entityData.set(WALKING, false);
         }
     }
 
-
     protected float getRiddenSpeed(Player rider) {
         float f1 = 0.0F;
-        if(this.areLegsMoving()){
+        if (this.areLegsMoving()) {
             float f = this.getLegSlamAmount(2.0F, 0.66F);
             float threshold = 0.65F;
             if (f >= threshold) {
@@ -326,11 +351,13 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
     }
 
     public void positionRider(Entity passenger, MoveFunction moveFunction) {
-        if (this.isPassengerOfSameVehicle(passenger) && passenger instanceof LivingEntity living && !this.touchingUnloadedChunk()) {
+        if (this.isPassengerOfSameVehicle(passenger) && passenger instanceof LivingEntity living
+                && !this.touchingUnloadedChunk()) {
             float seatY = 0.5F;
             float seatZ = 0.5F;
-            if(this.getAnimation() == ANIMATION_STOMP){
-                float animationIntensity = ACMath.cullAnimationTick(this.getAnimationTick(), 1F, ANIMATION_STOMP, 1.0F, 0, 30);
+            if (this.getAnimation() == ANIMATION_STOMP) {
+                float animationIntensity = ACMath.cullAnimationTick(this.getAnimationTick(), 1F, ANIMATION_STOMP, 1.0F,
+                        0, 30);
                 seatY += animationIntensity * 1.5F;
                 seatZ += animationIntensity * -4.5F;
             }
@@ -338,7 +365,9 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
             passenger.setYBodyRot(this.yBodyRot);
             passenger.fallDistance = 0.0F;
             clampRotation(living, 105);
-            moveFunction.accept(passenger, this.getX() + seatOffset.x, this.getY() + seatOffset.y + this.getPassengersRidingOffset() - this.getLegSolverBodyOffset(), this.getZ() + seatOffset.z);
+            moveFunction.accept(passenger, this.getX() + seatOffset.x,
+                    this.getY() + seatOffset.y + this.getPassengersRidingOffset() - this.getLegSolverBodyOffset(),
+                    this.getZ() + seatOffset.z);
         } else {
             super.positionRider(passenger, moveFunction);
         }
