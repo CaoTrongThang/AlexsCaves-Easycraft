@@ -34,7 +34,8 @@
     "SeagrassFeatureMixin",
     "ShipwreckStructureMixin",
     "SwampHutPieceMixin",
-    "NoiseGeneratorSettingsMixin"
+    "NoiseGeneratorSettingsMixin",
+    "WorldGenRegionMixin"
   ],
   "client": [
     "client.AdvancementTabMixin",
