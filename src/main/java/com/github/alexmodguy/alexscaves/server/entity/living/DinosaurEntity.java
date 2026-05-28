@@ -36,6 +36,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -118,6 +120,36 @@ public abstract class DinosaurEntity extends TamableAnimal
         if (!buryingEggs && buryEggsProgress > 0F) {
             buryEggsProgress--;
         }
+        if (!this.level().isClientSide && this.isTame() && this.getCommand() == 0 && this.hasRestriction()) {
+            if (this.tickCount % 40 == 0 && this.distanceToSqr(Vec3.atCenterOf(this.getRestrictCenter())) > 40 * 40) {
+                this.teleportToWanderCenter();
+            }
+        }
+    }
+
+    private void teleportToWanderCenter() {
+        BlockPos center = this.getRestrictCenter();
+        for (int i = 0; i < 10; i++) {
+            int dx = this.random.nextInt(17) - 8;
+            int dz = this.random.nextInt(17) - 8;
+            if (tryWanderTeleportTo(center.offset(dx, 0, dz))) {
+                return;
+            }
+        }
+    }
+
+    private boolean tryWanderTeleportTo(BlockPos pos) {
+        BlockPathTypes types = WalkNodeEvaluator.getBlockPathTypeStatic(this.level(), pos.mutable());
+        if (types != BlockPathTypes.WALKABLE) {
+            return false;
+        }
+        BlockPos delta = pos.subtract(this.blockPosition());
+        if (!this.level().noCollision(this, this.getBoundingBox().move(delta.getX(), delta.getY(), delta.getZ()))) {
+            return false;
+        }
+        this.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, this.getYRot(), this.getXRot());
+        this.getNavigation().stop();
+        return true;
     }
 
     public float maxSitTicks() {
@@ -145,7 +177,15 @@ public abstract class DinosaurEntity extends TamableAnimal
     }
 
     public void setCommand(int command) {
+        int old = this.getCommand();
         this.entityData.set(COMMAND, command);
+        if (this.isTame()) {
+            if (old != 0 && command == 0) {
+                this.restrictTo(this.blockPosition(), 24);
+            } else if (command != 0) {
+                this.clearRestriction();
+            }
+        }
     }
 
     public int getAltSkin() {

@@ -108,7 +108,7 @@ public class TremorsaurusEntity extends DinosaurEntity
         this.goalSelector.addGoal(5, new AnimalLayEggGoal(this, 100, 1));
         this.goalSelector.addGoal(6, new TemptGoal(this, 1.1D,
                 Ingredient.of(ACBlockRegistry.COOKED_DINOSAUR_CHOP.get(), ACBlockRegistry.DINOSAUR_CHOP.get()), false));
-        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 1.0D, 30));
+        this.goalSelector.addGoal(7, new DinosaurWanderGoal(this, 1.0D, 30));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, TremorsaurusEntity.class)));
@@ -261,7 +261,7 @@ public class TremorsaurusEntity extends DinosaurEntity
                             shakePreyPos.z - entity.getZ());
                     entity.setDeltaMovement(minus);
                     if (this.getAnimationTick() % 10 == 0) {
-                        entity.hurt(damageSources().mobAttack(this), 5 + this.getRandom().nextInt(2));
+                        entity.hurt(damageSources().mobAttack(this), 20 + this.getRandom().nextInt(6));
                     }
                 } else {
                     entity.setDeltaMovement(entity.getDeltaMovement().scale(0.6F));

@@ -41,9 +41,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity {
     public LegSolverQuadruped legSolver = new LegSolverQuadruped(-0.15F, 0.6F, 0.5F, 0.75F, 1);
-    private static final EntityDataAccessor<Integer> PECK_Y = SynchedEntityData.defineId(RelicheirusEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> HELD_MOB_ID = SynchedEntityData.defineId(RelicheirusEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> PUSHING_TREES_FOR = SynchedEntityData.defineId(RelicheirusEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> PECK_Y = SynchedEntityData.defineId(RelicheirusEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> HELD_MOB_ID = SynchedEntityData.defineId(RelicheirusEntity.class,
+            EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> PUSHING_TREES_FOR = SynchedEntityData
+            .defineId(RelicheirusEntity.class, EntityDataSerializers.INT);
     private Animation currentAnimation;
     private int animationTick;
     public static final Animation ANIMATION_SPEAK_1 = Animation.create(13);
@@ -72,7 +75,8 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.ATTACK_DAMAGE, 12.0D).add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.MAX_HEALTH, 120.0D);
+        return Monster.createMonsterAttributes().add(Attributes.ATTACK_DAMAGE, 12.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.MAX_HEALTH, 120.0D);
     }
 
     protected void registerGoals() {
@@ -83,11 +87,12 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
         this.goalSelector.addGoal(4, new TemptGoal(this, 1.1D, Ingredient.of(ACBlockRegistry.TREE_STAR.get()), false));
         this.goalSelector.addGoal(5, new RelicheirusPushTreesGoal(this, 25));
         this.goalSelector.addGoal(6, new RelicheirusNibblePewensGoal(this, 20));
-        this.goalSelector.addGoal(7, new RandomStrollGoal(this, 1.0D, 45));
+        this.goalSelector.addGoal(7, new DinosaurWanderGoal(this, 1.0D, 45));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, RelicheirusEntity.class)));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, TrilocarisEntity.class, 100, true, false, null));
+        this.targetSelector.addGoal(2,
+                new NearestAttackableTargetGoal<>(this, TrilocarisEntity.class, 100, true, false, null));
     }
 
     protected PathNavigation createNavigation(Level level) {
@@ -117,8 +122,10 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
         InteractionResult prev = super.mobInteract(player, hand);
         ItemStack itemstack = player.getItemInHand(hand);
         if (!prev.consumesAction() && itemstack.is(ACItemRegistry.PRIMORDIAL_SOUP.get())) {
-            if (!com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack).isEmpty()) {
-                this.spawnAtLocation(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack).copy());
+            if (!com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack)
+                    .isEmpty()) {
+                this.spawnAtLocation(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat
+                        .getCraftingRemainingItem(itemstack).copy());
             }
             this.usePlayerItem(player, hand, itemstack);
             return InteractionResult.SUCCESS;
@@ -150,7 +157,8 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
             this.heal(2);
         }
         if (!level().isClientSide) {
-            if (isStillEnough() && random.nextInt(200) == 0 && this.getAnimation() == NO_ANIMATION && !this.isDancing()) {
+            if (isStillEnough() && random.nextInt(200) == 0 && this.getAnimation() == NO_ANIMATION
+                    && !this.isDancing()) {
                 Animation idle;
                 float rand = random.nextFloat();
                 if (rand < 0.15F) {
@@ -187,7 +195,8 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
                 this.setPushingTreesFor(this.getPushingTreesFor() - 1);
             }
         }
-        if (this.getAnimation() == ANIMATION_SPEAK_1 && this.getAnimationTick() == 1 || this.getAnimation() == ANIMATION_SPEAK_2 && this.getAnimationTick() == 1) {
+        if (this.getAnimation() == ANIMATION_SPEAK_1 && this.getAnimationTick() == 1
+                || this.getAnimation() == ANIMATION_SPEAK_2 && this.getAnimationTick() == 1) {
             actuallyPlayAmbientSound();
         }
     }
@@ -209,7 +218,8 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
             float anim2 = Math.min(getAnimationTick(), 15F) / 15F;
             triloUp = triloUp.add(0, (this.getEyeHeight() + 1F) * anim1, anim2 * -1F + 1F);
         }
-        Vec3 head = triloUp.xRot(-this.getXRot() * ((float) Math.PI / 180F)).yRot(-this.getYHeadRot() * ((float) Math.PI / 180F));
+        Vec3 head = triloUp.xRot(-this.getXRot() * ((float) Math.PI / 180F))
+                .yRot(-this.getYHeadRot() * ((float) Math.PI / 180F));
         return this.position().add(head);
     }
 
@@ -218,13 +228,14 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
     }
 
     public boolean shouldRaiseArms() {
-        return this.getAnimation() == ANIMATION_EAT_TREE || this.getAnimation() == ANIMATION_PUSH_TREE || this.getAnimation() == ANIMATION_SCRATCH_1 || this.getAnimation() == ANIMATION_SCRATCH_2 || this.getAnimation() == ANIMATION_MELEE_SLASH_1 || this.getAnimation() == ANIMATION_MELEE_SLASH_2;
+        return this.getAnimation() == ANIMATION_EAT_TREE || this.getAnimation() == ANIMATION_PUSH_TREE
+                || this.getAnimation() == ANIMATION_SCRATCH_1 || this.getAnimation() == ANIMATION_SCRATCH_2
+                || this.getAnimation() == ANIMATION_MELEE_SLASH_1 || this.getAnimation() == ANIMATION_MELEE_SLASH_2;
     }
 
     public void setPeckY(int y) {
         this.entityData.set(PECK_Y, y);
     }
-
 
     public int getPeckY() {
         return this.entityData.get(PECK_Y);
@@ -301,7 +312,9 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{ANIMATION_SPEAK_1, ANIMATION_SPEAK_2, ANIMATION_EAT_TREE, ANIMATION_EAT_TRILOCARIS, ANIMATION_PUSH_TREE, ANIMATION_SCRATCH_1, ANIMATION_SCRATCH_2, ANIMATION_SHAKE, ANIMATION_MELEE_SLASH_1, ANIMATION_MELEE_SLASH_2};
+        return new Animation[] { ANIMATION_SPEAK_1, ANIMATION_SPEAK_2, ANIMATION_EAT_TREE, ANIMATION_EAT_TRILOCARIS,
+                ANIMATION_PUSH_TREE, ANIMATION_SCRATCH_1, ANIMATION_SCRATCH_2, ANIMATION_SHAKE, ANIMATION_MELEE_SLASH_1,
+                ANIMATION_MELEE_SLASH_2 };
     }
 
     public float getScale() {
@@ -344,7 +357,8 @@ public class RelicheirusEntity extends DinosaurEntity implements IAnimatedEntity
         }
         Vec3 delta = new Vec3(vec32.x * 0.1F, 0F, vec32.z * 0.1F);
         this.setDeltaMovement(this.getDeltaMovement().add(delta));
-        return this.distanceToSqr(vec31.x, this.getY(), vec31.z) < 4.0D && Mth.degreesDifferenceAbs(this.getYRot(), dir.toYRot()) < 7;
+        return this.distanceToSqr(vec31.x, this.getY(), vec31.z) < 4.0D
+                && Mth.degreesDifferenceAbs(this.getYRot(), dir.toYRot()) < 7;
     }
 
     public boolean isFood(ItemStack stack) {

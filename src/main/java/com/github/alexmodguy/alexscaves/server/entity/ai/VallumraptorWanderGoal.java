@@ -20,7 +20,11 @@ public class VallumraptorWanderGoal extends RandomStrollGoal {
     @Nullable
     protected Vec3 getPosition() {
         if (raptor.isPackFollower()) {
-            return DefaultRandomPos.getPosTowards(this.mob, 10, 7, ((Entity) raptor.getPackLeader()).position(), (double) ((float) Math.PI / 2F));
+            return DefaultRandomPos.getPosTowards(this.mob, 10, 7, ((Entity) raptor.getPackLeader()).position(),
+                    (double) ((float) Math.PI / 2F));
+        } else if (raptor.isTame() && raptor.getCommand() == 0 && raptor.hasRestriction()) {
+            return DefaultRandomPos.getPosTowards(this.mob, 16, 7, Vec3.atCenterOf(raptor.getRestrictCenter()),
+                    (double) ((float) Math.PI / 2F));
         } else {
             return DefaultRandomPos.getPos(this.mob, 16, 7);
         }
