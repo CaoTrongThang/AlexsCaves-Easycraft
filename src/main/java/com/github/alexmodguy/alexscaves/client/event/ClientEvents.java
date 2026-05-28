@@ -851,10 +851,10 @@ public class ClientEvents {
         float defaultNearPlaneDistance = RenderSystem.getShaderFogStart();
 
         Entity player = Minecraft.getInstance().getCameraEntity();
-        FluidState fluidstate = player.level().getFluidState(event.getCamera().getBlockPosition());
         BlockState blockState = player.level().getBlockState(event.getCamera().getBlockPosition());
+        FluidState fluidstate = blockState.getFluidState();
         if (!fluidstate.isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat
-                .getFluidType(fluidstate.getType()).equals(ACFluidRegistry.ACID_FLUID_TYPE.get())) {
+                .getFluidType(fluidstate.getType()) == ACFluidRegistry.ACID_FLUID_TYPE.get()) {
             event.setCanceled(true);
             float farness = 10.0F;
             if (Minecraft.getInstance().player.hasEffect(ACEffectRegistry.DEEPSIGHT.get())) {
@@ -866,7 +866,7 @@ public class ClientEvents {
             return;
         }
         if (!fluidstate.isEmpty() && com.github.alexmodguy.alexscaves.fabric.FluidTypeCompat
-                .getFluidType(fluidstate.getType()).equals(ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get())) {
+                .getFluidType(fluidstate.getType()) == ACFluidRegistry.PURPLE_SODA_FLUID_TYPE.get()) {
             event.setCanceled(true);
             float farness = 20.0F;
             float nearness = -8.0F;

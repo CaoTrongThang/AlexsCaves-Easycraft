@@ -326,7 +326,7 @@ public abstract class SauropodBaseEntity extends DinosaurEntity
     }
 
     private float wrapNeckDegrees(float f) {
-        return f % 360.0F;
+        return Mth.wrapDegrees(f);
     }
 
     protected void crushBlocksInRing(int width, int ringStartX, int ringStartZ, float dropChance) {

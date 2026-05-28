@@ -89,7 +89,7 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.325D)
                 .add(Attributes.MAX_HEALTH, 29250.0D).add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .add(Attributes.ATTACK_DAMAGE, 60);
+                .add(Attributes.ATTACK_DAMAGE, 60).add(Attributes.ARMOR, 40.0D);
     }
 
     @Override
@@ -246,16 +246,7 @@ public class AtlatitanEntity extends SauropodBaseEntity implements KeybindUsingM
 
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         InteractionResult prev = super.mobInteract(player, hand);
-        ItemStack itemstack = player.getItemInHand(hand);
-        if (!prev.consumesAction() && itemstack.is(ACItemRegistry.SERENE_SALAD.get()) && !this.isBaby()) {
-            if (!com.github.alexmodguy.alexscaves.fabric.ItemStackCompat.getCraftingRemainingItem(itemstack)
-                    .isEmpty()) {
-                this.spawnAtLocation(com.github.alexmodguy.alexscaves.fabric.ItemStackCompat
-                        .getCraftingRemainingItem(itemstack).copy());
-            }
-            this.usePlayerItem(player, hand, itemstack);
-            return InteractionResult.SUCCESS;
-        } else if (!prev.consumesAction() && this.getRideableFor() > 0 && !this.isBaby()
+        if (!prev.consumesAction() && this.getRideableFor() > 0 && !this.isBaby()
                 && this.canAddPassenger(player)) {
             player.startRiding(this);
         }

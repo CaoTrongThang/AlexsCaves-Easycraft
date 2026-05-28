@@ -112,7 +112,6 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         right_Hand.setTextureOffset(20, 238).addBox(2.0F, -2.0F, -12.75F, 0.0F, 47.0F, 10.0F, 0.0F, true);
         right_Hand.setTextureOffset(49, 0).addBox(9.0F, 37.0F, 13.25F, 8.0F, 8.0F, 8.0F, 0.0F, true);
 
-
         left_Arm = new AdvancedModelBox(this);
         left_Arm.setRotationPoint(23.0F, -3.0F, -37.5F);
         chest.addChild(left_Arm);
@@ -222,7 +221,8 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         animator.rotate(chest, (float) Math.toRadians(-20), 0, 0);
         animator.rotate(left_Leg, (float) Math.toRadians(40), 0, 0);
         animator.rotate(right_Leg, (float) Math.toRadians(40), 0, 0);
-        animator.rotate(left_Arm, (float) Math.toRadians(-20), (float) Math.toRadians(-20), (float) Math.toRadians(-20));
+        animator.rotate(left_Arm, (float) Math.toRadians(-20), (float) Math.toRadians(-20),
+                (float) Math.toRadians(-20));
         animator.rotate(right_Arm, (float) Math.toRadians(-20), (float) Math.toRadians(20), (float) Math.toRadians(20));
         animator.rotate(left_Hand, (float) Math.toRadians(50), 0, 0);
         animator.rotate(right_Hand, (float) Math.toRadians(50), 0, 0);
@@ -303,31 +303,31 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         animator.setAnimation(SauropodBaseEntity.ANIMATION_LEFT_KICK);
         animator.startKeyframe(4);
         animator.move(left_Arm, 3, 3, -3);
-        animator.rotate(left_Arm,  (float) Math.toRadians(-30), (float) Math.toRadians(-40), 0);
-        animator.rotate(left_Hand,  (float) Math.toRadians(40), 0, (float) Math.toRadians(10));
-        animator.rotate(body,  0, (float) Math.toRadians(10), 0);
-        animator.rotate(tail,  0, (float) Math.toRadians(10), 0);
-        animator.rotate(neck,  0, (float) Math.toRadians(-5), 0);
+        animator.rotate(left_Arm, (float) Math.toRadians(-30), (float) Math.toRadians(-40), 0);
+        animator.rotate(left_Hand, (float) Math.toRadians(40), 0, (float) Math.toRadians(10));
+        animator.rotate(body, 0, (float) Math.toRadians(10), 0);
+        animator.rotate(tail, 0, (float) Math.toRadians(10), 0);
+        animator.rotate(neck, 0, (float) Math.toRadians(-5), 0);
         animator.endKeyframe();
         animator.startKeyframe(6);
         animator.move(left_Arm, 0, -5, -3);
-        animator.rotate(left_Arm,  (float) Math.toRadians(-80), (float) Math.toRadians(0), 0);
-        animator.rotate(left_Hand,  (float) Math.toRadians(10), 0, (float) Math.toRadians(10));
+        animator.rotate(left_Arm, (float) Math.toRadians(-80), (float) Math.toRadians(0), 0);
+        animator.rotate(left_Hand, (float) Math.toRadians(10), 0, (float) Math.toRadians(10));
         animator.endKeyframe();
         animator.resetKeyframe(10);
         animator.setAnimation(SauropodBaseEntity.ANIMATION_RIGHT_KICK);
         animator.startKeyframe(5);
         animator.move(right_Arm, -3, 3, -3);
-        animator.rotate(right_Arm,  (float) Math.toRadians(-30), (float) Math.toRadians(40), 0);
-        animator.rotate(right_Hand,  (float) Math.toRadians(40), 0, (float) Math.toRadians(-10));
-        animator.rotate(body,  0, (float) Math.toRadians(-10), 0);
-        animator.rotate(tail,  0, (float) Math.toRadians(-10), 0);
-        animator.rotate(neck,  0, (float) Math.toRadians(5), 0);
+        animator.rotate(right_Arm, (float) Math.toRadians(-30), (float) Math.toRadians(40), 0);
+        animator.rotate(right_Hand, (float) Math.toRadians(40), 0, (float) Math.toRadians(-10));
+        animator.rotate(body, 0, (float) Math.toRadians(-10), 0);
+        animator.rotate(tail, 0, (float) Math.toRadians(-10), 0);
+        animator.rotate(neck, 0, (float) Math.toRadians(5), 0);
         animator.endKeyframe();
         animator.startKeyframe(4);
         animator.move(right_Arm, 0, -5, -3);
-        animator.rotate(right_Arm,  (float) Math.toRadians(-80), (float) Math.toRadians(0), 0);
-        animator.rotate(right_Hand,  (float) Math.toRadians(10), 0, (float) Math.toRadians(-10));
+        animator.rotate(right_Arm, (float) Math.toRadians(-80), (float) Math.toRadians(0), 0);
+        animator.rotate(right_Hand, (float) Math.toRadians(10), 0, (float) Math.toRadians(-10));
         animator.endKeyframe();
         animator.resetKeyframe(6);
         animator.setAnimation(SauropodBaseEntity.ANIMATION_EAT_LEAVES);
@@ -347,7 +347,8 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
     }
 
     @Override
-    public void setupAnim(SauropodBaseEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(SauropodBaseEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks,
+            float netHeadYaw, float headPitch) {
         this.resetToDefaultPose();
         animate(entity);
         if (entity.getAnimation() != IAnimatedEntity.NO_ANIMATION) {
@@ -383,17 +384,22 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         this.swing(tail3, idleSpeed, 0.03F, true, 2F, 0F, ageInTicks, 1);
         this.dewlap.rotationPointY += ACMath.walkValue(ageInTicks, 1F, 0.1F, -1.5F, 1, false);
         float legAnimSeperation = 0.5F;
-        animateLegWalking(right_Arm, right_Hand, legAnimSeperation * 3, walkSpeed, walkDegree, walk, armsWalkAmount, true, false, legBack);
-        animateLegWalking(right_Leg, right_Foot, legAnimSeperation * 2, walkSpeed, walkDegree, walk, walkAmount, false, false, legBack);
-        animateLegWalking(left_Arm, left_Hand, legAnimSeperation, walkSpeed, walkDegree, walk, armsWalkAmount, true, true, legBack);
+        animateLegWalking(right_Arm, right_Hand, legAnimSeperation * 3, walkSpeed, walkDegree, walk, armsWalkAmount,
+                true, false, legBack);
+        animateLegWalking(right_Leg, right_Foot, legAnimSeperation * 2, walkSpeed, walkDegree, walk, walkAmount, false,
+                false, legBack);
+        animateLegWalking(left_Arm, left_Hand, legAnimSeperation, walkSpeed, walkDegree, walk, armsWalkAmount, true,
+                true, legBack);
         animateLegWalking(left_Leg, left_Foot, 0, walkSpeed, walkDegree, walk, walkAmount, false, true, legBack);
         animateDancing(entity, danceAmount, ageInTicks);
     }
 
-    private void setupAnimForAnimation(SauropodBaseEntity entity, Animation animation, float limbSwing, float limbSwingAmount, float ageInTicks) {
+    private void setupAnimForAnimation(SauropodBaseEntity entity, Animation animation, float limbSwing,
+            float limbSwingAmount, float ageInTicks) {
         float partialTick = ageInTicks - entity.tickCount;
         if (entity.getAnimation() == SauropodBaseEntity.ANIMATION_ROAR) {
-            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 1, animation, partialTick, 5, 50);
+            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 1, animation, partialTick, 5,
+                    50);
             this.head.swing(1F, 0.1F, false, -1F, 0F, ageInTicks, animationIntensity);
             this.jaw.walk(2F, 0.1F, false, 1F, 0F, ageInTicks, animationIntensity);
             this.dewlap.flap(2F, 0.1F, false, 2F, 0F, ageInTicks, animationIntensity);
@@ -401,7 +407,8 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
             this.neck2.flap(0.5F, 0.1F, false, -2F, 0F, ageInTicks, animationIntensity);
         }
         if (entity.getAnimation() == SauropodBaseEntity.ANIMATION_EPIC_DEATH) {
-            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 1, animation, partialTick, 5, 110);
+            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 1, animation, partialTick, 5,
+                    110);
             this.head.swing(0.4F, 0.1F, false, -1F, 0F, ageInTicks, animationIntensity);
             this.jaw.walk(1F, 0.1F, false, 1F, 0F, ageInTicks, animationIntensity);
             this.dewlap.flap(1F, 0.1F, false, 2F, 0F, ageInTicks, animationIntensity);
@@ -411,7 +418,8 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
             this.neck2.flap(0.25F, 0.1F, false, -2F, 0F, ageInTicks, animationIntensity);
         }
         if (entity.getAnimation() == SauropodBaseEntity.ANIMATION_SPEW_FLAMES) {
-            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 1, animation, partialTick, 5, 70);
+            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 1, animation, partialTick, 5,
+                    70);
             this.head.walk(2F, 0.05F, false, 1F, 0F, ageInTicks, animationIntensity);
             this.head.swing(2F, 0.05F, false, 1F, 0F, ageInTicks, animationIntensity);
             this.dewlap.flap(2F, 0.1F, false, 2F, 0F, ageInTicks, animationIntensity);
@@ -419,47 +427,65 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
             this.neck2.flap(1F, 0.05F, false, -2F, 0F, ageInTicks, animationIntensity);
         }
         if (entity.getAnimation() == SauropodBaseEntity.ANIMATION_EAT_LEAVES) {
-            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 3, animation, partialTick, 35);
+            float animationIntensity = ACMath.cullAnimationTick(entity.getAnimationTick(), 3, animation, partialTick,
+                    35);
             float jawDown = Math.min(0, ACMath.walkValue(ageInTicks, animationIntensity, 0.4F, 2F, 1F, true));
             this.jaw.walk(0.5F, 0.1F, false, 1F, 0.1F, ageInTicks, animationIntensity);
             this.head.rotateAngleX += ACMath.walkValue(ageInTicks, animationIntensity, 0.4F, 2F, 0.05F, false);
-            this.jaw.rotationPointZ += animationIntensity * 2F + ACMath.walkValue(ageInTicks, animationIntensity, 0.4F, 0.5F, 1F, false);
+            this.jaw.rotationPointZ += animationIntensity * 2F
+                    + ACMath.walkValue(ageInTicks, animationIntensity, 0.4F, 0.5F, 1F, false);
         }
     }
 
     private void positionNeckAndTail(SauropodBaseEntity entity, float netHeadYaw, float headPitch, float partialTicks) {
         if (!straighten && !entity.isFakeEntity()) {
-            float neckPart1Pitch = (float) Math.toRadians(entity.neckPart1.calculateAnimationAngle(partialTicks, true)) * 0.5F;
-            float neckPart2Pitch = (float) Math.toRadians(entity.neckPart2.calculateAnimationAngle(partialTicks, true)) * 0.5F;
-            float neckPart3Pitch = (float) Math.toRadians(entity.neckPart3.calculateAnimationAngle(partialTicks, true)) * 0.5F;
-            float tailPart1Pitch = (float) Math.toRadians(entity.tailPart1.calculateAnimationAngle(partialTicks, true)) + 0.141F;
-            float tailPart2Pitch = (float) Math.toRadians(entity.tailPart2.calculateAnimationAngle(partialTicks, true)) + 0.076F;
-            float tailPart3Pitch = (float) Math.toRadians(entity.tailPart3.calculateAnimationAngle(partialTicks, true)) * 0.5F;
+            float neckPart1Pitch = (float) Math.toRadians(entity.neckPart1.calculateAnimationAngle(partialTicks, true))
+                    * 0.5F;
+            float neckPart2Pitch = (float) Math.toRadians(entity.neckPart2.calculateAnimationAngle(partialTicks, true))
+                    * 0.5F;
+            float neckPart3Pitch = (float) Math.toRadians(entity.neckPart3.calculateAnimationAngle(partialTicks, true))
+                    * 0.5F;
+            float tailPart1Pitch = (float) Math.toRadians(entity.tailPart1.calculateAnimationAngle(partialTicks, true))
+                    + 0.141F;
+            float tailPart2Pitch = (float) Math.toRadians(entity.tailPart2.calculateAnimationAngle(partialTicks, true))
+                    + 0.076F;
+            float tailPart3Pitch = (float) Math.toRadians(entity.tailPart3.calculateAnimationAngle(partialTicks, true))
+                    * 0.5F;
             float neckPart2Yaw = entity.neckPart2.calculateAnimationAngle(partialTicks, false);
-            float pitchAmount = entity.getAnimation() == SauropodBaseEntity.ANIMATION_SPEW_FLAMES ? 0.0F : Mth.clamp(headPitch, -30, 30) / 57.295776F;
-            float headApproach = Mth.approachDegrees(neckPart2Yaw, entity.headPart.calculateAnimationAngle(partialTicks, false), 45F) - neckPart2Yaw;
+            float pitchAmount = entity.getAnimation() == SauropodBaseEntity.ANIMATION_SPEW_FLAMES ? 0.0F
+                    : Mth.clamp(headPitch, -30, 30) / 57.295776F;
+            float headApproach = Mth.approachDegrees(neckPart2Yaw,
+                    entity.headPart.calculateAnimationAngle(partialTicks, false), 45F) - neckPart2Yaw;
             neck.rotateAngleX -= neckPart1Pitch + neckPart2Pitch;
-            neck.rotateAngleY += Math.toRadians(180F + entity.neckPart1.calculateAnimationAngle(partialTicks, false)) - this.chest.rotateAngleY - this.body.rotateAngleY - this.root.rotateAngleY;
+            neck.rotateAngleY += Math.toRadians(180F + entity.neckPart1.calculateAnimationAngle(partialTicks, false))
+                    - this.chest.rotateAngleY - this.body.rotateAngleY - this.root.rotateAngleY;
             neck2.rotateAngleX -= neckPart2Pitch;
-            neck2.rotateAngleY += Math.toRadians(180F + neckPart2Yaw);
-            head.rotateAngleX += pitchAmount + neckPart1Pitch + neckPart2Pitch + neckPart3Pitch - (float) Math.toRadians(entity.headPart.calculateAnimationAngle(partialTicks, true)) * 0.2F;
+            neck2.rotateAngleY += Math.toRadians(180F + neckPart2Yaw) - this.chest.rotateAngleY - this.body.rotateAngleY
+                    - this.root.rotateAngleY - this.neck.rotateAngleY;
+            head.rotateAngleX += pitchAmount + neckPart1Pitch + neckPart2Pitch + neckPart3Pitch
+                    - (float) Math.toRadians(entity.headPart.calculateAnimationAngle(partialTicks, true)) * 0.2F;
             head.rotateAngleY += Math.toRadians(headApproach);
             if (neckPart2Pitch > 0F) {
                 neck2.rotationPointZ += Math.min(neckPart2Pitch * 50F, 50F);
             }
             tail.rotateAngleY += Math.toRadians(entity.tailPart1.calculateAnimationAngle(partialTicks, false));
             tail2.rotateAngleY += Math.toRadians(entity.tailPart2.calculateAnimationAngle(partialTicks, false));
-            tail3.rotateAngleY += Math.toRadians(entity.tailPart3.calculateAnimationAngle(partialTicks, false) - entity.tailPart2.calculateAnimationAngle(partialTicks, false));
+            tail3.rotateAngleY += Math.toRadians(entity.tailPart3.calculateAnimationAngle(partialTicks, false)
+                    - entity.tailPart2.calculateAnimationAngle(partialTicks, false));
             tail.rotateAngleX += tailPart1Pitch;
             tail2.rotateAngleX += tailPart2Pitch;
             tail3.rotateAngleX += tailPart3Pitch;
         }
     }
 
-    private void animateLegWalking(AdvancedModelBox leg, AdvancedModelBox foot, float offset, float speed, float degree, float limbSwing, float limbSwingAmount, boolean front, boolean left, float legBack) {
-        float leg1 = Math.min(0, ACMath.walkValue(limbSwing, limbSwingAmount, speed, Mth.PI * (offset + 0.3333F), 1F, true) + 0.75F) * 4;
-        float leg1Delayed = Math.min(0, ACMath.walkValue(limbSwing, limbSwingAmount, speed, Mth.PI * offset, 1F, true) + 0.75F) * 4;
-        float leg1Prev = Math.min(0, ACMath.walkValue(limbSwing, limbSwingAmount, speed, Mth.PI * (offset + 0.6666F), 1F, true) + 0.75F) * 4;
+    private void animateLegWalking(AdvancedModelBox leg, AdvancedModelBox foot, float offset, float speed, float degree,
+            float limbSwing, float limbSwingAmount, boolean front, boolean left, float legBack) {
+        float leg1 = Math.min(0,
+                ACMath.walkValue(limbSwing, limbSwingAmount, speed, Mth.PI * (offset + 0.3333F), 1F, true) + 0.75F) * 4;
+        float leg1Delayed = Math.min(0,
+                ACMath.walkValue(limbSwing, limbSwingAmount, speed, Mth.PI * offset, 1F, true) + 0.75F) * 4;
+        float leg1Prev = Math.min(0,
+                ACMath.walkValue(limbSwing, limbSwingAmount, speed, Mth.PI * (offset + 0.6666F), 1F, true) + 0.75F) * 4;
         float leg1Squish = 1F - 0.15F * (float) (Math.pow(Math.min(leg1Delayed - leg1, 0), 3F));
         float legInactivityAmount = 1F - Math.abs(leg1);
         this.walk(leg, speed, degree * 0.3F, false, Mth.PI * offset + 1F, 0F, limbSwing, leg1);
@@ -490,7 +516,8 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         float heightBackRight = legs.backRight.getHeight(partialTick);
         float heightFrontLeft = legs.frontLeft.getHeight(partialTick);
         float heightFrontRight = legs.frontRight.getHeight(partialTick);
-        float max = Math.max(Math.max(heightBackLeft, heightBackRight), armsArticulateAmount * Math.max(heightFrontLeft, heightFrontRight)) * 0.75F;
+        float max = Math.max(Math.max(heightBackLeft, heightBackRight),
+                armsArticulateAmount * Math.max(heightFrontLeft, heightFrontRight)) * 0.75F;
         body.rotationPointY += max * 16;
         right_Arm.rotationPointY += (heightFrontRight - max) * armsArticulateAmount * 16;
         left_Arm.rotationPointY += (heightFrontLeft - max) * armsArticulateAmount * 16;
@@ -498,7 +525,6 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         left_Leg.rotationPointY += (heightBackLeft - max) * 16;
         return max * 16;
     }
-
 
     private void animateDancing(SauropodBaseEntity entity, float danceAmount, float ageInTicks) {
         float ageSine = Mth.clamp((float) Math.sin(ageInTicks * 0.08F) * 2F, 0, 1);
@@ -537,8 +563,10 @@ public abstract class SauropodBaseModel<T extends SauropodBaseEntity> extends Ad
         progressPositionPrev(right_Hand, gangnam2, 3, -3, 3, 1F);
         progressRotationPrev(left_Arm, gangnam2, (float) Math.toRadians(-10), 0, (float) Math.toRadians(-30), 1F);
         progressRotationPrev(left_Hand, gangnam2, (float) Math.toRadians(-10), 0, (float) Math.toRadians(90), 1F);
-        progressRotationPrev(right_Arm, gangnam2, (float) Math.toRadians(-80), (float) Math.toRadians(40), (float) Math.toRadians(-20), 1F);
-        progressRotationPrev(right_Hand, gangnam2, (float) Math.toRadians(-40), (float) Math.toRadians(-40), (float) Math.toRadians(20), 1F);
+        progressRotationPrev(right_Arm, gangnam2, (float) Math.toRadians(-80), (float) Math.toRadians(40),
+                (float) Math.toRadians(-20), 1F);
+        progressRotationPrev(right_Hand, gangnam2, (float) Math.toRadians(-40), (float) Math.toRadians(-40),
+                (float) Math.toRadians(20), 1F);
         this.right_Arm.flap(gangnamSpeed, 0.5F, false, 1F, 0F, ageInTicks, gangnam2);
         this.right_Arm.swing(gangnamSpeed, 0.5F, false, 0F, 0F, ageInTicks, gangnam2);
         this.right_Hand.flap(gangnamSpeed, 0.2F, false, 3F, -0.1F, ageInTicks, gangnam2);
