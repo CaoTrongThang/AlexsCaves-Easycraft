@@ -399,7 +399,7 @@ public class TremorsaurusEntity extends DinosaurEntity
     public void tryRoar() {
         if (roarCooldown == 0 && this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_ROAR);
-            this.roarCooldown = 200 + random.nextInt(200);
+            this.roarCooldown = 600 + random.nextInt(400);
         }
     }
 

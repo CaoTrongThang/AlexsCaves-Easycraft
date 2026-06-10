@@ -39,7 +39,7 @@ public class TremorsaurusMeleeGoal extends Goal {
         if (target != null) {
             boolean grab = isFlyingTarget();
             tremorsaurus.lookAt(EntityAnchorArgument.Anchor.EYES, target.getEyePosition());
-            if (!tremorsaurus.isVehicle()) {
+            if (!tremorsaurus.isVehicle() && tremorsaurus.getRandom().nextInt(80) == 0) {
                 tremorsaurus.tryRoar();
             }
             double dist = tremorsaurus.distanceTo(target);

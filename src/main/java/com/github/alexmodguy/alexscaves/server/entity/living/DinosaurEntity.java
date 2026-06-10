@@ -177,12 +177,11 @@ public abstract class DinosaurEntity extends TamableAnimal
     }
 
     public void setCommand(int command) {
-        int old = this.getCommand();
         this.entityData.set(COMMAND, command);
-        if (this.isTame()) {
-            if (old != 0 && command == 0) {
+        if (!this.level().isClientSide && this.isTame()) {
+            if (command == 0) {
                 this.restrictTo(this.blockPosition(), 24);
-            } else if (command != 0) {
+            } else {
                 this.clearRestriction();
             }
         }
