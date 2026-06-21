@@ -137,9 +137,9 @@ public class TremorsaurusEntity extends DinosaurEntity
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.ATTACK_DAMAGE, 45.0D)
+        return Monster.createMonsterAttributes().add(Attributes.ATTACK_DAMAGE, 60.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.KNOCKBACK_RESISTANCE, 0.9D)
-                .add(Attributes.FOLLOW_RANGE, 48.0D).add(Attributes.MAX_HEALTH, 4120.0D).add(Attributes.ARMOR, 20.0D);
+                .add(Attributes.FOLLOW_RANGE, 48.0D).add(Attributes.MAX_HEALTH, 6520.0D).add(Attributes.ARMOR, 20.0D);
     }
 
     public void tick() {

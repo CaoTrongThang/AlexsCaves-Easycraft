@@ -99,8 +99,8 @@ public class ForsakenEntity extends Monster implements IAnimatedEntity, ShakesSc
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes().add(Attributes.MOVEMENT_SPEED, 0.30D)
-                .add(Attributes.MAX_HEALTH, 36666.0D).add(Attributes.FOLLOW_RANGE, 64.0D)
-                .add(Attributes.ATTACK_DAMAGE, 70.0D).add(Attributes.KNOCKBACK_RESISTANCE, 0.8D);
+                .add(Attributes.MAX_HEALTH, 66666.0D).add(Attributes.FOLLOW_RANGE, 64.0D)
+                .add(Attributes.ATTACK_DAMAGE, 85.0D).add(Attributes.KNOCKBACK_RESISTANCE, 0.8D);
     }
 
     @Override
